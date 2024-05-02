@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset
+				name="histo"
+				label="Historique"
+	>
+		<field name="id" type="hidden" default="0" 
+			readonly="true" class="readonly"
+			label="JGLOBAL_FIELD_ID_LABEL" 	description ="JGLOBAL_FIELD_ID_DESC" />
+		<field name="created" type="hidden" default="0" 
+			readonly="true" class="readonly"
+			label="created" 	description ="created" />
+		<field name="modified" type="hidden" default="0" 
+			readonly="true" class="readonly"
+			label="modified" 	description ="modified" />
+
+    </fieldset>
+</form>

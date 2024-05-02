@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<config>         
+		<inlinehelp button="show"/>     
+	</config>
+    <fieldset name="basic" label="CGRESA_GLOBAL_DATA" description="GSD_GLOBAL_DATA_DESC"
+		addfieldprefix="ConseilGouz\Component\Automsg\Administrator\Field">
+		<field name="version" type="version"  margintop="-3em" extension="com_automsg"/>
+		<field name="id" type="hidden" default="0"
+			readonly="true" class="readonly"
+			label="JGLOBAL_FIELD_ID_LABEL" 	description ="JGLOBAL_FIELD_ID_DESC" />
+		<field name="title" type="text"
+			label="COM_CGRESA_TITLE" 
+			description ="COM_CGRESA_TITLE_DESC" 
+			required="true"  />
+		<field	name="state" type="list" label="JSTATUS"
+			 class="chzn-color-state"
+			size="1" default="1">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="2">JARCHIVED</option>
+			<option value="-2">JTRASHED</option>
+		</field>
+		<field	name="language"	type="contentlanguage"
+			label="JFIELD_LANGUAGE_LABEL" description="JFIELD_LANGUAGE_DESC"	>
+			<option value="*">JALL</option>
+		</field>
+		<field name="minsize" type="number"
+			label="COM_CGRESA_MINSIZE" 
+			description ="COM_CGRESA_MINSIZE_DESC" 
+			default="0"
+			required="true"  />
+		<field name="legend" type="textarea" label="COM_CGRESA_LEGEND" description="COM_CGRESA_LEGEND_DESC" cols="200" rows="4" filter="raw" 
+			default="&lt;h1&gt;CG Réservation&lt;/h1&gt;"
+		/>	
+		<field name="rightmsg" type="textarea" label="COM_CGRESA_RIGHTMSG" description="COM_CGRESA_RIGHTMSG_DESC" cols="200" rows="4" filter="raw" 
+				default="&lt;h2&gt;Ouvertures&lt;/h2&gt;"
+		/>	
+		<field name="date_format" type="list" default="%d-%m-%Y" label="COM_CGRESA_DATEFORMAT_LABEL" description="COM_CGRESA_DATEFORMAT_DESC" size="20" required="true">
+			<option value="%d-%m-%Y">d-m-y</option>
+			<option value="%Y-%m-%d">y-m-d</option>
+			<option value="%m-%d-%Y">m-d-y</option>
+		</field>		
+		<field name="note_captcha" type="note" description="COM_CGRESA_NOTE_CAPTCHA" class="alert-success"/>
+		<field name="captcha" type="plugins" folder="captcha"
+					label="COM_CGRESA_CAPTCHA"	description="COM_CGRESA_CAPTCHA_DESC"
+					default="0" filter="cmd" >
+			<option value="0">JOPTION_DO_NOT_USE</option>
+		</field>
+		<field name="note_css" type="note" description="COM_CGRESA_NOTE_CSS" class="alert-success"/>
+		<field name="css" type="textarea" label="COM_CGRESA_CSS" description="COM_CGRESA_CSS_DESC" cols="400" rows="4" filter="raw" 
+				default="[class*='fg-c']{padding-left: 1em} .adminform .control-label {float:left;width:20%} .input-group-btn {width:inherit} .input-append {display:flex} #cg_resa_messages .alert-heading {display:none} #system-message-container > div {margin: 12px 4px 20px 0;} .row-fluid .span12 {background-color: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.04);border-radius: 4px;margin: 1em 0 1em 0;min-height: 20px;padding: 15px 10px;font-size: 110%;}@media screen and (max-width: 767px) {.cgresaform .control-label {display:none}}"
+		/>	
+    </fieldset>
+    <fieldset name="mail" label="CGRESA_MAIL_FIELDSET">
+		<field name="note_mail" type="note" description="COM_CGRESA_NOTE_MAIL" class="alert-success"/>
+		<field name="mailfrom" type="text" label="COM_CGRESA_FROM" description="COM_CGRESA_FROM_DESC" required="true"/>
+		<field name="mailfromlib" type="text" label="COM_CGRESA_FROM_LIB" description="COM_CGRESA_FROM_LIB_DESC" required="true" />
+	    <field name="maildest" type="text" label="COM_CGRESA_DEST" description="COM_CGRESA_DEST_DESC" required="true" />
+		<field name="mailreplyto" type="text" label="COM_CGRESA_REPLYTO" description="COM_CGRESA_REPLYTO_DESC" default=""/>
+	    <field name="mailcc" type="text" label="COM_CGRESA_CC" description="COM_CGRESA_CC_DESC" default=""/>
+	    <field name="mailbcc" type="text" label="COM_CGRESA_BCC" description="COM_CGRESA_BCC_DESC" default=""/>
+	    <field name="mailsubject" type="text" label="COM_CGRESA_SUBJECT" description="COM_CGRESA_SUBJECT_DESC" default="Demande de reservation" />
+		<field name="note_perso" type="note" description="COM_CGRESA_PERSO_NOTE" class="alert-success"/>
+		<field name="perso" type="textarea" label="COM_CGRESA_PERSO"  cols="400" rows="4" filter="raw" 
+			default="&lt;b&gt;Demande de réservation.&lt;/b&gt;&lt;br&gt;De la part de {name}&lt;br&gt;Téléphone : {phone}&lt;br&gt;Email : {email}&lt;br&gt;Réservation pour le {date} à {time}, pour {number} personne(s).&lt;br&gt;Message éventuelle : &lt;br&gt;{msg}&lt;br&gt;&lt;br&gt;Le Restaurant"
+		/>	
+		<field name="note_confirm" type="note" description="COM_CGRESA_CONFIRM_NOTE" class="alert-success"/>
+		<field name="confirm" type="radio" default="0" label="COM_CGRESA_CONF" description="COM_CGRESA_CONF_DESC" class="btn-group">
+            <option value="1">JYES</option>
+			<option value="0">JNO</option>
+        </field>
+	    <field showon="confirm:1" name="confirmsubject" type="text" label="COM_CGRESA_CONF_SUBJECT" description="COM_CGRESA_CONF_SUBJECT_DESC" default="Confirmation de reservation" />
+		<field showon="confirm:1" name="confirmfrom" type="text" label="COM_CGRESA_CONF_FROM" description="COM_CGRESA_CONF_FROM_DESC" />
+		<field showon="confirm:1" name="confimfromlib" type="text" label="COM_CGRESA_CONF_FROM_LIB" description="COM_CGRESA_CONF_FROM_LIB_DESC" />
+	    <field showon="confirm:1" name="confirmcc" type="text" label="COM_CGRESA_CONF_CC" description="COM_CGRESA_CONF_CC_DESC" default=""/>
+	    <field showon="confirm:1" name="confirmbcc" type="text" label="COM_CGRESA_CONF_BCC" description="COM_CGRESA_CONF_BCC_DESC" default=""/>
+		<field showon="confirm:1" name="confirmperso" type="textarea" label="COM_CGRESA_CONFIRM_PERSO" cols="400" rows="4" filter="raw" 
+				default="&lt;b&gt;A l'attention de {name}.&lt;/b&gt;&lt;br&gt;Nous avons bien reçu votre demande de réservation pour le {date} à {time}, pour {number} personne(s).&lt;br&gt;Nous vous en remercions et vous la confirmerons dès que possible.&lt;br&gt;&lt;br&gt;Le restaurant."
+		/>	
+    </fieldset>
+    <fieldset name="opening" label="CGRESA_OPENING">
+		<field type="note" name="note1" description="COM_CGRESA_MONDAY" class="alert-success"/>			 
+		<field name="1" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/ouv.xml"  />			
+		<field type="note" name="note2" description="COM_CGRESA_TUESDAY" class="alert-success"/>			 
+		<field name="2" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/ouv.xml"   />			
+		<field type="note" name="note3" description="COM_CGRESA_WEDNESDAY" class="alert-success"/>			 
+		<field name="3" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/ouv.xml"   />			
+		<field type="note" name="note4" description="COM_CGRESA_THURSDAY" class="alert-success"/>			 
+		<field name="4" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/ouv.xml"  />			
+		<field type="note" name="note5" description="COM_CGRESA_FRIDAY" class="alert-success"/>			 
+		<field name="5" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/ouv.xml"  />			
+		<field type="note" name="note6" description="COM_CGRESA_SATURDAY" class="alert-success"/>			 
+		<field name="6" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/ouv.xml"  />			
+		<field type="note" name="note7" description="COM_CGRESA_SUNDAY" class="alert-success"/>			 
+		<field name="7" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/ouv.xml"  />			
+    </fieldset>
+	<fieldset name="Exceptions" label="CGRESA_EXCEPTIONS">
+		<field name="note_conges" type="note" description="COM_CGRESA_CONGES_DATE" class="alert-success"/>
+		<field name="conges" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/conges.xml"   />			
+		<field name="note_date" type="note" description="COM_CGRESA_INTRO_DATE" class="alert-success"/>
+		<field name="days" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/calendar.xml"   />			
+	</fieldset>
+	<fieldset name="Events" label="CGRESA_EVENTS">
+		<field name="note_date" type="note" description="COM_CGRESA_INTRO_EVENT" class="alert-success"/>
+		<field name="events" label="" type="subform" multiple ="true" 
+				formsource="/administrator/components/com_cgresa/events.xml"   />			
+	</fieldset>
+</form>

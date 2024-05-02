@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <config>         
+        <inlinehelp button="show"/>     
+    </config>
+    <fieldset name="config" label="AutoMsg Config"
+        addfieldprefix="ConseilGouz\Component\Automsg\Administrator\Field">
+        <field name="version" type="version"  margintop="-3em" extension="com_automsg"/>
+        <field name="id" type="hidden" default="0" readonly="true" class="readonly"
+            label="JGLOBAL_FIELD_ID_LABEL" 	description ="JGLOBAL_FIELD_ID_DESC" />
+        <field name="usergroups" type="usergrouplist"
+            description="COM_AUTOMSG_USERGROUP_DESC" label="COM_AUTOMSG_USERGROUP_LABEL"
+            multiple="true" required="true"
+            layout="joomla.form.field.list-fancy-select">
+        </field>
+        <field name="categories"
+            type="category"	multiple="true"	extension="com_content"
+            layout="joomla.form.field.list-fancy-select"
+            label="JCATEGORIES">
+        </field>
+        <field name="msgcreator"
+            type="list" default="1"
+            label="COM_AUTOMSG_CREATOR" description="COM_AUTOMSG_CREATOR_DESC">
+                <option value="0">Message identique</option>
+                <option value="1">Message spécifique</option>
+        </field>
+        <field name="msgauto"
+            type="radio" class="btn-group btn-group-yesno"
+            default="1" label="COM_AUTOMSG_AUTO">
+            <option value="0">Non</option>
+            <option value="1">Oui</option>
+        </field>
+        <field name="async"
+            type="radio" class="btn-group btn-group-yesno" default="0"
+            label="COM_AUTOMSG_ASYNC" description="COM_AUTOMSG_ASYNC_DESC">
+            <option value="0">Non</option>
+            <option value="1">Oui</option>
+        </field>
+        <field type="note" name="note1" label="COM_AUTOMSG_NOTE_ADM" heading="p" />
+        <field name="log"
+            type="radio" class="btn-group btn-group-yesno" default="0"
+            label="COM_AUTOMSG_LOG" description="COM_AUTOMSG_LOG_DESC">
+            <option value="0">Non</option>
+            <option value="1">Erreurs</option>
+            <option value="21">JALL</option>
+        </field>
+		<field name="created" type="hidden" default="0" 
+			readonly="true" class="readonly"
+			label="created" 	description ="created" />
+		<field name="modified" type="hidden" default="0" 
+			readonly="true" class="readonly"
+			label="modified" 	description ="modified" />
+    </fieldset>
+</form>

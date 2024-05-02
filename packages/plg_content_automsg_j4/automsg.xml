@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4.0" type="plugin" group="content" method="upgrade">
+	<name>PLG_CONTENT_AUTOMSG</name>
+	<author>conseilgouz</author>
+	<creationDate>2024-04-30</creationDate>
+	<copyright>Copyright (C) 2024 ConseilGouz. All rights reserved.</copyright>
+	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
+	<authorUrl>www.conseilgouz.com</authorUrl>
+	<version>4.0.0</version>
+	<description>PLG_CONTENT_AUTOMSG_XML_DESCRIPTION</description>
+	<files>
+		<folder plugin="automsg">services</folder>
+		<folder>src</folder>
+		<filename >index.html</filename>
+	</files>
+	<media folder="media" destination="plg_content_automsg">
+        <folder>js</folder>
+        <filename>index.html</filename>
+	</media>
+    <languages>
+		<language tag="fr-FR">language/fr-FR/plg_content_automsg.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_content_automsg.sys.ini</language>
+		<language tag="en-GB">language/en-GB/plg_content_automsg.ini</language>
+		<language tag="en-GB">language/en-GB/plg_content_automsg.sys.ini</language>
+	</languages>
+	<namespace path="src">ConseilGouz\Plugin\Content\AutoMsg</namespace>
+    <changelogurl>https://raw.githubusercontent.com/conseilgouz/com_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="usergroups"
+					type="usergrouplist"
+					description="PLG_CONTENT_AUTOMSG_USERGROUP_DESC"
+					label="PLG_CONTENT_AUTOMSG_USERGROUP_LABEL"
+					multiple="true" required="true"
+					layout="joomla.form.field.list-fancy-select">
+				</field>
+				<field name="categories"
+						type="category"	multiple="true"	extension="com_content"
+						layout="joomla.form.field.list-fancy-select"
+						label="JCATEGORIES"
+						>
+				</field>
+				<field name="msgcreator"
+					type="list"
+					default="1"
+					label="PLG_CONTENT_AUTOMSG_CREATOR"
+					description="PLG_CONTENT_AUTOMSG_CREATOR_DESC"
+				>
+					<option value="0">Message identique</option>
+					<option value="1">Message spécifique</option>
+				</field>
+				<field name="msgauto"
+					type="radio" class="btn-group btn-group-yesno"
+					default="1"
+					label="PLG_CONTENT_AUTOMSG_AUTO"
+				>
+					<option value="0">Non</option>
+					<option value="1">Oui</option>
+				</field>
+				<field name="chkasync" type="sql"
+                query="select count('id') as count from #__extensions where element = 'com_automsg' or (element = 'automsg' and type='plugin' and folder='task')"
+				key_field="count" value_field="count" default="0" class="hidefield" />
+			    <field type="note" showon="chkasync!:2" name="noteasync" label="PLG_CONTENT_AUTOMSG_ASYNC_NOTE" heading="p" />
+				<field name="async" showon="chkasync:2"
+					type="radio" class="btn-group btn-group-yesno"
+					default="0"
+					label="PLG_CONTENT_AUTOMSG_ASYNC"
+					description="PLG_CONTENT_AUTOMSG_ASYNC_DESC"
+				>
+					<option value="0">Non</option>
+					<option value="1">Oui</option>
+				</field>
+			    <field type="note" name="note1" label="PLG_CONTENT_AUTOMSG_NOTE" heading="p" />
+				<field name="log"
+					type="radio" class="btn-group btn-group-yesno" default="0"
+					label="PLG_CONTENT_AUTOMSG_LOG" description="PLG_CONTENT_AUTOMSG_LOG_DESC">
+					<option value="0">Non</option>
+					<option value="1">Erreurs</option>
+					<option value="21">JALL</option>
+				</field>
+				
+			</fieldset>
+		</fields>
+	</config>
+	<updateservers>
+	<server type="extension" name="AutoMsg" priority="1">https://raw.githubusercontent.com/conseilgouz/updates_github/master/pkg_automsg_update.xml</server>
+	</updateservers>
+</extension>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<form>
+	<fields name="profile_automsg">
+		<fieldset name="profile_automsg"
+			label="Email sur un nouvel article"
+		>
+			<field
+				name="automsg"
+				type="radio" class="btn-group btn-group-yesno" default="Oui"
+				label="Réception des emails"
+				description="Réception des emails de création des articles"
+				>
+				<option value="Oui">JYES</option>
+				<option value="Non">JNO</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>

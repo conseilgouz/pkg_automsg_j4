@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension version="4.0" type="plugin" group="system" method="upgrade">
+	<name>plgautomsginstaller</name>
+	<author>ConseilGouz</author>
+	<creationDate>2024-04-30</creationDate>
+	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
+	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
+	<authorUrl>www.conseilgouz.com</authorUrl>
+	<version>4.0.0</version>
+	<description>AutoMsg</description>
+	<scriptfile>script.install.php</scriptfile>
+	<files>
+		<filename plugin="automsginstaller">automsginstaller.php</filename>
+		<folder>language</folder>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/plgautomsginstaller.sys.ini</language>
+		<language tag="fr-FR">fr-FR/plgautomsginstaller.sys.ini</language>
+	</languages>
+	<updateservers>
+	<server type="extension" name="AutoMsg" priority="1">https://raw.githubusercontent.com/conseilgouz/updates_github/master/pkg_automsg_update.xml</server>
+	</updateservers>
+	<changelogurl>https://raw.githubusercontent.com/conseilgouz/pkg_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
+</extension>

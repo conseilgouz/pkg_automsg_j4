@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4.0" type="library" method="upgrade">
+	<name>Automsg Library</name>
+	<libraryname>automsg</libraryname>
+	<author>ConseilGouz</author>
+	<version>4.0.0</version>
+	<creationDate>2024-05-01</creationDate>
+	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
+	<license>GNU General Public License version 3 or later; https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
+	<authorUrl>www.conseilgouz.com</authorUrl>
+	<namespace>ConseilGouz\Automsg</namespace>
+	<files>
+		<folder>Helper</folder>
+		<file>index.html</file>
+	</files>
+</extension>

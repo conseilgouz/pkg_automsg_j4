@@ -1,0 +1,13 @@
+<changelogs>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
+		<version>4.0.0</version>
+        <note>
+            <item>Update : 30/04/2024</item>
+        </note>
+		<change>
+			<item>Becomes a package</item>
+		</change>
+	</changelog>
+</changelogs>

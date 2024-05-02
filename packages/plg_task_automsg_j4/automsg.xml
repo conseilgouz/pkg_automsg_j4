@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4.1" type="plugin" group="task" method="upgrade">
+	<name>PLG_TASK_AUTOMSG</name>
+	<author>conseilgouz</author>
+	<creationDate>2024-04-30</creationDate>
+	<copyright>Copyright (C) 2024 ConseilGouz. All rights reserved.</copyright>
+	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
+	<authorUrl>www.conseilgouz.com</authorUrl>
+	<version>4.0.0</version>
+	<description>PLG_TASK_AUTOMSG_DESC</description>
+	<namespace path="src">ConseilGouz\Plugin\Task\AutoMsg</namespace>
+	<files>
+		<folder plugin="automsg">services</folder>
+		<folder>forms</folder>	
+		<folder>src</folder>	
+		<folder>services</folder>	
+	</files>
+    <languages>
+		<language tag="fr-FR">language/fr-FR/plg_task_automsg.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_task_automsg.sys.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_automsg.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_automsg.sys.ini</language>
+	</languages>
+    <changelogurl>https://raw.githubusercontent.com/conseilgouz/com_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
+</extension>
