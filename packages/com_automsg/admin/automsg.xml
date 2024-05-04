@@ -41,7 +41,7 @@
 		<menu>COM_AUTOMSG_MENU</menu>
         <submenu>
             <menu link="option=com_automsg&amp;view=config" view="config">COM_AUTOMSG_CONFIG</menu>
-            <menu link="option=com_automsg&amp;view=histos" view="histos">COM_AUTOMSG_HISTO</menu>
+            <menu link="option=com_automsg&amp;view=messages" view="messages">COM_AUTOMSG_MESSAGES</menu>
         </submenu>
     
 		<files folder="admin">

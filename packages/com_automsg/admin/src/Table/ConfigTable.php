@@ -84,39 +84,9 @@ class ConfigTable extends Table implements VersionableTableInterface
 
         return $db->insertObject($table, $data);
     }
-    public function publish($pks = null, $state = 1, $userId = 0)
-    {
-        $k = $this->_tbl_key;
-        ArrayHelper::toInteger($pks);
-        $userId = (int) $userId;
-        $state  = (int) $state;
 
-        $db = $this->getDbo();
-        if (empty($pks)) {
-            if ($this->$k) {
-                $pks = array($this->$k);
-            } else {
-                $this->setError(Text::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
-                return false;
-            }
-        }
-        // ???? $table = Table::getInstance('WaitingTable', __NAMESPACE__ . '\\', array('dbo' => $db));
-        $table = $this->_tbl;
-        foreach ($pks as $pk) {
-            if(!$table->load($pk)) {
-                $this->setError($table->getError());
-            }
-            $table->state = $state;
-            $table->updated = Factory::getDate()->toSql();
-            $table->check();
-            if (!$table->updateState()) {
-                $this->setError($table->getError());
-            }
-        }
-        return count($this->getErrors()) == 0;
-    }
     /**
-     * Get the type alias for the history table
+     * Get the type alias for the message table
      *
      * @return  string  The alias as described above
      *

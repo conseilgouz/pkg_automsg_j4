@@ -7,7 +7,7 @@
  * @author ConseilGouz
 **/
 
-namespace ConseilGouz\Component\Automsg\Administrator\View\Histos;
+namespace ConseilGouz\Component\Automsg\Administrator\View\Messages;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -50,25 +50,25 @@ class HtmlView extends BaseHtmlView
         $canDo = ContentHelper::getActions('com_automsg');
         $user = Factory::getApplication()->getIdentity();
 
-        ToolbarHelper::title(Text::_('COM_AUTOMSG_PAGES'), 'automsg.png');
+        ToolbarHelper::title(Text::_('COM_AUTOMSG_MESSAGES'), 'automsg.png');
 
         if ($canDo->get('core.create') || (count($user->getAuthorisedCategories('com_automsg', 'core.create'))) > 0) {
-            ToolbarHelper::addNew('histo.add');
+            ToolbarHelper::addNew('message.add');
         }
 
         if (($canDo->get('core.edit')) || ($canDo->get('core.edit.own'))) {
-            ToolbarHelper::editList('histo.edit');
+            ToolbarHelper::editList('message.edit');
         }
 
         if ($canDo->get('core.edit.state')) {
             ToolbarHelper::divider();
-            ToolbarHelper::publish('histo.publish', 'JTOOLBAR_PUBLISH', true);
-            ToolbarHelper::unpublish('histo.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+            ToolbarHelper::publish('message.publish', 'JTOOLBAR_PUBLISH', true);
+            ToolbarHelper::unpublish('message.unpublish', 'JTOOLBAR_UNPUBLISH', true);
         }
         if (isset($this->state) && $this->state->get('filter.state') == -2 && $canDo->get('core.delete')) {
-            ToolBarHelper::deleteList('', 'histos.delete', 'JTOOLBAR_EMPTY_TRASH');
+            ToolBarHelper::deleteList('', 'messages.delete', 'JTOOLBAR_EMPTY_TRASH');
         } elseif ($canDo->get('core.edit.state')) {
-            ToolBarHelper::trash('histos.trash');
+            ToolBarHelper::trash('messages.trash');
         }
         if ($canDo->get('core.admin')) {
             ToolbarHelper::divider();

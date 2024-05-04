@@ -1,7 +1,7 @@
 <?php
 /**
  * @component     AutoMsg - Joomla 4.x/5.x
- * Version			: 4.0.0
+ * Version		: 4.0.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -16,7 +16,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
-class HistosModel extends ListModel
+class MessagesModel extends ListModel
 {
     public function __construct($config = array(), MVCFactoryInterface $factory = null)
     {
@@ -48,7 +48,7 @@ class HistosModel extends ListModel
         if (is_numeric($published)) {
             $query->where('state = '.(int) $published);
         } elseif ($published === '') {
-            $query->where('(state IN (0, 1))');
+            $query->where('(state IN (0, 1, 9))');
         }
         // Filter by search
         $search = $this->getState('filter.search');
@@ -67,8 +67,6 @@ class HistosModel extends ListModel
 
     protected function populateState($ordering = null, $direction = null)
     {
-        // Initialise variables.
-        $app = Factory::getApplication('administrator');
         // Load the filter state.
         $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
@@ -104,7 +102,7 @@ class HistosModel extends ListModel
             return false;
         }
     }
-    public function getTable($type = 'Histo', $prefix = 'Administrator', $config = [])
+    public function getTable($type = 'Message', $prefix = 'Administrator', $config = [])
     {
         return parent::getTable($type, $prefix, $config);
     }

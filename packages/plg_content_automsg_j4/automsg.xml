@@ -14,10 +14,6 @@
 		<folder>src</folder>
 		<filename >index.html</filename>
 	</files>
-	<media folder="media" destination="plg_content_automsg">
-        <folder>js</folder>
-        <filename>index.html</filename>
-	</media>
     <languages>
 		<language tag="fr-FR">language/fr-FR/plg_content_automsg.ini</language>
 		<language tag="fr-FR">language/fr-FR/plg_content_automsg.sys.ini</language>

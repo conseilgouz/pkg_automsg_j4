@@ -26,8 +26,42 @@ $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $canOrder	= ContentHelper::getActions('com_automsg');
 $saveOrder	= $listOrder == 'ordering';
+
+$states = [
+        0 => [
+             'send', // action : publish => envoi
+             'aa',
+             'Cliquer pour envoyer',
+             'bb',
+             true,
+             'warning', // icone 
+             'cc',
+         ],
+         1 => [
+              'ss', // ne rien faire 
+              'sss',
+              'Envoyé', // état : 
+              'ssss',
+              true,
+              'publish', // icone
+              'sssss',
+         ],
+         9 => [
+              'restart', // ne rien faire 
+              'fffff',
+              'Erreurs', // état : 
+              'ffff',
+              true,
+              'error', // icone
+              'ff',
+         ]
+       ];
+        $options   = [];
+        $options[] = HTMLHelper::_('select.option', '0', 'En attente');
+        $options[] = HTMLHelper::_('select.option', '1', 'Envoyés');
+        $options[] = HTMLHelper::_('select.option', '9', 'En erreur');
 ?>
-<form action="<?php echo Route::_('index.php?option=com_automsg&view=histos'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_automsg&view=messages'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
@@ -50,7 +84,7 @@ $saveOrder	= $listOrder == 'ordering';
 		<div class="btn-group pull-right hidden-phone">
 			<select name="filter_state" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo Text::_('JOPTION_SELECT_PUBLISHED');?></option>
-                <?php echo HtmlHelper::_('select.options', HtmlHelper::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.state'), true);?>
+                <?php echo HtmlHelper::_('select.options', $options);?>
 			</select>
 		</div>
 	</div>
@@ -87,7 +121,7 @@ $saveOrder	= $listOrder == 'ordering';
 			</tr>
 		</tfoot>
 		<tbody>
-		<?php foreach ($this->items as $i => $histo) :
+		<?php foreach ($this->items as $i => $message) :
 		    $ordering	= ($listOrder == 'ordering');
 		    $canCreate	= $user->authorise('core.create');
 		    $canEdit	= $user->authorise('core.edit');
@@ -96,7 +130,7 @@ $saveOrder	= $listOrder == 'ordering';
 		    ?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
-					<?php echo HtmlHelper::_('grid.id', $i, $histo->ids); ?>
+					<?php echo HtmlHelper::_('grid.id', $i, $message->ids); ?>
 				</td>
                 <td>
             <?php
@@ -113,7 +147,7 @@ $saveOrder	= $listOrder == 'ordering';
 		    $model->setState('list.ordering', 'a.hits');
 		    $model->setState('list.direction', 'DESC');
 		    $titles = "";
-		    $articles = explode(',', $histo->articles);
+		    $articles = explode(',', $message->articles);
 		    foreach ($articles as $articleid) {
 		        $article = $model->getItem($articleid);
 		        $titles .= ($titles) ? ',' : '' ;
@@ -123,7 +157,7 @@ $saveOrder	= $listOrder == 'ordering';
 				</td>
                 <td align="center">
             <?php
-		    $sent = $histo->sent;
+		    $sent = $message->sent;
 		    if (!$sent) {
 		        $sent = "en attente";
 		    }
@@ -131,7 +165,9 @@ $saveOrder	= $listOrder == 'ordering';
 		    ?>
                 </td>
 				<td class="center">
-					<?php echo HTMLHelper::_('jgrid.published', $histo->state, $i, 'histo.', $canChange, 'cb'); ?>
+					<?php 
+
+                    echo HTMLHelper::_('jgrid.state', $states, $message->state, $i, 'messages.', $canChange, 'cb'); ?>
 				</td>
 			</tr>
 			<?php endforeach; ?>

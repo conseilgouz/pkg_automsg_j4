@@ -17,7 +17,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Form\Form;
 use Joomla\Database\DatabaseInterface;
 
-class HistoModel extends AdminModel
+class MessageModel extends AdminModel
 {
     protected function preprocessForm(Form $form, $data, $group = 'content')
     {
@@ -26,7 +26,7 @@ class HistoModel extends AdminModel
     public function getForm($data = array(), $loadData = true)
     {
         // Get the form.
-        $form = $this->loadForm('com_automsg.histo', 'histo', array('control' => 'jform', 'load_data' => $loadData));
+        $form = $this->loadForm('com_automsg.message', 'message', array('control' => 'jform', 'load_data' => $loadData));
 
         if (empty($form)) {
             return false;
@@ -34,7 +34,7 @@ class HistoModel extends AdminModel
 
         return $form;
     }
-    public function getTable($type = 'Histo', $prefix = 'Administrator', $config = [])
+    public function getTable($type = 'Message', $prefix = 'Administrator', $config = [])
     {
         return parent::getTable($type, $prefix, $config);
     }
@@ -46,7 +46,7 @@ class HistoModel extends AdminModel
      */
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_automsg.edit.histo.data', array());
+        $data = Factory::getApplication()->getUserState('com_automsg.edit.message.data', array());
         if (empty($data)) {
             $data = $this->getItem();
         }

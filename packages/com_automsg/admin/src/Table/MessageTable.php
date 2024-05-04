@@ -4,7 +4,7 @@
  * Version			: 4.0.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
- * @author ConseilGouz 
+ * @author ConseilGouz
 **/
 
 namespace ConseilGouz\Component\Automsg\Administrator\Table;
@@ -15,9 +15,10 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableTableInterface;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Utilities\ArrayHelper;
 
-class WaitingTable extends Table implements VersionableTableInterface
+class MessageTable extends Table implements VersionableTableInterface
 {
     /**
      * An array of key names to be json encoded in the bind function
@@ -44,9 +45,9 @@ class WaitingTable extends Table implements VersionableTableInterface
      */
     public function __construct(DatabaseDriver $db)
     {
-        $this->typeAlias = 'com_automsg.waiting';
+        $this->typeAlias = 'com_automsg.message';
 
-        parent::__construct('#__automsg_waiting', 'id', $db);
+        parent::__construct('#__automsg', 'id', $db);
 
         $this->created = Factory::getDate()->toSql();
         $this->updated = Factory::getDate()->toSql();
@@ -59,7 +60,7 @@ class WaitingTable extends Table implements VersionableTableInterface
      */
     public function updateState($key = 'id')
     {
-        $db    = Factory::getDBo();
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $table = $this->_tbl;
         $key   = empty($this->id) ? $key : $this->id;
 
@@ -91,7 +92,6 @@ class WaitingTable extends Table implements VersionableTableInterface
         $userId = (int) $userId;
         $state  = (int) $state;
 
-        $db = $this->getDbo();
         if (empty($pks)) {
             if ($this->$k) {
                 $pks = array($this->$k);
@@ -100,8 +100,9 @@ class WaitingTable extends Table implements VersionableTableInterface
                 return false;
             }
         }
-        // ???? $table = Table::getInstance('WaitingTable', __NAMESPACE__ . '\\', array('dbo' => $db));
-        $table = $this->_tbl;
+        $db = $this->getDbo();
+        $table = Table::getInstance('MessageTable', __NAMESPACE__ . '\\', array('dbo' => $db));
+        // $table = $this->_tbl;
         foreach ($pks as $pk) {
             if(!$table->load($pk)) {
                 $this->setError($table->getError());

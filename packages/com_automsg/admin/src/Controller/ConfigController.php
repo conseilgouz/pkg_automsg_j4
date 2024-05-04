@@ -87,7 +87,7 @@ class ConfigController extends FormController
             return false;
         }
         $data['usergroups'] = implode(',', $data['usergroups']);
-        if ($data['categories']) {
+        if (isset($data['categories'])) {
             $data['categories'] = implode(',', $data['categories']);
         } else {
             $data['categories'] = '';

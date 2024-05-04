@@ -174,7 +174,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
     {
         $app = Factory::getApplication();
 
-        if ($this->autoParams->log) { // need to log msgs
+        if ($this->autoparams->log) { // need to log msgs
             AutomsgHelper::createLog();
         }
         $lang = $app->getLanguage();
@@ -197,14 +197,14 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             try {
                 $send = $mailer->Send();
             } catch (\Exception $e) {
-                if ($this->autoParams->log) { // need to log msgs
+                if ($this->autoparams->log) { // need to log msgs
                     Log::add('Task : Erreur ----> Articles : '.$articlesList.' non envoyé à '.$receiver->email.'/'.$e->getMessage(), Log::ERROR, 'com_automsg');
                 } else {
                     $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
                 }
                 continue; // try next one
             }
-            if ($this->autoParams->log == 2) { // need to log msgs
+            if ($this->autoparams->log == 2) { // need to log msgs
                 Log::add('Task : Article OK : '.$articlesList.' envoyé à '.$receiver->email, Log::DEBUG, 'com_automsg');
             }
         }

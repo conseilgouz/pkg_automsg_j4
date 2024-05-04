@@ -17,7 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 
-class HistoController extends FormController
+class MessageController extends FormController
 {
     protected function allowAdd($data = array())
     {
@@ -43,12 +43,12 @@ class HistoController extends FormController
         }
 
         // Check edit on the record asset (explicit or inherited)
-        if ($user->authorise('core.edit', 'com_automsg.waiting.' . $recordId)) {
+        if ($user->authorise('core.edit', 'com_automsg.message.' . $recordId)) {
             return true;
         }
 
         // Check edit own on the record asset (explicit or inherited)
-        if ($user->authorise('core.edit.own', 'com_automsg.waiting.' . $recordId)) {
+        if ($user->authorise('core.edit.own', 'com_automsg.message.' . $recordId)) {
             // Existing record already has an owner, get it
             $record = $this->getModel()->getItem($recordId);
 
@@ -66,7 +66,7 @@ class HistoController extends FormController
     {
         // $result = parent::cancel();
         $app = Factory::getApplication();
-        $return = Uri::base().'index.php?option=com_automsg&view=histo';
+        $return = Uri::base().'index.php?option=com_automsg&view=messages';
         $app->redirect($return);
         return true;
     }
@@ -78,10 +78,10 @@ class HistoController extends FormController
 
         // Initialise variables.
         $app = Factory::getApplication();
-        $model = $this->getModel('histo');
+        $model = $this->getModel('message');
         $data = $app->input->getVar('jform', array(), 'post', 'array');
         $task = $this->getTask();
-        $context = 'com_automsg.edit.histo';
+        $context = 'com_automsg.edit.message';
         $recordId = $app->input->getInt('id');
         // Populate the row id from the session.
         $data['id'] = $recordId;
@@ -99,7 +99,7 @@ class HistoController extends FormController
                 }
             }
             // Save the data in the session.
-            $app->setUserState('com_automsg.edit.histo.data', $data);
+            $app->setUserState('com_automsg.edit.message.data', $data);
             // Redirect back to the edit screen.
             $this->setRedirect(Route::_('index.php?option=com_automsg&view=' . $this->view_item . $this->getRedirectToItemAppend($recordId), false));
             return false;
@@ -108,7 +108,7 @@ class HistoController extends FormController
         // Attempt to save the data.
         if (!$model->save($data)) {
             // Save the data in the session.
-            $app->setUserState('com_automsg.edit.histo.data', $data);
+            $app->setUserState('com_automsg.edit.message.data', $data);
             // Redirect back to the edit screen.
             $this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()), 'warning');
             $this->setRedirect(Route::_('index.php?option=com_automsg&view=' . $this->view_item . $this->getRedirectToItemAppend($recordId), false));
@@ -122,7 +122,7 @@ class HistoController extends FormController
                 // Set the row data in the session.
                 $recordId = $model->getState($this->context . '.id');
                 $this->holdEditId($context, $recordId);
-                $app->setUserState('com_automsg.edit.histo.data', null);
+                $app->setUserState('com_automsg.edit.message.data', null);
 
                 // Redirect back to the edit screen.
                 $this->setRedirect(Route::_('index.php?option=com_automsg&view=' . $this->view_item . $this->getRedirectToItemAppend($recordId), false));
@@ -130,14 +130,14 @@ class HistoController extends FormController
             case 'save2new':
                 // Clear the row id and data in the session.
                 $this->releaseEditId($context, $recordId);
-                $app->setUserState('com_automsg.edit.histo.data', null);
+                $app->setUserState('com_automsg.edit.message.data', null);
                 // Redirect back to the edit screen.
                 $this->setRedirect(Route::_('index.php?option=com_automsg&view=' . $this->view_item . $this->getRedirectToItemAppend(), false));
                 break;
             default:
                 // Clear the row id and data in the session.
                 $this->releaseEditId($context, $recordId);
-                $app->setUserState('com_automsg.edit.histo.data', null);
+                $app->setUserState('com_automsg.edit.message.data', null);
                 // Redirect to the list screen.
                 $this->setRedirect(Route::_('index.php?option=com_automsg&view=' . $this->view_list . $this->getRedirectToListAppend(), false));
                 break;

@@ -7,7 +7,7 @@
  * @author ConseilGouz 
 **/
 
-namespace ConseilGouz\Component\AutoMsg\Administrator\View\Histo;
+namespace ConseilGouz\Component\AutoMsg\Administrator\View\Message;
 
 // No direct access
 \defined('_JEXEC') or die;
@@ -32,7 +32,7 @@ class HtmlView extends BaseHtmlView
     {
 
         $this->form		= $this->get('Form');
-        $this->histo		= $this->get('Item');
+        $this->message	= $this->get('Item');
         $this->formControl = $this->form ? $this->form->getFormControl() : null;
 
         $this->addToolbar();
@@ -42,7 +42,7 @@ class HtmlView extends BaseHtmlView
     }
 
     /**
-     * Add the histo title and toolbar.
+     * Add the message title and toolbar.
      *
      * @since	1.6
      */
@@ -55,23 +55,23 @@ class HtmlView extends BaseHtmlView
         */
         $user		= Factory::getUser();
         $userId		= $user->get('id');
-        if (!isset($this->histo->id)) {
-            $this->histo->id = 0;
+        if (!isset($this->message->id)) {
+            $this->message->id = 0;
         }
-        $isNew		= ($this->histo->id == 0);
+        $isNew		= ($this->message->id == 0);
 
-        ToolBarHelper::title($isNew ? Text::_('CG_PX_ITEM_NEW') : Text::_('CG_PX_HISTO_EDIT'), '#xs#.png');
+        ToolBarHelper::title($isNew ? Text::_('CG_PX_ITEM_NEW') : Text::_('CG_PX_MESSAGE_EDIT'), '#xs#.png');
 
         // If not checked out, can save the item.
         if ($canDo->get('core.edit')) {
-            ToolBarHelper::apply('histo.apply');
-            ToolBarHelper::save('histo.save');
+            ToolBarHelper::apply('message.apply');
+            ToolBarHelper::save('message.save');
         }
 
-        if (empty($this->histo->id)) {
-            ToolBarHelper::cancel('histo.cancel');
+        if (empty($this->message->id)) {
+            ToolBarHelper::cancel('message.cancel');
         } else {
-            ToolBarHelper::cancel('histo.cancel', 'JTOOLBAR_CLOSE');
+            ToolBarHelper::cancel('message.cancel', 'JTOOLBAR_CLOSE');
         }
         ToolbarHelper::inlinehelp();
 
