@@ -9,7 +9,6 @@
 namespace ConseilGouz\Plugin\Task\AutoMsg\Extension;
 
 defined('_JEXEC') or die;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -17,7 +16,6 @@ use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Component\Content\Site\Model\ArticleModel;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
@@ -48,24 +46,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         ],
     ];
     protected $autoparams;
-    protected $categories;
-    protected $usergroups;
-    protected $deny;
     protected $tokens;
-    protected $itemtags;
-    protected $info_cat;
-    protected $tag_img;
-    protected $cat_img;
-    protected $cat_img_emb;
-    protected $cat_emb_img;
-    protected $introimg;
-    protected $introimg_emb;
-    protected $url;
-    protected $needCatImg;
-    protected $needIntroImg;
-    protected $creator;
-    protected $articles;
-    protected $users;
     /**
      * @inheritDoc
      *
@@ -85,11 +66,6 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
     protected function automsg(ExecuteTaskEvent $event): int
     {
         $this->autoparams = AutomsgHelper::getParams();
-        $this->categories = [];
-        if ($this->autoparams->categories) {
-            $this->categories = explode(',', $this->autoparams->categories);
-        }
-        $this->usergroups = $this->autoparams->usergroups;
         $this->goMsg();
         return TaskStatus::OK;
     }
@@ -97,51 +73,38 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
     {
         $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_automsg');
-        $db = $this->getDatabase();
-        $query = $db->getQuery(true)
-        ->select($db->quoteName('u.id'))
-        ->from($db->quoteName('#__users').' as u ')
-        ->join('LEFT', $db->quoteName('#__user_usergroup_map').' as g on u.id = g.user_id')
-        ->where($db->quoteName('block') . ' = 0 AND g.group_id IN ('.$this->usergroups.')');
-        $db->setQuery($query);
-        $this->users = (array) $db->loadColumn();
+        // get users
+        $users = AutomsgHelper::getUsers($this->autoparams->usergroups);
         // check profile automsg
-        $query = $db->getQuery(true)
-        ->select($db->quoteName('p.user_id'))
-        ->from($db->quoteName('#__user_profiles').' as p ')
-        ->where($db->quoteName('profile_key') . ' like ' .$db->quote('profile_automsg.%').' AND '.$db->quoteName('profile_value'). ' like '.$db->quote('%Non%'));
-        $db->setQuery($query);
-        $this->deny = (array) $db->loadColumn();
-        $this->users = array_diff($this->users, $this->deny);
+        $deny = AutomsgHelper::getDenyUsers();
 
-        if (empty($this->users)) {
+        $users = array_diff($users, $deny);
+        if (empty($users)) { // no user left => exit
             return true;
         }
-        $this->tokens = AutomsgHelper::getAutomsgToken($this->users);
-        $this->articles = $this->getArticlesToSend();
-        // build message body
-        $data = [];
-        $model     = new ArticleModel(array('ignore_request' => true));
-        $model->setState('params', $this->params);
-        $model->setState('list.start', 0);
-        $model->setState('list.limit', 1);
-        $model->setState('filter.published', 1);
-        $model->setState('filter.featured', 'show');
-        // Access filter
-        $access = ComponentHelper::getParams('com_content')->get('show_noauth');
-        $model->setState('filter.access', $access);
+        $this->tokens = AutomsgHelper::getAutomsgToken($users);
 
-        // Ordering
-        $model->setState('list.ordering', 'a.hits');
-        $model->setState('list.direction', 'DESC');
-
-        foreach ($this->articles as $articleid) {
-            $article = $model->getItem($articleid);
-            $data[] = AutomsgHelper::oneLine($article, $this->users, $this->deny);
-        }
-        if (count($data)) {
-            $this->sendEmails($data);
-            $this->updateAutoMsgTable();
+        $articles = $this->getArticlesToSend();
+        $model     = AutomsgHelper::prepare_content_model($this->params);
+        if ($this->autoparams->async == 1) {// all articles in one email per user
+            // article lines
+            $data = [];
+            //  prepa model articles
+            foreach ($articles as $articleid) {
+                $article = $model->getItem($articleid);
+                $data[] = AutomsgHelper::oneLine($article, $users, $deny);
+            }
+            if (count($data)) {
+                $this->sendEmails($data, $users);
+                AutomsgHelper::updateAutoMsgTable();
+            }
+        } else { // one article per email per user
+            foreach ($articles as $articleid) {
+                $article = $model->getItem($articleid);
+                $date = Factory::getDate();
+                AutomsgHelper::sendEmails($article, $users, $this->tokens, $deny);
+                AutomsgHelper::updateAutoMsgTable($articleid);
+            }
         }
     }
 
@@ -157,20 +120,8 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         $result = $db->loadColumn();
         return $result;
     }
-    private function updateAutoMsgTable()
-    {
-        $db    = $this->getDatabase();
-        $date = Factory::getDate();
-        $query = $db->getQuery(true)
-        ->update($db->quoteName('#__automsg'))
-        ->set($db->quoteName('state').'=1,'.$db->quoteName('sent').'='.$db->quote($date->toSql()))
-        ->where($db->quoteName('state') . ' = 0');
-        $db->setQuery($query);
-        $db->execute();
-        return true;
-    }
 
-    private function sendEmails($articlesList)
+    private function sendEmails($articles, $users)
     {
         $app = Factory::getApplication();
 
@@ -179,7 +130,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         }
         $lang = $app->getLanguage();
         $lang->load('com_automsg');
-        foreach ($this->users as $user_id) {
+        foreach ($users as $user_id) {
             // Load language for messaging
             $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
             $go = false;
@@ -188,24 +139,24 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$this->tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
             $data = ['unsubscribe'   => $unsubscribe];
-            $mailer = new MailTemplate('plg_task_automsg.asyncmail', $receiver->getParam('language', $app->get('language')));
-            $articles = ['articles' => $articlesList];
-            $mailer->addTemplateData($articles);
+            $mailer = new MailTemplate('com_automsg.asyncmail', $receiver->getParam('language', $app->get('language')));
+            $data_articles = ['articles' => $articles];
             $mailer->addTemplateData($data);
+            $mailer->addTemplateData($data_articles);
             $mailer->addRecipient($receiver->email, $receiver->name);
 
             try {
                 $send = $mailer->Send();
             } catch (\Exception $e) {
                 if ($this->autoparams->log) { // need to log msgs
-                    Log::add('Task : Erreur ----> Articles : '.$articlesList.' non envoyé à '.$receiver->email.'/'.$e->getMessage(), Log::ERROR, 'com_automsg');
+                    Log::add('Task : Erreur ----> Articles : '.$articles.' non envoyé à '.$receiver->email.'/'.$e->getMessage(), Log::ERROR, 'com_automsg');
                 } else {
                     $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
                 }
                 continue; // try next one
             }
             if ($this->autoparams->log == 2) { // need to log msgs
-                Log::add('Task : Article OK : '.$articlesList.' envoyé à '.$receiver->email, Log::DEBUG, 'com_automsg');
+                Log::add('Task : Article OK : '.$articles.' envoyé à '.$receiver->email, Log::DEBUG, 'com_automsg');
             }
         }
     }

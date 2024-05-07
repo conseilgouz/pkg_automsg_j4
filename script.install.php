@@ -36,12 +36,14 @@ class PlgSystemAutomsgInstallerInstallerScript
     {
         $this->dir = __DIR__;
     }
-    function uninstall($parent) {
+    public function uninstall($parent)
+    {
         $template = new TemplateModel(array('ignore_request' => true));
         $table = $template->getTable();
-        $table->delete('plg_content_automsg.ownermail');
-        $table->delete('plg_content_automsg.usermail');
-        $table->delete('plg_content_automsg.asyncmail');
+        $table->delete('com_automsg.ownermail');
+        $table->delete('com_automsg.usermail');
+        $table->delete('com_automsg.asyncmail');
+        $table->delete('com_automsg.report');
         $task = new TaskModel(array('ignore_request' => true));
         $table = $task->getTable();
         $table->delete('automsg');
@@ -122,14 +124,43 @@ class PlgSystemAutomsgInstallerInstallerScript
         $query = $db->getQuery(true);
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
-        $query->where('extension = ' . $db->quote('plg_task_automsg'));
+        $query->where('extension = ' . $db->quote('plg_content_automsg'));
         $db->setQuery($query);
         $result = $db->loadResult();
         if (!$result) {
             $this->create_mail_templates();
+        } else { // plg_content_automsg/plg_task_automsg => com_automsg mail template
+            $this->update_mail_templates($db);
         }
 
     }
+    private function update_mail_templates($db)
+    {
+        $query = $db->getQuery(true)
+                ->update('#__mail_templates')
+                ->set($db->qn('template_id').' = REPLACE(template_id,'.$db->q('plg_content_automsg').','.$db->q('com_automsg').')')
+                ->set($db->qn('subject').' = REPLACE(subject,'.$db->q('PLG_CONTENT_AUTOMSG_').','.$db->q('COM_AUTOMSG_').')')
+                ->set($db->qn('body').' = REPLACE(body,'.$db->q('PLG_CONTENT_AUTOMSG_').','.$db->q('COM_AUTOMSG_').')')
+                ->where($db->qn('extension').' = '.$db->q('plg_content_automsg'));
+        $db->setQuery($query);
+        $db->execute();
+        $query = $db->getQuery(true)
+                ->update('#__mail_templates')
+                ->set($db->qn('template_id').' = REPLACE(template_id,'.$db->q('plg_task_automsg').','.$db->q('com_automsg').')')
+                ->set($db->qn('subject').' = REPLACE(subject,'.$db->q('PLG_TASK_AUTOMSG_').','.$db->q('COM_AUTOMSG_').')')
+                ->set($db->qn('body').' = REPLACE(body,'.$db->q('PLG_TASK_AUTOMSG_').','.$db->q('COM_AUTOMSG_').')')
+                ->where($db->qn('extension').' = '.$db->q('plg_task_automsg'));
+        $db->setQuery($query);
+        $db->execute();
+        $query = $db->getQuery(true)
+                ->update('#__mail_templates')
+                ->set($db->qn('extension').' = '.$db->q('com_automsg'))
+                ->where($db->qn('extension').' IN ('.$db->q('plg_task_automsg').','.$db->q('plg_content_automsg').')');
+        $db->setQuery($query);
+        $db->execute();
+
+    }
+    // create email templates from scratch or from older plugins definition
     private function create_mail_templates()
     {
         // check if defined in previous version
@@ -141,31 +172,37 @@ class PlgSystemAutomsgInstallerInstallerScript
         $table = $template->getTable();
         $data = [];
         // owner mail template
-        $data['template_id'] = 'plg_content_automsg.ownermail';
-        $data['extension'] = 'plg_content_automsg';
+        $data['template_id'] = 'com_automsg.ownermail';
+        $data['extension'] = 'com_automsg';
         $data['language'] = '';
-        $data['subject'] = 'PLG_CONTENT_AUTOMSG_PUBLISHED_SUBJECT';
-        $data['body'] = 'PLG_CONTENT_AUTOMSG_PUBLISHED_MSG';
+        $data['subject'] = 'COM_AUTOMSG_PUBLISHED_SUBJECT';
+        $data['body'] = 'COM_AUTOMSG_PUBLISHED_MSG';
         $data['htmlbody'] = '';
         $data['attachments'] = '';
         $data['params'] = '{"tags": ["creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
         $table->save($data);
         // other users mail template
-        $data['template_id'] = 'plg_content_automsg.usermail';
-        if ($plugin) {
+        $data['template_id'] = 'com_automsg.usermail';
+        if ($plugin && isset($params->subject)) {
             $subject = $this->tagstouppercase($params->subject);
             $data['subject'] = $subject;
             $body = $this->tagstouppercase($params->body);
             $data['body'] = $body;
         } else {
-            $data['subject'] = 'PLG_CONTENT_AUTOMSG_USER_SUBJECT';
-            $data['body'] = 'PLG_CONTENT_AUTOMSG_USER_MSG';
+            $data['subject'] = 'COM_AUTOMSG_USER_SUBJECT';
+            $data['body'] = 'COM_AUTOMSG_USER_MSG';
         }
         $table->save($data);
         // Async message
-        $data['template_id'] = 'plg_content_automsg.asyncmail';
-        $data['subject'] = 'PLG_TASK_AUTOMSG_ASYNC_SUBJECT';
-        $data['body'] = 'PLG_CONTENT_AUTOMSG_ASYNC_MSG';
+        $data['template_id'] = 'com_automsg.asyncmail';
+        $data['subject'] = 'COM_AUTOMSG_ASYNC_SUBJECT';
+        $data['body'] = 'COM_AUTOMSG_ASYNC_MSG';
+        $table->save($data);
+        // Report message
+        $data['params'] = '{"tags": ["ok", "error", "total"]}';
+        $data['template_id'] = 'com_automsg.report';
+        $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
+        $data['body'] = 'COM_AUTOMSG_REPORT_MSG';
         $table->save($data);
     }
     private function tagstouppercase($text)
@@ -198,7 +235,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $version = $j->getShortVersion();
         if (version_compare($version, $this->min_joomla_version, '<')) {
             Factory::getApplication()->enqueueMessage(
-                JText::sprintf(
+                Text::sprintf(
                     'NOT_COMPATIBLE_UPDATE',
                     '<strong>' . JVERSION . '</strong>',
                     '<strong>' . $this->min_joomla_version . '</strong>'
@@ -218,7 +255,7 @@ class PlgSystemAutomsgInstallerInstallerScript
 
         if (version_compare(PHP_VERSION, $this->min_php_version, '<')) {
             Factory::getApplication()->enqueueMessage(
-                JText::sprintf(
+                Text::sprintf(
                     'NOT_COMPATIBLE_PHP',
                     '<strong>' . PHP_VERSION . '</strong>',
                     '<strong>' . $this->min_php_version . '</strong>'
@@ -285,7 +322,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             JPATH_PLUGINS . '/system/' . $this->installerName . '/language',
             JPATH_PLUGINS . '/system/' . $this->installerName,
         ]);
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->delete('#__extensions')
             ->where($db->quoteName('element') . ' = ' . $db->quote($this->installerName))

@@ -55,18 +55,10 @@ class HtmlView extends BaseHtmlView
         */
         $user		= Factory::getUser();
         $userId		= $user->get('id');
-        if (!isset($this->message->id)) {
-            $this->message->id = 0;
+        if (!isset($this->message->sent)) {
+            $this->message->sent = null;
         }
-        $isNew		= ($this->message->id == 0);
-
-        ToolBarHelper::title($isNew ? Text::_('CG_PX_ITEM_NEW') : Text::_('CG_PX_MESSAGE_EDIT'), '#xs#.png');
-
-        // If not checked out, can save the item.
-        if ($canDo->get('core.edit')) {
-            ToolBarHelper::apply('message.apply');
-            ToolBarHelper::save('message.save');
-        }
+        ToolBarHelper::title( Text::_('CG_PX_MESSAGE_EDIT'), '#xs#.png');
 
         if (empty($this->message->id)) {
             ToolBarHelper::cancel('message.cancel');

@@ -27,6 +27,11 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 $canOrder	= ContentHelper::getActions('com_automsg');
 $saveOrder	= $listOrder == 'ordering';
 
+/** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
+$wa = Factory::getDocument()->getWebAssetManager();
+$wa->addInlineStyle('.icon-error{ color:red!important}');
+
+
 $states = [
         0 => [
              'send', // action : publish => envoi
@@ -34,32 +39,39 @@ $states = [
              'Cliquer pour envoyer',
              'bb',
              true,
-             'warning', // icone 
+             'warning', // icone
              'cc',
          ],
          1 => [
-              'ss', // ne rien faire 
+              'ss', // ne rien faire
               'sss',
-              'Envoyé', // état : 
+              'Envoyé', // état :
               'ssss',
               true,
               'publish', // icone
               'sssss',
          ],
          9 => [
-              'restart', // ne rien faire 
+              'restart', // ne rien faire
               'fffff',
-              'Erreurs', // état : 
+              'Erreurs', // état :
               'ffff',
               true,
               'error', // icone
               'ff',
          ]
        ];
-        $options   = [];
-        $options[] = HTMLHelper::_('select.option', '0', 'En attente');
-        $options[] = HTMLHelper::_('select.option', '1', 'Envoyés');
-        $options[] = HTMLHelper::_('select.option', '9', 'En erreur');
+$options   = [];
+$options[] = HTMLHelper::_('select.option', '0', 'En attente');
+$options[] = HTMLHelper::_('select.option', '1', 'Envoyés');
+$options[] = HTMLHelper::_('select.option', '9', 'En erreur');
+
+$ordering	= ($listOrder == 'ordering');
+$canCreate	= $user->authorise('core.create');
+$canEdit	= $user->authorise('core.edit');
+$canCheckin	= $user->authorise('core.manage', 'com_checkin') ;
+$canChange	= $user->authorise('core.edit.state') && $canCheckin;
+
 ?>
 <form action="<?php echo Route::_('index.php?option=com_automsg&view=messages'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if (!empty($this->sidebar)) : ?>
@@ -101,10 +113,10 @@ $states = [
 				<th width="1%">
 					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo Text::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 				</th>
-				<th class="85%">
+				<th class="90%">
 					<?php echo HtmlHelper::_('grid.sort', 'Article(s)', 'articles', $listDirn, $listOrder); ?>
 				</th>
-				<th class="10%">
+				<th class="5%">
 					<?php echo HtmlHelper::_('grid.sort', 'Envoyé', 'modified', $listDirn, $listOrder); ?>
 				</th>
 				<th width="5%">
@@ -122,15 +134,14 @@ $states = [
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $message) :
-		    $ordering	= ($listOrder == 'ordering');
-		    $canCreate	= $user->authorise('core.create');
-		    $canEdit	= $user->authorise('core.edit');
-		    $canCheckin	= $user->authorise('core.manage', 'com_checkin') ;
-		    $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 		    ?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
-					<?php echo HtmlHelper::_('grid.id', $i, $message->ids); ?>
+					<?php 
+                    // note : $message->ids contains all ids from one record
+                    // id will be truncated to 1st record when sent to MessageModel
+                    echo HtmlHelper::_('grid.id', $i, $message->ids);
+                    ?>
 				</td>
                 <td>
             <?php
@@ -153,9 +164,9 @@ $states = [
 		        $titles .= ($titles) ? ',' : '' ;
 		        $titles .= $article->title;
 		    }
-		    echo $this->escape(HTMLHelper::_('string.truncateComplex',$titles,200,true)); ?>
+		    echo $this->escape(HTMLHelper::_('string.truncateComplex', $titles, 200, true)); ?>
 				</td>
-                <td align="center">
+                <td >
             <?php
 		    $sent = $message->sent;
 		    if (!$sent) {
@@ -165,9 +176,9 @@ $states = [
 		    ?>
                 </td>
 				<td class="center">
-					<?php 
+					<?php
 
-                    echo HTMLHelper::_('jgrid.state', $states, $message->state, $i, 'messages.', $canChange, 'cb'); ?>
+		            echo HTMLHelper::_('jgrid.state', $states, $message->state, $i, 'messages.', $canChange, 'cb'); ?>
 				</td>
 			</tr>
 			<?php endforeach; ?>

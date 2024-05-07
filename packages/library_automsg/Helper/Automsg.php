@@ -13,6 +13,7 @@ namespace ConseilGouz\Automsg\Helper;
 
 defined('_JEXEC') or die();
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -20,6 +21,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Content\Site\Model\ArticleModel;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use ConseilGouz\Component\Automsg\Administrator\Model\ConfigModel;
@@ -76,6 +78,20 @@ class Automsg
         foreach ($article_tags as $tag) {
             $itemtags .= '<span class="iso_tag_'.$tag->alias.'">'.(($itemtags == "") ? $tag->tag : "<span class='iso_tagsep'><span>-</span></span>".$tag->tag).'</span>';
         }
+        $data = [
+            'creator'   => $creator->name,
+            'id'        => $article->id,
+            'title'     => $article->title,
+            'cat'       => $info_cat[0]->title,
+            'date'      => HTMLHelper::_('date', $article->created, $libdateformat),
+            'intro'     => $article->introtext,
+            'catimg'    => $cat_img,
+            'url'       => $url,
+            'introimg'  => $article->introimg,
+            'subtitle'  => '', // not used
+            'tags'      => $itemtags,
+            'featured'  => $article->featured,
+        ];
 
         foreach ($users as $user_id) {
             $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
@@ -83,27 +99,12 @@ class Automsg
             if ($tokens[$user_id]) {
                 $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
-            $go = false;
+            $data['unsubscribe'] = $unsubscribe;
             // Collect data for mail
-            $data = [
-                'creator'   => $creator->name,
-                'id'        => $article->id,
-                'title'     => $article->title,
-                'cat'       => $info_cat[0]->title,
-                'date'      => HTMLHelper::_('date', $article->created, $libdateformat),
-                'intro'     => $article->introtext,
-                'catimg'    => $cat_img,
-                'url'       => $url,
-                'introimg'  => $article->introimg,
-                'subtitle'  => '', // not used
-                'tags'      => $itemtags,
-                'featured'  => $article->featured,
-                'unsubscribe'   => $unsubscribe
-            ];
             if (($user_id == $creatorId) && ($msgcreator == 1)) { // mail specifique au createur de l'article
-                $mailer = new MailTemplate('plg_content_automsg.ownermail', $receiver->getParam('language', $app->get('language')));
+                $mailer = new MailTemplate('com_automsg.ownermail', $receiver->getParam('language', $app->get('language')));
             } else {
-                $mailer = new MailTemplate('plg_content_automsg.usermail', $receiver->getParam('language', $app->get('language')));
+                $mailer = new MailTemplate('com_automsg.usermail', $receiver->getParam('language', $app->get('language')));
             }
             $mailer->addTemplateData($data);
             $mailer->addRecipient($receiver->email, $receiver->name);
@@ -147,6 +148,27 @@ class Automsg
         ;
         $db->setQuery($query);
         return $db->loadObjectList();
+    }
+    public static function getUsers($usergroups)
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('u.id'))
+            ->from($db->quoteName('#__users').' as u ')
+            ->join('LEFT', $db->quoteName('#__user_usergroup_map').' as g on u.id = g.user_id')
+            ->where($db->quoteName('block') . ' = 0 AND g.group_id IN ('.$usergroups.')');
+        $db->setQuery($query);
+        return (array) $db->loadColumn();
+    }
+    public static function getDenyUsers()
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('p.user_id'))
+            ->from($db->quoteName('#__user_profiles').' as p ')
+            ->where($db->quoteName('profile_key') . ' like ' .$db->quote('profile_automsg.%').' AND '.$db->quoteName('profile_value'). ' like '.$db->quote('%Non%'));
+        $db->setQuery($query);
+        return (array) $db->loadColumn();
     }
     public static function getAutomsgToken($users)
     {
@@ -211,8 +233,9 @@ class Automsg
     }
     /*
      * Asynchronous process : store article id in automsg table
+     * Synchronous process : store errors only
      */
-    public static function async($article)
+    public static function store_automsg($article, $state = 0, $sent = null)
     {
         $autoparams = self::getParams();
 
@@ -227,11 +250,11 @@ class Automsg
                 $query->bindArray(
                     [
                         0, // key
-                        0, // state
+                        $state, // state
                         $article->id,
                         $date->toSql(), // date created
                         null, // date modified
-                        null
+                        $sent
                     ],
                     [
                         ParameterType::INTEGER,
@@ -248,9 +271,28 @@ class Automsg
         $db->execute();
         if ($autoparams->log == 2) { // need to log all msgs
             self::createLog();
-            Log::add('Article Async : '.$article->title, Log::DEBUG, 'com_automsg');
+            Log::add('Article in automsg : '.$article->title, Log::DEBUG, 'com_automsg');
         }
     }
+    /*
+        Store same date in sent to all sent articles in this session
+    */
+    public static function updateAutoMsgTable($articleid = null)
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $date = Factory::getDate();
+        $query = $db->getQuery(true)
+        ->update($db->quoteName('#__automsg'))
+        ->set($db->quoteName('state').'=1,'.$db->quoteName('sent').'='.$db->quote($date->toSql()))
+        ->where($db->quoteName('state') . ' = 0');
+        if ($articleid) {
+            $query->where($db->qn('article_id').' = '.$db->q($articleid));
+        }
+        $db->setQuery($query);
+        $db->execute();
+        return true;
+    }
+
     public static function oneLine($article, $users, $deny)
     {
         $lang = Factory::getApplication()->getLanguage();
@@ -296,5 +338,19 @@ class Automsg
                 'featured'  => $article->featured,
             ];
         return $data;
+    }
+    public static function prepare_content_model($params)
+    {
+        $model     = new ArticleModel(array('ignore_request' => true));
+        $model->setState('params', $params);
+        $model->setState('list.start', 0);
+        $model->setState('list.limit', 1);
+        $model->setState('filter.published', 1);
+        $model->setState('filter.featured', 'show');
+        $access = ComponentHelper::getParams('com_content')->get('show_noauth');
+        $model->setState('filter.access', $access);
+        $model->setState('list.ordering', 'a.hits');
+        $model->setState('list.direction', 'DESC');
+        return $model;
     }
 }

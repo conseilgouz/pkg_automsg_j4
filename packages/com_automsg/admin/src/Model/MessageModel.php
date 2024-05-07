@@ -4,7 +4,7 @@
  * Version			: 4.0.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
- * @author ConseilGouz 
+ * @author ConseilGouz
 **/
 
 namespace ConseilGouz\Component\Automsg\Administrator\Model;
@@ -65,6 +65,24 @@ class MessageModel extends AdminModel
             'name'   => $name,
             'params' => json_encode($data)
         );
+    }
+    public function getMessagesList($data)
+    {
+        // Initialise variables.
+        $db		= $this->getDatabase();
+        $query	= $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select('sent, state, GROUP_CONCAT(DISTINCT id) as ids, GROUP_CONCAT(DISTINCT article_id) as articles');
+        $query->from('#__automsg');
+        if (!$data->sent) {
+            $query->where($db->quoteName('sent').' IS NULL ');
+        } else{
+            $query->where($db->quoteName('sent').' = '.$db->quote($data->sent));
+        }
+        $query->group('sent,state');
+        $db->setQuery($query);
+        return $db->loadObjectList();
     }
 
 }

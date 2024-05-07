@@ -27,20 +27,21 @@
         <field name="msgauto"
             type="radio" class="btn-group btn-group-yesno"
             default="1" label="COM_AUTOMSG_AUTO">
-            <option value="0">Non</option>
-            <option value="1">Oui</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
         <field name="async"
             type="radio" class="btn-group btn-group-yesno" default="0"
             label="COM_AUTOMSG_ASYNC" description="COM_AUTOMSG_ASYNC_DESC">
-            <option value="0">Non</option>
-            <option value="1">Oui</option>
+            <option value="0">JNO</option>
+            <option value="1">JALL</option>
+            <option value="2">Un article par message</option>
         </field>
         <field type="note" name="note1" label="COM_AUTOMSG_NOTE_ADM" heading="p" />
         <field name="log"
             type="radio" class="btn-group btn-group-yesno" default="0"
             label="COM_AUTOMSG_LOG" description="COM_AUTOMSG_LOG_DESC">
-            <option value="0">Non</option>
+            <option value="0">JNO</option>
             <option value="1">Erreurs</option>
             <option value="21">JALL</option>
         </field>

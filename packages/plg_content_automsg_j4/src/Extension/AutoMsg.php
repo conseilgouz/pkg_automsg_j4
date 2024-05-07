@@ -12,10 +12,9 @@ namespace ConseilGouz\Plugin\Content\AutoMsg\Extension;
 
 defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Log\Log;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\Component\Content\Site\Model\ArticleModel;
 use Joomla\Database\DatabaseAwareTrait;
 use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
 
@@ -23,13 +22,6 @@ final class AutoMsg extends CMSPlugin
 {
     use DatabaseAwareTrait;
 
-    protected $itemtags;
-    protected $info_cat;
-    protected $tag_img;
-    protected $cat_img;
-    protected $url;
-    protected $needCatImg;
-    protected $needIntroImg;
     protected $autoparams;
 
     public function onContentAfterSave($context, $article, $isNew): void
@@ -76,45 +68,20 @@ final class AutoMsg extends CMSPlugin
         if ($this->autoparams->categories) {
             $categories = explode(',', $this->autoparams->categories);
         }
-        $usergroups = $this->autoparams->usergroups;
-
-        $db = $this->getDatabase();
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('u.id'))
-            ->from($db->quoteName('#__users').' as u ')
-            ->join('LEFT', $db->quoteName('#__user_usergroup_map').' as g on u.id = g.user_id')
-            ->where($db->quoteName('block') . ' = 0 AND g.group_id IN ('.$usergroups.')');
-        $db->setQuery($query);
-        $users = (array) $db->loadColumn();
+        // prepa model articles
+        $model     = AutomsgHelper::prepare_content_model($this->params);
+        // get users
+        $users = AutomsgHelper::getUsers($this->autoparams->usergroups);
         // check profile automsg
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('p.user_id'))
-            ->from($db->quoteName('#__user_profiles').' as p ')
-            ->where($db->quoteName('profile_key') . ' like ' .$db->quote('profile_automsg.%').' AND '.$db->quoteName('profile_value'). ' like '.$db->quote('%Non%'));
-        $db->setQuery($query);
-        $deny = (array) $db->loadColumn();
-        $users = array_diff($users, $deny);
+        $deny = AutomsgHelper::getDenyUsers();
 
-        if (empty($users)) {
+        $users = array_diff($users, $deny);
+        if (empty($users)) { // no user left => exit
             return true;
         }
         $tokens = AutomsgHelper::getAutomsgToken($users);
 
         foreach ($pks as $articleid) {
-            $model     = new ArticleModel(array('ignore_request' => true));
-            $model->setState('params', $this->params);
-            $model->setState('list.start', 0);
-            $model->setState('list.limit', 1);
-            $model->setState('filter.published', 1);
-            $model->setState('filter.featured', 'show');
-            // Access filter
-            $access = ComponentHelper::getParams('com_content')->get('show_noauth');
-            $model->setState('filter.access', $access);
-
-            // Ordering
-            $model->setState('list.ordering', 'a.hits');
-            $model->setState('list.direction', 'DESC');
-
             $article = $model->getItem($articleid);
             if (!empty($categories) && !in_array($article->catid, $categories)) {
                 continue; // wrong category
@@ -123,10 +90,12 @@ final class AutoMsg extends CMSPlugin
             if (PluginHelper::isEnabled('task', 'automsg') && ComponentHelper::isEnabled('com_automsg')) {
                 $async = true; // automsg task plugin / component ok
             }
-            if ($this->autoparams->async && $async) {
-                AutomsgHelper::async($article);
+            if (($this->autoparams->async > 0) && $async) {
+                AutomsgHelper::store_automsg($article);
             } else {
+                $date = Factory::getDate();
                 AutomsgHelper::sendEmails($article, $users, $tokens, $deny);
+                AutomsgHelper::store_automsg($article, 1, $date->toSql());
             }
         }
         return true;

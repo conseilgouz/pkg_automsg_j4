@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
+    <config>         
+        <inlinehelp button="show"/>     
+    </config>
+
     <fieldset
 				name="message"
-				label="Historique"
+				label="Message"
 	>
 		<field name="id" type="hidden" default="0" 
 			readonly="true" class="readonly"
@@ -13,6 +17,5 @@
 		<field name="modified" type="hidden" default="0" 
 			readonly="true" class="readonly"
 			label="modified" 	description ="modified" />
-
     </fieldset>
 </form>

@@ -90,7 +90,7 @@ class MessagesController extends FormController
 
         $model = new ConfigModel();
         $params = $model->getItem(1);
-        if ($params->async) {
+        if ($params->async > 0) {
             $this->send_async();
         }
     }
