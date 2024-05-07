@@ -94,12 +94,14 @@ final class AutoMsg extends CMSPlugin
                 AutomsgHelper::store_automsg($article);
             } else {
                 $date = Factory::getDate();
-                AutomsgHelper::sendEmails($article, $users, $tokens, $deny);
-                AutomsgHelper::store_automsg($article, 1, $date->toSql());
+                $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny);
+                $state = 1; // assume ok
+                if (isset($results['error']) && ($results['error'] > 0)) {
+                    $state = 9; // contains error
+                }
+                AutomsgHelper::store_automsg($article, $state, $date->toSql());
             }
         }
         return true;
     }
-
-
 }

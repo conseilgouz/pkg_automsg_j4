@@ -58,7 +58,7 @@ class HtmlView extends BaseHtmlView
 
         if ($canDo->get('core.edit.state')) {
             ToolbarHelper::divider();
-            ToolbarHelper::publish('message.publish', 'Envoyer', true);
+            ToolbarHelper::publish('messages.send', 'Envoyer', true);
         }
         if (isset($this->state) && $this->state->get('filter.state') == -2 && $canDo->get('core.delete')) {
             ToolBarHelper::deleteList('', 'messages.delete', 'JTOOLBAR_EMPTY_TRASH');

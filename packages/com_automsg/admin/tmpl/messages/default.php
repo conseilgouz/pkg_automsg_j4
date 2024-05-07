@@ -177,7 +177,6 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
                 </td>
 				<td class="center">
 					<?php
-
 		            echo HTMLHelper::_('jgrid.state', $states, $message->state, $i, 'messages.', $canChange, 'cb'); ?>
 				</td>
 			</tr>

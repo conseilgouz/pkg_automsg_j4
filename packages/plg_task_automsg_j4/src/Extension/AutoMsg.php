@@ -47,6 +47,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
     ];
     protected $autoparams;
     protected $tokens;
+    protected $articles;
     /**
      * @inheritDoc
      *
@@ -84,22 +85,26 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         }
         $this->tokens = AutomsgHelper::getAutomsgToken($users);
 
-        $articles = $this->getArticlesToSend();
+        $this->articles = $this->getArticlesToSend();
         $model     = AutomsgHelper::prepare_content_model($this->params);
         if ($this->autoparams->async == 1) {// all articles in one email per user
             // article lines
             $data = [];
             //  prepa model articles
-            foreach ($articles as $articleid) {
+            foreach ($this->articles as $articleid) {
                 $article = $model->getItem($articleid);
                 $data[] = AutomsgHelper::oneLine($article, $users, $deny);
             }
             if (count($data)) {
-                $this->sendEmails($data, $users);
-                AutomsgHelper::updateAutoMsgTable();
+                $result = $this->sendEmails($data, $users);
+                $state = 1; // assume ok
+                if (isset($results['error']) && ($results['error'] > 0)) {
+                    $state = 9; // contains error
+                }
+                AutomsgHelper::updateAutoMsgTable(null, $state);
             }
         } else { // one article per email per user
-            foreach ($articles as $articleid) {
+            foreach ($this->articles as $articleid) {
                 $article = $model->getItem($articleid);
                 $date = Factory::getDate();
                 AutomsgHelper::sendEmails($article, $users, $this->tokens, $deny);
@@ -130,8 +135,14 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         }
         $lang = $app->getLanguage();
         $lang->load('com_automsg');
+
+        $results = [];
+        $results['total'] = 0;
+        $results['sent'] = 0;
+        $results['error'] = 0;
+
         foreach ($users as $user_id) {
-            // Load language for messaging
+            $results['total']++;
             $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
             $go = false;
             $unsubscribe = "";
@@ -153,11 +164,15 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 } else {
                     $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
                 }
+                AutomsgHelper::store_automsg_error($user_id, $this->articles, $e->getMessage());
+                $results['error']++;
                 continue; // try next one
             }
             if ($this->autoparams->log == 2) { // need to log msgs
                 Log::add('Task : Article OK : '.$articles.' envoyé à '.$receiver->email, Log::DEBUG, 'com_automsg');
             }
+            $results['sent']++;
         }
+        return $results;
     }
 }

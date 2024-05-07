@@ -19,6 +19,8 @@ $comfield	= 'components/com_automsg/';
 /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 
+$wa->addInlineStyle('.icon-error{ color:red!important}');
+
 $wa->useScript('keepalive')
     ->useScript('form.validate');
 
@@ -48,37 +50,6 @@ $model->setState('list.direction', 'DESC');
 
 $listOrder	= '';
 $listDirn	= '';
-
-$states = [
-        0 => [
-             'send', // action : publish => envoi
-             'aa',
-             'Cliquer pour envoyer',
-             'bb',
-             true,
-             'warning', // icone
-             'cc',
-         ],
-         1 => [
-              'ss', // ne rien faire
-              'sss',
-              'Envoyé', // état :
-              'ssss',
-              true,
-              'publish', // icone
-              'sssss',
-         ],
-         9 => [
-              'restart', // ne rien faire
-              'fffff',
-              'Erreurs', // état :
-              'ffff',
-              true,
-              'error', // icone
-              'ff',
-         ]
-       ];
-
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task){
@@ -97,13 +68,13 @@ $states = [
           		<thead>
           			<tr>
        				<th class="90%">
-                    <?php echo HTMLHelper::_('grid.sort', 'Article(s)', 'articles', '', ''); ?>
+                    Article(s)
 				    </th>
 				    <th class="5%">
-					<?php echo HTMLHelper::_('grid.sort', 'Envoyé', 'modified', '', ''); ?>
+                    Envoyé
 				    </th>
 				    <th width="5%">
-					<?php echo HTMLHelper::_('grid.sort', 'JSTATUS', 'sent', '', ''); ?>
+					Status
 				    </th>
             	    </tr>
 		        </thead>
@@ -134,7 +105,29 @@ foreach ($data as $i => $message) : ?>
                 </td>
                 <td>
             <?php
-                echo HTMLHelper::_('jgrid.state', $states, $message->state, $i, 'messages.', $canChange, 'cb'); 
+                if ($message->state == 1) {
+                    echo '<span class="icon-publish" aria-hidden="true" title="Envoyé"></span>';
+                }
+                if ($message->state == 9) { // build error modal
+                    echo '<a href="#" data-bs-toggle="modal" data-bs-target="#errorModal" >';
+                    echo '<span class="icon-error" aria-hidden="true" title="Voir les erreur"></span>';
+                    echo '</a>';
+                    echo '<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">';
+                    echo '<div class="modal-dialog">';
+                    echo '<div class="modal-content">';
+                    echo '<div class="modal-header">';
+                    echo '<h1 class="modal-title fs-5" id="errorModalLabel">Liste des erreurs</h1>';
+                    echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+                    echo '</div>';
+                    echo '<div class="modal-body">';
+                    echo '<p>Tagada</p>';
+                    echo '<p>Tagada</p>';
+                    echo '<p>Tsouin tsouin</p>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                }
             ?>
                 </td>
                 </tr>

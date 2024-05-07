@@ -49,6 +49,12 @@ class Automsg
         $app = Factory::getApplication();
         $lang = $app->getLanguage();
         $lang->load('com_automsg');
+
+        $results = [];
+        $results['total'] = 0;
+        $results['sent'] = 0;
+        $results['error'] = 0;
+
         $msgcreator = $autoparams->msgcreator;
         $libdateformat = "d/M/Y h:m";
         if ($autoparams->log) { // need to log msgs
@@ -92,8 +98,8 @@ class Automsg
             'tags'      => $itemtags,
             'featured'  => $article->featured,
         ];
-
         foreach ($users as $user_id) {
+            $results['total']++;
             $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
             $unsubscribe = "";
             if ($tokens[$user_id]) {
@@ -117,12 +123,16 @@ class Automsg
                 } else {
                     $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
                 }
+                self::store_automsg_error($user_id, $article->id, $e->getMessage());
+                $results['error']++;
                 continue;
             }
+            $results['sent']++;
             if ($autoparams->log == 2) { // need to log all msgs
                 Log::add('Article OK : '.$article->title.' envoyé à '.$receiver->email, Log::DEBUG, 'com_automsg');
             }
         }
+        return $results;
     }
     private static function getCategoryName($id)
     {
@@ -243,7 +253,7 @@ class Automsg
         $date = Factory::getDate();
 
         $query = $db->getQuery(true)
-        ->insert($db->quoteName('#__automsg'));
+        ->insert($db->qn('#__automsg'));
         $query->values(
             implode(
                 ',',
@@ -277,14 +287,14 @@ class Automsg
     /*
         Store same date in sent to all sent articles in this session
     */
-    public static function updateAutoMsgTable($articleid = null)
+    public static function updateAutoMsgTable($articleid = null, $state = 0)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $date = Factory::getDate();
         $query = $db->getQuery(true)
-        ->update($db->quoteName('#__automsg'))
-        ->set($db->quoteName('state').'=1,'.$db->quoteName('sent').'='.$db->quote($date->toSql()))
-        ->where($db->quoteName('state') . ' = 0');
+        ->update($db->qn('#__automsg'))
+        ->set($db->qn('state').'='.$state.','.$db->qn('sent').'='.$db->q($date->toSql()))
+        ->where($db->qn('state') . ' = 0');
         if ($articleid) {
             $query->where($db->qn('article_id').' = '.$db->q($articleid));
         }
@@ -292,7 +302,46 @@ class Automsg
         $db->execute();
         return true;
     }
+    /*
+      * store errors
+      */
+    public static function store_automsg_error($userid, $articleids, $error, $state = 0)
+    {
+        $autoparams = self::getParams();
 
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $date = Factory::getDate();
+
+        $query = $db->getQuery(true)
+        ->insert($db->qn('#__automsg_errors'));
+        $query->values(
+            implode(
+                ',',
+                $query->bindArray(
+                    [
+                        0, // key
+                        $state, // state
+                        $userid,
+                        $articleids,
+                        $error,
+                        $date->toSql(), // date created
+                        null // date modified
+                    ],
+                    [
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::STRING,
+                        ParameterType::STRING,
+                        ParameterType::STRING,
+                        ParameterType::NULL
+                    ]
+                )
+            )
+        );
+        $db->setQuery($query);
+        $db->execute();
+    }
     public static function oneLine($article, $users, $deny)
     {
         $lang = Factory::getApplication()->getLanguage();

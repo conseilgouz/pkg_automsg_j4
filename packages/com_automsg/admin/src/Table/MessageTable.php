@@ -50,7 +50,7 @@ class MessageTable extends Table implements VersionableTableInterface
         parent::__construct('#__automsg', 'id', $db);
 
         $this->created = Factory::getDate()->toSql();
-        $this->updated = Factory::getDate()->toSql();
+        $this->modified = Factory::getDate()->toSql();
     }
 
     /**
@@ -60,7 +60,7 @@ class MessageTable extends Table implements VersionableTableInterface
      */
     public function updateState($key = 'id')
     {
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $db    = $this->getDbo();
         $table = $this->_tbl;
         $key   = empty($this->id) ? $key : $this->id;
 
@@ -78,19 +78,37 @@ class MessageTable extends Table implements VersionableTableInterface
         $data = new \stdClass();
         $data->id   = $key;
         $data->state = $this->state;
-        $data->updated = $this->updated;
+        $data->modified = $this->modified;
         if ($exists) {
             return $db->updateObject($table, $data, 'id');
         }
 
         return $db->insertObject($table, $data);
     }
-    public function publish($pks = null, $state = 1, $userId = 0)
+    public function check_restart($pks = null)
+    {
+        $articles = [];
+        $db = $this->getDbo();
+        foreach ($pks as $pk) {
+            $result = $db->setQuery(
+                $db->getQuery(true)
+                    ->select('id')
+                    ->from($db->qn($this->_tbl))
+                    ->where($db->qn('id') . ' = ' . $db->q($pk))
+                    ->where($db->qn('state') . '= 9')
+            )->loadResult();
+            if ($result) {
+                $articles[] = $result;
+            }
+        }
+        return $articles;
+    }
+    public function restart($pks = null, $userId = 0)
     {
         $k = $this->_tbl_key;
         ArrayHelper::toInteger($pks);
         $userId = (int) $userId;
-        $state  = (int) $state;
+        // $state  = (int) $state;
 
         if (empty($pks)) {
             if ($this->$k) {
@@ -100,18 +118,16 @@ class MessageTable extends Table implements VersionableTableInterface
                 return false;
             }
         }
-        $db = $this->getDbo();
-        $table = Table::getInstance('MessageTable', __NAMESPACE__ . '\\', array('dbo' => $db));
-        // $table = $this->_tbl;
+        // $table = Table::getInstance('MessageTable', __NAMESPACE__ . '\\', array('dbo' => $db));
         foreach ($pks as $pk) {
-            if(!$table->load($pk)) {
-                $this->setError($table->getError());
+            if(!$this->load($pk)) {
+                $this->setError($this->getError());
             }
-            $table->state = $state;
-            $table->updated = Factory::getDate()->toSql();
-            $table->check();
-            if (!$table->updateState()) {
-                $this->setError($table->getError());
+            // $table->state = $state;
+            $this->modified = Factory::getDate()->toSql();
+            $this->check();
+            if (!$this->updateState()) {
+                $this->setError($this->getError());
             }
         }
         return count($this->getErrors()) == 0;

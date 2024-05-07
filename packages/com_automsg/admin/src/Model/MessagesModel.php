@@ -93,11 +93,20 @@ class MessagesModel extends ListModel
 
         return $db->getIterator();
     }
-    public function publish($pks, $state)
+    public function check_restart($pks)
     {
         $table = $this->getTable();
         $pks   = (array) $pks;
-        if (!$table->publish($pks, $state, $this->getCurrentUser()->id)) {
+        if (!$articles = $table->check_restart($pks)) {
+            return false;
+        }
+        return $articles;
+    }
+    public function restart($pks)
+    {
+        $table = $this->getTable();
+        $pks   = (array) $pks;
+        if (!$table->restart($pks,$this->getCurrentUser()->id)) {
             $this->setError($table->getError());
             return false;
         }

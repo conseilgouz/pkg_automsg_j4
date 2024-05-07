@@ -66,7 +66,7 @@ class MessagesController extends FormController
         return true;
 
     }
-    public function publish($pks = null, $state = 1, $userId = 0)
+    public function restart($pks = null, $state = 1, $userId = 0)
     {
         // Check for request forgeries.
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
@@ -76,9 +76,8 @@ class MessagesController extends FormController
 
         $input = $app->input;
         $pks = $input->post->get('cid', array(), 'array');
-        if (!$model->publish($pks, $state)) {
-        }
-        $this->setMessage(Text::_('COM_AUTOMSG_PUBLISHED'));
+        $item = $model->restart($pks);
+        $this->setMessage(Text::_('COM_AUTOMSG_RESTARTED'));
         $this->setRedirect(Uri::base().'index.php?option=com_automsg&view=messages');
         return true;
 
@@ -88,13 +87,25 @@ class MessagesController extends FormController
         // Check for request forgeries.
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
 
+        $app = Factory::getApplication();
+        $input = $app->input;
+        $pks = $input->post->get('cid', array(), 'array');
+        // check for errors to restart
+        $model = $this->getModel('messages');
+        $articles = $model->check_restart($pks);
+        if (sizeof($articles)) {
+            $this->restart($articles);
+        }
+        // check for waiting async
         $model = new ConfigModel();
         $params = $model->getItem(1);
         if ($params->async > 0) {
             $this->send_async();
         }
+        $this->setRedirect(Uri::base().'index.php?option=com_automsg&view=messages');
     }
-    private function send_async() {
+    private function send_async()
+    {
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $result = $db->setQuery(
             $db->getQuery(true)
