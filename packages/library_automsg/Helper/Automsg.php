@@ -245,7 +245,7 @@ class Automsg
      * Asynchronous process : store article id in automsg table
      * Synchronous process : store errors only
      */
-    public static function store_automsg($article, $state = 0, $sent = null)
+    public static function store_automsg($article, $state = 0, $sent = null, $results = [])
     {
         $autoparams = self::getParams();
 
@@ -264,7 +264,8 @@ class Automsg
                         $article->id,
                         $date->toSql(), // date created
                         null, // date modified
-                        $sent
+                        $sent,
+                        json_encode($results)
                     ],
                     [
                         ParameterType::INTEGER,
@@ -272,7 +273,8 @@ class Automsg
                         ParameterType::INTEGER,
                         ParameterType::STRING,
                         ParameterType::NULL,
-                        ParameterType::NULL
+                        ParameterType::NULL,
+                        ParameterType::STRING
                     ]
                 )
             )
@@ -388,10 +390,10 @@ class Automsg
             ];
         return $data;
     }
-    public static function prepare_content_model($params)
+    public static function prepare_content_model()
     {
         $model     = new ArticleModel(array('ignore_request' => true));
-        $model->setState('params', $params);
+        $model->setState('params', ComponentHelper::getParams('com_content'));
         $model->setState('list.start', 0);
         $model->setState('list.limit', 1);
         $model->setState('filter.published', 1);

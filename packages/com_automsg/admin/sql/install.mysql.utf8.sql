@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `#__automsg` (
 `created` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
 `modified` datetime NULL DEFAULT NULL,
 `sent` datetime NULL DEFAULT NULL,
+'cr' varchar(50) NOT NULL default '',
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Auto Message Table';
 

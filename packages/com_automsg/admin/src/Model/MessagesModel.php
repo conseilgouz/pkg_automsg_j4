@@ -27,7 +27,8 @@ class MessagesModel extends ListModel
                 'userid', 'userid',
                 'state', 'state',
                 'created','created',
-                'modified','modified'
+                'modified','modified',
+                'cr','cr'
                 );
         }
 
@@ -40,9 +41,9 @@ class MessagesModel extends ListModel
         $query	= $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query->select('sent, state, GROUP_CONCAT(DISTINCT id) as ids, GROUP_CONCAT(DISTINCT article_id) as articles');
+        $query->select('sent, state,cr, GROUP_CONCAT(DISTINCT id) as ids, GROUP_CONCAT(DISTINCT article_id) as articles');
         $query->from('#__automsg');
-        $query->group('sent,state');
+        $query->group('sent,state,cr');
         // Filter by published state
         $published = $this->getState('filter.state');
         if (is_numeric($published)) {
@@ -50,13 +51,6 @@ class MessagesModel extends ListModel
         } elseif ($published === '') {
             $query->where('(state IN (0, 1, 9))');
         }
-        // Filter by search
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            $searchLike = $db->Quote('%'.$db->escape($search, true).'%');
-            // $search = $db->Quote($db->escape($search, true));
-            $query->where('(t.title like '.$searchLike.' )');
-        } //end search
 
         // Add the list ordering clause.
         $orderCol	= $this->state->get('list.ordering');

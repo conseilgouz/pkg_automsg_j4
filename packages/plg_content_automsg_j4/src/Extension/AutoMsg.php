@@ -69,7 +69,7 @@ final class AutoMsg extends CMSPlugin
             $categories = explode(',', $this->autoparams->categories);
         }
         // prepa model articles
-        $model     = AutomsgHelper::prepare_content_model($this->params);
+        $model     = AutomsgHelper::prepare_content_model();
         // get users
         $users = AutomsgHelper::getUsers($this->autoparams->usergroups);
         // check profile automsg
@@ -99,7 +99,7 @@ final class AutoMsg extends CMSPlugin
                 if (isset($results['error']) && ($results['error'] > 0)) {
                     $state = 9; // contains error
                 }
-                AutomsgHelper::store_automsg($article, $state, $date->toSql());
+                AutomsgHelper::store_automsg($article, $state, $date->toSql(), $results);
             }
         }
         return true;

@@ -86,7 +86,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         $this->tokens = AutomsgHelper::getAutomsgToken($users);
 
         $this->articles = $this->getArticlesToSend();
-        $model     = AutomsgHelper::prepare_content_model($this->params);
+        $model     = AutomsgHelper::prepare_content_model();
         if ($this->autoparams->async == 1) {// all articles in one email per user
             // article lines
             $data = [];

@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\Component\Content\Site\Model\ArticleModel;
 use Joomla\Registry\Registry;
+use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
 
 HTMLHelper::_('behavior.multiselect');
 
@@ -83,16 +84,6 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 	<div id="j-main-container">
 	<?php endif; ?>
 	<div id="filter-bar" class="btn-toolbar">
-		<div class="filter-search btn-group pull-left">
-			<label for="filter_search" class="element-invisible"><?php echo Text::_('JSEARCH_FILTER_LABEL'); ?></label>  
-			<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo Text::_('COM_AUTMSG_SEARCH_IN_TITLE'); ?>" />
-        </div>
-        <div class="btn-group pull-left">            
-			<button type="submit" class="btn hasTooltip btn-primary">
-                <span class="filter-search-bar__button-icon icon-search" aria-hidden="true"></span>
-            </button>
-			<button type="button" style="margin-left:1em;margin-right:1em" class="btn hasTooltip btn-primary " onclick="resetSearch(); this.form.submit();"><?php echo Text::_('JSEARCH_FILTER_CLEAR'); ?></button>
-		</div>
 		<div class="btn-group pull-right hidden-phone">
 			<select name="filter_state" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo Text::_('JOPTION_SELECT_PUBLISHED');?></option>
@@ -119,6 +110,15 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 				<th class="5%">
 					<?php echo HtmlHelper::_('grid.sort', 'Envoyé', 'modified', $listDirn, $listOrder); ?>
 				</th>
+				<th class="5%">
+					Total
+				</th>
+				<th class="5%">
+					OK
+				</th>
+				<th class="5%">
+					Erreurs
+				</th>
 				<th width="5%">
 					<?php echo HtmlHelper::_('grid.sort', 'JSTATUS', 'sent', $listDirn, $listOrder); ?>
 				</th>
@@ -137,26 +137,15 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 		    ?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
-					<?php 
-                    // note : $message->ids contains all ids from one record
-                    // id will be truncated to 1st record when sent to MessageModel
-                    echo HtmlHelper::_('grid.id', $i, $message->ids);
-                    ?>
+					<?php
+		            // note : $message->ids contains all ids from one record
+		            // id will be truncated to 1st record when sent to MessageModel
+		            echo HtmlHelper::_('grid.id', $i, $message->ids);
+		    ?>
 				</td>
                 <td>
             <?php
-		    $model     = new ArticleModel(array('ignore_request' => true));
-		    $model->setState('params', ComponentHelper::getParams('com_content'));
-		    $model->setState('list.start', 0);
-		    $model->setState('list.limit', 1);
-		    $model->setState('filter.published', 1);
-		    $model->setState('filter.featured', 'show');
-		    // Access filter
-		    $access = ComponentHelper::getParams('com_content')->get('show_noauth');
-		    $model->setState('filter.access', $access);
-		    // Ordering
-		    $model->setState('list.ordering', 'a.hits');
-		    $model->setState('list.direction', 'DESC');
+		    $model     = AutomsgHelper::prepare_content_model();
 		    $titles = "";
 		    $articles = explode(',', $message->articles);
 		    foreach ($articles as $articleid) {
@@ -175,9 +164,30 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 		    echo $this->escape($sent)
 		    ?>
                 </td>
+				<?php
+		        $cr = null;
+		    if (isset($message->cr)) {
+		        $cr = json_decode($message->cr);
+		    }
+		    ?>
+				<td class="center">
+					<?php if ($cr) {
+					    echo $cr->total;
+					} ?>
+				</td>
+				<td class="center">
+				<?php if ($cr) {
+				    echo $cr->sent;
+				} ?>
+				</td>
+				<td class="center">
+				<?php if ($cr) {
+				    echo $cr->error;
+				} ?>
+				</td>
 				<td class="center">
 					<?php
-		            echo HTMLHelper::_('jgrid.state', $states, $message->state, $i, 'messages.', $canChange, 'cb'); ?>
+				echo HTMLHelper::_('jgrid.state', $states, $message->state, $i, 'messages.', $canChange, 'cb'); ?>
 				</td>
 			</tr>
 			<?php endforeach; ?>
