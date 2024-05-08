@@ -53,34 +53,31 @@ class MessageModel extends AdminModel
         // split general parameters
         return $data;
     }
-    /**
-     *  Method to validate form data.
-     */
-    public function validate($form, $data, $group = null)
-    {
-        $name = $data['name'];
-        unset($data["name"]);
-
-        return array(
-            'name'   => $name,
-            'params' => json_encode($data)
-        );
-    }
     public function getMessagesList($data)
     {
-        // Initialise variables.
         $db		= $this->getDatabase();
         $query	= $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query->select('sent, state, GROUP_CONCAT(DISTINCT id) as ids, GROUP_CONCAT(DISTINCT article_id) as articles');
+        $query->select('sent, state,cr, GROUP_CONCAT(DISTINCT id) as ids, GROUP_CONCAT(DISTINCT article_id) as articles');
         $query->from('#__automsg');
         if (!$data->sent) {
             $query->where($db->quoteName('sent').' IS NULL ');
         } else{
             $query->where($db->quoteName('sent').' = '.$db->quote($data->sent));
         }
-        $query->group('sent,state');
+        $query->group('sent,state,cr');
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+    public function getMessageErrors($sent) {
+        $db		= $this->getDatabase();
+        $query	= $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select('userid, error');
+        $query->from('#__automsg_errors');
+        $query->where($db->qn('created').' = '.$db->q($sent));
         $db->setQuery($query);
         return $db->loadObjectList();
     }

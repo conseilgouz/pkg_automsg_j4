@@ -118,7 +118,6 @@ class MessageTable extends Table implements VersionableTableInterface
                 return false;
             }
         }
-        // $table = Table::getInstance('MessageTable', __NAMESPACE__ . '\\', array('dbo' => $db));
         foreach ($pks as $pk) {
             if(!$this->load($pk)) {
                 $this->setError($this->getError());

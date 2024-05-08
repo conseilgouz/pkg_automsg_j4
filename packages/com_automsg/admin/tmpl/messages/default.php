@@ -36,30 +36,30 @@ $wa->addInlineStyle('.icon-error{ color:red!important}');
 $states = [
         0 => [
              'send', // action : publish => envoi
-             'aa',
+             '',
              'Cliquer pour envoyer',
-             'bb',
+             '',
              true,
              'warning', // icone
-             'cc',
+             '',
          ],
          1 => [
-              'ss', // ne rien faire
-              'sss',
+              'detail', // ne rien faire
+              '',
               'Envoyé', // état :
-              'ssss',
+              '',
               true,
               'publish', // icone
-              'sssss',
+              '',
          ],
          9 => [
-              'restart', // ne rien faire
-              'fffff',
+              'restart', // restart
+              '',
               'Erreurs', // état :
-              'ffff',
+              '',
               true,
               'error', // icone
-              'ff',
+              '',
          ]
        ];
 $options   = [];
@@ -87,7 +87,7 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 		<div class="btn-group pull-right hidden-phone">
 			<select name="filter_state" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo Text::_('JOPTION_SELECT_PUBLISHED');?></option>
-                <?php echo HtmlHelper::_('select.options', $options);?>
+                <?php echo HtmlHelper::_('select.options', $options, 'value', 'text', $this->state->get('filter.state'), true);?>
 			</select>
 		</div>
 	</div>
@@ -166,10 +166,10 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
                 </td>
 				<?php
 		        $cr = null;
-		    if (isset($message->cr)) {
-		        $cr = json_decode($message->cr);
-		    }
-		    ?>
+                if (isset($message->cr)) {
+                    $cr = json_decode($message->cr);
+                }
+                ?>
 				<td class="center">
 					<?php if ($cr) {
 					    echo $cr->total;

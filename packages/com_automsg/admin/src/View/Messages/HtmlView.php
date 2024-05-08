@@ -60,11 +60,11 @@ class HtmlView extends BaseHtmlView
             ToolbarHelper::divider();
             ToolbarHelper::publish('messages.send', 'Envoyer', true);
         }
-        if (isset($this->state) && $this->state->get('filter.state') == -2 && $canDo->get('core.delete')) {
+        /*if (isset($this->state) && $this->state->get('filter.state') == -2 && $canDo->get('core.delete')) {
             ToolBarHelper::deleteList('', 'messages.delete', 'JTOOLBAR_EMPTY_TRASH');
         } elseif ($canDo->get('core.edit.state')) {
             ToolBarHelper::trash('messages.trash');
-        }
+        }*/
         if ($canDo->get('core.admin')) {
             ToolbarHelper::divider();
             ToolbarHelper::inlinehelp();

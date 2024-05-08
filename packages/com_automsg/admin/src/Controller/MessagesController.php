@@ -49,7 +49,7 @@ class MessagesController extends FormController
         $this->setRedirect(Route::_('index.php?option=com_automsg&view=messages', true));
         return true;
     }
-    public function unpublish($pks = null, $state = 0, $userId = 0)
+    public function detail($pks = null, $state = 0, $userId = 0)
     {
         // Check for request forgeries.
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
@@ -59,10 +59,8 @@ class MessagesController extends FormController
 
         $input = $app->input;
         $pks = $input->post->get('cid', array(), 'array');
-        if (!$model->publish($pks, $state)) {
-        }
-        $this->setMessage(Text::_('COM_AUTOMSG_UNPUBLISHED'));
-        $this->setRedirect(Uri::base().'index.php?option=com_automsg&view=messages');
+
+        $this->setRedirect(Uri::base().'index.php?option=com_automsg&view=message&layout=edit&id='.$pks[0]);
         return true;
 
     }

@@ -64,7 +64,7 @@ class Automsg
         if (!in_array($creatorId, $users) && (!in_array($creatorId, $deny))) { // creator not in users array : add it
             $users[] = $creatorId;
         }
-        $creator = $app->getIdentity($creatorId);
+        $creator = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($creatorId);
         $url = "<a href='".URI::root()."index.php?option=com_content&view=article&id=".$article->id."' target='_blank'>".Text::_('COM_AUTOMSG_CLICK')."</a>";
         $info_cat = self::getCategoryName($article->catid);
         $cat_params = json_decode($info_cat[0]->params);
