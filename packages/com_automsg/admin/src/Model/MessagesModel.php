@@ -51,7 +51,6 @@ class MessagesModel extends ListModel
         } elseif ($published === '') {
             $query->where('(state IN (0, 1, 9))');
         }
-
         // Add the list ordering clause.
         $orderCol	= $this->state->get('list.ordering');
         $orderDirn	= $this->state->get('list.direction');
@@ -62,8 +61,6 @@ class MessagesModel extends ListModel
     protected function populateState($ordering = null, $direction = null)
     {
         // Load the filter state.
-        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
-        $this->setState('filter.search', $search);
         $state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $state);
         // List state information.

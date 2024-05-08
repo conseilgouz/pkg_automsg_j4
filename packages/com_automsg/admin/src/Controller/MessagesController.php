@@ -91,7 +91,7 @@ class MessagesController extends FormController
         // check for errors to restart
         $model = $this->getModel('messages');
         $articles = $model->check_restart($pks);
-        if (sizeof($articles)) {
+        if ($articles && sizeof($articles)) {
             $this->restart($articles);
         }
         // check for waiting async

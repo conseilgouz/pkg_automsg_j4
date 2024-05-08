@@ -28,21 +28,9 @@ use ConseilGouz\Component\Automsg\Administrator\Model\ConfigModel;
 
 class Automsg
 {
-    // get automsg params
-    public static function getParams()
-    {
-        $model = new ConfigModel();
-        return $model->getItem(1);
-    }
-    public static function createLog()
-    {
-        Log::addLogger(
-            array('text_file' => 'com_automsg.log.php'),
-            Log::ALL,
-            array('com_automsg')
-        );
-    }
+    //
     // send single article emails
+    //
     public static function sendEmails($article, $users, $tokens, $deny)
     {
         $autoparams = self::getParams();
@@ -64,7 +52,7 @@ class Automsg
         if (!in_array($creatorId, $users) && (!in_array($creatorId, $deny))) { // creator not in users array : add it
             $users[] = $creatorId;
         }
-        $creator = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($creatorId);
+        $creator = $app->getIdentity($creatorId);
         $url = "<a href='".URI::root()."index.php?option=com_content&view=article&id=".$article->id."' target='_blank'>".Text::_('COM_AUTOMSG_CLICK')."</a>";
         $info_cat = self::getCategoryName($article->catid);
         $cat_params = json_decode($info_cat[0]->params);
@@ -134,6 +122,9 @@ class Automsg
         }
         return $results;
     }
+    //
+    // get category information
+    //
     private static function getCategoryName($id)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -145,6 +136,9 @@ class Automsg
         $db->setQuery($query);
         return $db->loadObjectList();
     }
+    //
+    // get article tags
+    //
     private static function getArticleTags($id)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -159,6 +153,9 @@ class Automsg
         $db->setQuery($query);
         return $db->loadObjectList();
     }
+    //
+    // get all users from defined user groups
+    //
     public static function getUsers($usergroups)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -170,6 +167,9 @@ class Automsg
         $db->setQuery($query);
         return (array) $db->loadColumn();
     }
+    //
+    // Get deny users list 
+    //
     public static function getDenyUsers()
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -180,6 +180,9 @@ class Automsg
         $db->setQuery($query);
         return (array) $db->loadColumn();
     }
+    //
+    // Get all users token (used in unsubscribe links)
+    //
     public static function getAutomsgToken($users)
     {
         $tokens = array();
@@ -191,9 +194,9 @@ class Automsg
         }
         return $tokens;
     }
-    /* check if automsg token exists.
-    *  if it does not, create it
-    */
+    // check if automsg token exists.
+    // if it does not, create it
+    //
     private static function checkautomsgtoken($userId)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -241,109 +244,9 @@ class Automsg
         $db->execute();
         return $token;
     }
-    /*
-     * Asynchronous process : store article id in automsg table
-     * Synchronous process : store errors only
-     */
-    public static function store_automsg($article, $state = 0, $sent = null, $results = [])
-    {
-        $autoparams = self::getParams();
-
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $date = Factory::getDate();
-
-        $query = $db->getQuery(true)
-        ->insert($db->qn('#__automsg'));
-        $query->values(
-            implode(
-                ',',
-                $query->bindArray(
-                    [
-                        0, // key
-                        $state, // state
-                        $article->id,
-                        $date->toSql(), // date created
-                        null, // date modified
-                        $sent,
-                        json_encode($results)
-                    ],
-                    [
-                        ParameterType::INTEGER,
-                        ParameterType::INTEGER,
-                        ParameterType::INTEGER,
-                        ParameterType::STRING,
-                        ParameterType::NULL,
-                        ParameterType::NULL,
-                        ParameterType::STRING
-                    ]
-                )
-            )
-        );
-        $db->setQuery($query);
-        $db->execute();
-        if ($autoparams->log == 2) { // need to log all msgs
-            self::createLog();
-            Log::add('Article in automsg : '.$article->title, Log::DEBUG, 'com_automsg');
-        }
-    }
-    /*
-        Store same date in sent to all sent articles in this session
-    */
-    public static function updateAutoMsgTable($articleid = null, $state = 0)
-    {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $date = Factory::getDate();
-        $query = $db->getQuery(true)
-        ->update($db->qn('#__automsg'))
-        ->set($db->qn('state').'='.$state.','.$db->qn('sent').'='.$db->q($date->toSql()))
-        ->where($db->qn('state') . ' = 0');
-        if ($articleid) {
-            $query->where($db->qn('article_id').' = '.$db->q($articleid));
-        }
-        $db->setQuery($query);
-        $db->execute();
-        return true;
-    }
-    /*
-      * store errors
-      */
-    public static function store_automsg_error($userid, $articleids, $error, $state = 0)
-    {
-        $autoparams = self::getParams();
-
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $date = Factory::getDate();
-
-        $query = $db->getQuery(true)
-        ->insert($db->qn('#__automsg_errors'));
-        $query->values(
-            implode(
-                ',',
-                $query->bindArray(
-                    [
-                        0, // key
-                        $state, // state
-                        $userid,
-                        $articleids,
-                        $error,
-                        $date->toSql(), // date created
-                        null // date modified
-                    ],
-                    [
-                        ParameterType::INTEGER,
-                        ParameterType::INTEGER,
-                        ParameterType::INTEGER,
-                        ParameterType::STRING,
-                        ParameterType::STRING,
-                        ParameterType::STRING,
-                        ParameterType::NULL
-                    ]
-                )
-            )
-        );
-        $db->setQuery($query);
-        $db->execute();
-    }
+    // ------------------------------------------------
+    // Async task : Create one article line to include in the email
+    //
     public static function oneLine($article, $users, $deny)
     {
         $lang = Factory::getApplication()->getLanguage();
@@ -390,6 +293,200 @@ class Automsg
             ];
         return $data;
     }
+    //
+    // Async task : check articles list
+    //
+    public static function getArticlesToSend()
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+        ->select('DISTINCT '.$db->quoteName('article_id'))
+            ->from($db->quoteName('#__automsg'))
+            ->where($db->quoteName('state') . ' = 0');
+
+        $db->setQuery($query);
+        $result = $db->loadColumn();
+        return $result;
+    }
+    //
+    // Async task : send emails
+    //
+    public static function sendTaskEmails($articleids, $articles, $users,$tokens)
+    {
+        $autoparams = self::getParams();
+        $app = Factory::getApplication();
+        if ($autoparams->log) { // need to log msgs
+            self::createLog();
+        }
+        $lang = $app->getLanguage();
+        $lang->load('com_automsg');
+
+        $results = [];
+        $results['total'] = 0;
+        $results['sent'] = 0;
+        $results['error'] = 0;
+
+        foreach ($users as $user_id) {
+            $results['total']++;
+            $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+            $go = false;
+            $unsubscribe = "";
+            if ($tokens[$user_id]) {
+                $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
+            }
+            $data = ['unsubscribe'   => $unsubscribe];
+            $mailer = new MailTemplate('com_automsg.asyncmail', $receiver->getParam('language', $app->get('language')));
+            $data_articles = ['articles' => $articles];
+            $mailer->addTemplateData($data);
+            $mailer->addTemplateData($data_articles);
+            $mailer->addRecipient($receiver->email, $receiver->name);
+
+            try {
+                $send = $mailer->Send();
+            } catch (\Exception $e) {
+                if ($autoparams->log) { // need to log msgs
+                    Log::add('Task : Erreur ----> Articles : '.$articleids.' non envoyé à '.$receiver->email.'/'.$e->getMessage(), Log::ERROR, 'com_automsg');
+                } else {
+                    $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
+                }
+                self::store_automsg_error($user_id, $articleids, $e->getMessage());
+                $results['error']++;
+                continue; // try next one
+            }
+            if ($autoparams->log == 2) { // need to log msgs
+                Log::add('Task : Articles OK : '.$articleids.' envoyés à '.$receiver->email, Log::DEBUG, 'com_automsg');
+            }
+            $results['sent']++;
+        }
+        return $results;
+    }
+    
+    //
+    // Asynchronous process : store article id in automsg table
+    // Synchronous process : store errors only
+    //
+    public static function store_automsg($article, $state = 0, $sent = null, $results = [])
+    {
+        $autoparams = self::getParams();
+
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $date = Factory::getDate();
+
+        $query = $db->getQuery(true)
+        ->insert($db->qn('#__automsg'));
+        $query->values(
+            implode(
+                ',',
+                $query->bindArray(
+                    [
+                        0, // key
+                        $state, // state
+                        $article->id,
+                        $date->toSql(), // date created
+                        null, // date modified
+                        $sent,
+                        json_encode($results)
+                    ],
+                    [
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::STRING,
+                        ParameterType::NULL,
+                        ParameterType::NULL,
+                        ParameterType::STRING
+                    ]
+                )
+            )
+        );
+        $db->setQuery($query);
+        $db->execute();
+        if ($autoparams->log == 2) { // need to log all msgs
+            self::createLog();
+            Log::add('Article in automsg : '.$article->title, Log::DEBUG, 'com_automsg');
+        }
+    }
+    //
+    //   Store same date in sent to all sent articles in this session
+    //
+    public static function updateAutoMsgTable($articleid = null, $state = 0, $cr = [])
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $date = Factory::getDate();
+        $query = $db->getQuery(true)
+        ->update($db->qn('#__automsg'))
+        ->set($db->qn('state').'='.$state.','.$db->qn('sent').'='.$db->q($date->toSql()).','.$db->qn('cr').'='.$db->q(json_encode($cr)))
+        ->where($db->qn('state') . ' = 0');
+        if ($articleid) {
+            $query->where($db->qn('article_id').' = '.$db->q($articleid));
+        }
+        $db->setQuery($query);
+        $db->execute();
+        return true;
+    }
+    //
+    // store errors
+    //
+    public static function store_automsg_error($userid, $articleids, $error, $state = 0)
+    {
+        $autoparams = self::getParams();
+
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $date = Factory::getDate();
+
+        $query = $db->getQuery(true)
+        ->insert($db->qn('#__automsg_errors'));
+        $query->values(
+            implode(
+                ',',
+                $query->bindArray(
+                    [
+                        0, // key
+                        $state, // state
+                        $userid,
+                        json_encode($articleids),
+                        $error,
+                        $date->toSql(), // date created
+                        null // date modified
+                    ],
+                    [
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::STRING,
+                        ParameterType::STRING,
+                        ParameterType::STRING,
+                        ParameterType::NULL
+                    ]
+                )
+            )
+        );
+        $db->setQuery($query);
+        $db->execute();
+    }
+    // ------------Other functions
+    //
+    // get automsg params
+    //
+    public static function getParams()
+    {
+        $model = new ConfigModel();
+        return $model->getItem(1); // only one config record in db
+    }
+    //
+    // create log file
+    //
+    public static function createLog()
+    {
+        Log::addLogger(
+            array('text_file' => 'com_automsg.log.php'),
+            Log::ALL,
+            array('com_automsg')
+        );
+    }
+    //
+    // Prepare content model to call $model->getItem(articleid)
+    //
     public static function prepare_content_model()
     {
         $model     = new ArticleModel(array('ignore_request' => true));
