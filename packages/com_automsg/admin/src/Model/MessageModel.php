@@ -10,12 +10,9 @@
 namespace ConseilGouz\Component\Automsg\Administrator\Model;
 
 defined('_JEXEC') or die;
-use Joomla\Registry\Registry;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\AdminModel;
-use Joomla\CMS\Table\Table;
 use Joomla\CMS\Form\Form;
-use Joomla\Database\DatabaseInterface;
 
 class MessageModel extends AdminModel
 {
@@ -63,14 +60,15 @@ class MessageModel extends AdminModel
         $query->from('#__automsg');
         if (!$data->sent) {
             $query->where($db->quoteName('sent').' IS NULL ');
-        } else{
+        } else {
             $query->where($db->quoteName('sent').' = '.$db->quote($data->sent));
         }
         $query->group('sent,state,cr');
         $db->setQuery($query);
         return $db->loadObjectList();
     }
-    public function getMessageErrors($sent) {
+    public function getMessageErrors($sent)
+    {
         $db		= $this->getDatabase();
         $query	= $db->getQuery(true);
 

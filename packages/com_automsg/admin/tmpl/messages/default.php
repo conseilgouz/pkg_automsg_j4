@@ -9,14 +9,11 @@
 
 // no direct access
 defined('_JEXEC') or die;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Helper\ContentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\Component\Content\Site\Model\ArticleModel;
-use Joomla\Registry\Registry;
 use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
 
 HTMLHelper::_('behavior.multiselect');
@@ -108,7 +105,7 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 					<?php echo HtmlHelper::_('grid.sort', 'Article(s)', 'articles', $listDirn, $listOrder); ?>
 				</th>
 				<th class="5%">
-					<?php echo HtmlHelper::_('grid.sort', 'Envoyé', 'modified', $listDirn, $listOrder); ?>
+					<?php echo HtmlHelper::_('grid.sort', 'Envoyé', 'sent', $listDirn, $listOrder); ?>
 				</th>
 				<th class="5%">
 					Total
@@ -166,10 +163,10 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
                 </td>
 				<?php
 		        $cr = null;
-                if (isset($message->cr)) {
-                    $cr = json_decode($message->cr);
-                }
-                ?>
+		    if (isset($message->cr)) {
+		        $cr = json_decode($message->cr);
+		    }
+		    ?>
 				<td class="center">
 					<?php if ($cr) {
 					    echo $cr->total;

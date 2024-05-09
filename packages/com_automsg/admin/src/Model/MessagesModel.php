@@ -64,7 +64,7 @@ class MessagesModel extends ListModel
         $state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $state);
         // List state information.
-        parent::populateState('ids', 'DESC');
+        parent::populateState('sent', 'DESC');
     }
     /**
      * Get logs data as a database iterator
@@ -97,7 +97,7 @@ class MessagesModel extends ListModel
     {
         $table = $this->getTable();
         $pks   = (array) $pks;
-        if (!$table->restart($pks,$this->getCurrentUser()->id)) {
+        if (!$table->restart($pks, $this->getCurrentUser()->id)) {
             $this->setError($table->getError());
             return false;
         }

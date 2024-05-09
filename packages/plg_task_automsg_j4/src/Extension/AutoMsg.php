@@ -86,6 +86,9 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
 
         $this->articles = AutomsgHelper::getArticlesToSend();
         $model          = AutomsgHelper::prepare_content_model();
+
+        $date = Factory::getDate(); // same timestamp for everybody in same request
+
         if ($this->autoparams->async == 1) {// all articles in one email per user
             // article lines
             $data = [];
@@ -95,19 +98,23 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 $data[] = AutomsgHelper::oneLine($article, $users, $deny);
             }
             if (count($data)) {
-                $results = AutomsgHelper::sendTaskEmails($this->articles, $data, $users,$tokens);
+                $results = AutomsgHelper::sendTaskEmails($this->articles, $data, $users, $tokens, $date);
                 $state = 1; // assume ok
                 if (isset($results['error']) && ($results['error'] > 0)) {
                     $state = 9; // contains error
                 }
-                AutomsgHelper::updateAutoMsgTable(null, $state, $results);
+                AutomsgHelper::updateAutoMsgTable(null, $state, $date, $results);
             }
         } else { // one article per email per user
             foreach ($this->articles as $articleid) {
                 $article = $model->getItem($articleid);
                 $date = Factory::getDate();
-                $results = AutomsgHelper::sendEmails($article, $users, $this->tokens, $deny);
-                AutomsgHelper::updateAutoMsgTable($articleid);
+                $results = AutomsgHelper::sendEmails($article, $users, $this->tokens, $deny, $date);
+                $state = 1; // assume ok
+                if (isset($results['error']) && ($results['error'] > 0)) {
+                    $state = 9; // contains error
+                }
+                AutomsgHelper::updateAutoMsgTable($articleid, $state, $date, $results);
             }
         }
     }

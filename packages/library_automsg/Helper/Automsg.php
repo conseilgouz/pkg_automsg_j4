@@ -31,7 +31,7 @@ class Automsg
     //
     // send single article emails
     //
-    public static function sendEmails($article, $users, $tokens, $deny)
+    public static function sendEmails($article, $users, $tokens, $deny, $datesent)
     {
         $autoparams = self::getParams();
         $app = Factory::getApplication();
@@ -111,7 +111,7 @@ class Automsg
                 } else {
                     $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
                 }
-                self::store_automsg_error($user_id, $article->id, $e->getMessage());
+                self::store_automsg_error($user_id, $article->id, $e->getMessage(), 0, $datesent);
                 $results['error']++;
                 continue;
             }
@@ -168,7 +168,7 @@ class Automsg
         return (array) $db->loadColumn();
     }
     //
-    // Get deny users list 
+    // Get deny users list
     //
     public static function getDenyUsers()
     {
@@ -311,7 +311,7 @@ class Automsg
     //
     // Async task : send emails
     //
-    public static function sendTaskEmails($articleids, $articles, $users,$tokens)
+    public static function sendTaskEmails($articleids, $articles, $users, $tokens, $datesent)
     {
         $autoparams = self::getParams();
         $app = Factory::getApplication();
@@ -349,7 +349,7 @@ class Automsg
                 } else {
                     $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
                 }
-                self::store_automsg_error($user_id, $articleids, $e->getMessage());
+                self::store_automsg_error($user_id, $articleids, $e->getMessage(), 0, $datesent);
                 $results['error']++;
                 continue; // try next one
             }
@@ -360,12 +360,12 @@ class Automsg
         }
         return $results;
     }
-    
+
     //
     // Asynchronous process : store article id in automsg table
     // Synchronous process : store errors only
     //
-    public static function store_automsg($article, $state = 0, $sent = null, $results = [])
+    public static function store_automsg($article, $state = 0, $timestamp = null, $results = [])
     {
         $autoparams = self::getParams();
 
@@ -384,7 +384,7 @@ class Automsg
                         $article->id,
                         $date->toSql(), // date created
                         null, // date modified
-                        $sent,
+                        $timestamp->toSql(), // timestamp
                         json_encode($results)
                     ],
                     [
@@ -407,19 +407,21 @@ class Automsg
         }
     }
     //
-    //   Store same date in sent to all sent articles in this session
+    //   Async : Store same timestamp to all sent articles in this session
     //
-    public static function updateAutoMsgTable($articleid = null, $state = 0, $cr = [])
+    public static function updateAutoMsgTable($articleid = null, $state = 0, $timestamp = null, $cr = [])
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $date = Factory::getDate();
         $query = $db->getQuery(true)
         ->update($db->qn('#__automsg'))
-        ->set($db->qn('state').'='.$state.','.$db->qn('sent').'='.$db->q($date->toSql()).','.$db->qn('cr').'='.$db->q(json_encode($cr)))
+        ->set($db->qn('state').'='.$state.','.$db->qn('sent').'='.$db->q($timestamp->toSql()).','.$db->qn('cr').'='.$db->q(json_encode($cr)))
         ->where($db->qn('state') . ' = 0');
         if ($articleid) {
             $query->where($db->qn('article_id').' = '.$db->q($articleid));
         }
+        // if ($timestamp) {
+        //     $query->where($db->qn('sent').' = '.$db->q($timestamp->toSql()));
+        // }
         $db->setQuery($query);
         $db->execute();
         return true;
@@ -427,12 +429,11 @@ class Automsg
     //
     // store errors
     //
-    public static function store_automsg_error($userid, $articleids, $error, $state = 0)
+    public static function store_automsg_error($userid, $articleids, $error, $state = 0, $timestamp = null)
     {
         $autoparams = self::getParams();
 
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $date = Factory::getDate();
 
         $query = $db->getQuery(true)
         ->insert($db->qn('#__automsg_errors'));
@@ -446,7 +447,7 @@ class Automsg
                         $userid,
                         json_encode($articleids),
                         $error,
-                        $date->toSql(), // date created
+                        $timestamp->toSql(), // timestamp
                         null // date modified
                     ],
                     [

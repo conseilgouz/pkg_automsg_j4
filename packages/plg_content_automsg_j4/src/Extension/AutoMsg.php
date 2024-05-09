@@ -81,6 +81,8 @@ final class AutoMsg extends CMSPlugin
         }
         $tokens = AutomsgHelper::getAutomsgToken($users);
 
+        $timestamp = Factory::getDate(); // same timestamp for everybody in same request
+
         foreach ($pks as $articleid) {
             $article = $model->getItem($articleid);
             if (!empty($categories) && !in_array($article->catid, $categories)) {
@@ -91,15 +93,14 @@ final class AutoMsg extends CMSPlugin
                 $async = true; // automsg task plugin / component ok
             }
             if (($this->autoparams->async > 0) && $async) {
-                AutomsgHelper::store_automsg($article);
+                AutomsgHelper::store_automsg($article,0,$timestamp);
             } else {
-                $date = Factory::getDate();
-                $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny);
+                $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny,$timestamp);
                 $state = 1; // assume ok
                 if (isset($results['error']) && ($results['error'] > 0)) {
                     $state = 9; // contains error
                 }
-                AutomsgHelper::store_automsg($article, $state, $date->toSql(), $results);
+                AutomsgHelper::store_automsg($article, $state, $timestamp, $results);
             }
         }
         return true;
