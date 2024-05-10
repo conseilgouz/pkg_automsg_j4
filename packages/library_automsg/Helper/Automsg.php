@@ -42,6 +42,7 @@ class Automsg
         $results['total'] = 0;
         $results['sent'] = 0;
         $results['error'] = 0;
+        $results['waiting'] = 0;
 
         $msgcreator = $autoparams->msgcreator;
         $libdateformat = "d/M/Y h:m";
@@ -88,6 +89,11 @@ class Automsg
         ];
         foreach ($users as $user_id) {
             $results['total']++;
+            if ($autoparams->limit && ($results['total'] > $autoparams->maillimit)) {
+                self::store_automsg_waiting($user_id, $article->id, 0, $datesent);
+                $results['waiting']++;
+                continue;
+            }
             $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
             $unsubscribe = "";
             if ($tokens[$user_id]) {
@@ -325,9 +331,14 @@ class Automsg
         $results['total'] = 0;
         $results['sent'] = 0;
         $results['error'] = 0;
-
+        $results['waiting'] = 0;
         foreach ($users as $user_id) {
             $results['total']++;
+            if ($autoparams->limit && ($results['total'] > $autoparams->maillimit)) {
+                self::store_automsg_waiting($user_id, $articleids, 0, $datesent);
+                $results['waiting']++;
+                continue;
+            }
             $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
             $go = false;
             $unsubscribe = "";
@@ -431,8 +442,6 @@ class Automsg
     //
     public static function store_automsg_error($userid, $articleids, $error, $state = 0, $timestamp = null)
     {
-        $autoparams = self::getParams();
-
         $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         $query = $db->getQuery(true)
@@ -448,7 +457,8 @@ class Automsg
                         json_encode($articleids),
                         $error,
                         $timestamp->toSql(), // timestamp
-                        null // date modified
+                        null, // date modified
+                        0 // retry
                     ],
                     [
                         ParameterType::INTEGER,
@@ -457,7 +467,43 @@ class Automsg
                         ParameterType::STRING,
                         ParameterType::STRING,
                         ParameterType::STRING,
-                        ParameterType::NULL
+                        ParameterType::NULL,
+                        ParameterType::INTEGER,
+                    ]
+                )
+            )
+        );
+        $db->setQuery($query);
+        $db->execute();
+    }
+    //
+    // store errors
+    //
+    public static function store_automsg_waiting($userid, $articleids, $state = 0, $timestamp = null)
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+        $query = $db->getQuery(true)
+        ->insert($db->qn('#__automsg_waiting'));
+        $query->values(
+            implode(
+                ',',
+                $query->bindArray(
+                    [
+                        0, // key
+                        $state, // state
+                        $userid,
+                        json_encode($articleids),
+                        $timestamp->toSql(), // timestamp
+                        null, // date modified
+                    ],
+                    [
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::INTEGER,
+                        ParameterType::STRING,
+                        ParameterType::STRING,
+                        ParameterType::NULL,
                     ]
                 )
             )

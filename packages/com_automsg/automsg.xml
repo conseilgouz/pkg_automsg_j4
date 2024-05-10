@@ -48,6 +48,7 @@
 			<filename>index.html</filename>
             <filename>access.xml</filename>
             <filename>config.xml</filename>
+            <folder>admincss</folder>
             <folder>forms</folder>
 			<folder>src</folder>
 			<folder>services</folder>

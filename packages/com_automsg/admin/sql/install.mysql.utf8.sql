@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `#__automsg` (
 `created` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
 `modified` datetime NULL DEFAULT NULL,
 `sent` datetime NULL DEFAULT NULL,
-'cr' varchar(50) NOT NULL default '',
+`cr` varchar(50) NOT NULL default '',
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Auto Message Table';
 
@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS `#__automsg_config` (
 `msgcreator` tinyint NOT NULL default 0,
 `msgauto` tinyint NOT NULL default 0,
 `async` tinyint NOT NULL default 0,
+`limit` tinyint NOT NULL default 0,
+`maillimit` integer NOT NULL default 0,
+`maildelay` integer NOT NULL default 1,
 `log` tinyint NOT NULL default 0,
 `created` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
 `modified` datetime NULL DEFAULT NULL,
@@ -29,9 +32,21 @@ CREATE TABLE IF NOT EXISTS `#__automsg_errors` (
 `userid` integer NOT NULL,
 `articleids` text,
 `error` text,  
-`created` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
+`timestamp` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
+`modified` datetime NULL DEFAULT NULL,
+`retry`integer not null default 0,
+PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='AutoMsg Error Table';
+
+CREATE TABLE IF NOT EXISTS `#__automsg_waiting` (
+`id` integer NOT NULL AUTO_INCREMENT,
+`state` integer NOT NULL default 0,
+`userid` integer NOT NULL,
+`articleids` text,
+`timestamp` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
 `modified` datetime NULL DEFAULT NULL,
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='AutoMsg Error Table';
+
 
 INSERT INTO `#__automsg_config` (`id`,`state`,`usergroups`,`categories`) VALUES (1,0,'8','');

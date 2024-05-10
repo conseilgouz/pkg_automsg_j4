@@ -61,6 +61,9 @@ $app = Factory::getApplication();
                     <th class="5%">
                         Erreurs
                     </th>
+                    <th class="5%">
+                        Attente
+                    </th>
 				    <th width="5%">
 					Status
 				    </th>
@@ -124,10 +127,35 @@ foreach ($data as $i => $message) : ?>
 				        echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
 				        echo '</div>';
 				        echo '<div class="modal-body">';
-
 				        foreach($errors as $error) {
 				            $auser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($error->userid);
 				            echo '<p>'.$auser->name.' (user id '.$auser->id.') : '.$error->error.'</p>';
+				        }
+				        echo '</div>';
+				        echo '</div>';
+				        echo '</div>';
+				        echo '</div>';
+				    }
+				} ?>
+				</td>
+				<td class="center">
+				<?php if ($cr) {
+				    if ($cr->waiting > 0) { // build error modal
+				        $errors = $modelMessage->getMessageWaiting($message->sent);
+				        echo '<a href="#" data-bs-toggle="modal" data-bs-target="#errorModal" title="Voir les erreurs">';
+				        echo $cr->waiting;
+				        echo '</a>';
+				        echo '<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">';
+				        echo '<div class="modal-dialog">';
+				        echo '<div class="modal-content">';
+				        echo '<div class="modal-header">';
+				        echo '<h1 class="modal-title fs-5" id="errorModalLabel">Liste des erreurs</h1>';
+				        echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+				        echo '</div>';
+				        echo '<div class="modal-body">';
+				        foreach($errors as $error) {
+				            $auser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($error->userid);
+				            echo '<p>'.$auser->name.' (user id '.$auser->id.')</p>';
 				        }
 				        echo '</div>';
 				        echo '</div>';

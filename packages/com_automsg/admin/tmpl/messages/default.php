@@ -116,6 +116,9 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 				<th class="5%">
 					Erreurs
 				</th>
+				<th class="5%">
+					Attente
+				</th>
 				<th width="5%">
 					<?php echo HtmlHelper::_('grid.sort', 'JSTATUS', 'sent', $listDirn, $listOrder); ?>
 				</th>
@@ -180,6 +183,11 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 				<td class="center">
 				<?php if ($cr) {
 				    echo $cr->error;
+				} ?>
+				</td>
+				<td class="center">
+				<?php if ($cr) {
+				    echo $cr->waiting;
 				} ?>
 				</td>
 				<td class="center">

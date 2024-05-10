@@ -75,7 +75,19 @@ class MessageModel extends AdminModel
         // Select the required fields from the table.
         $query->select('userid, error');
         $query->from('#__automsg_errors');
-        $query->where($db->qn('created').' = '.$db->q($sent));
+        $query->where($db->qn('timestamp').' = '.$db->q($sent));
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+    public function getMessageWaiting($sent)
+    {
+        $db		= $this->getDatabase();
+        $query	= $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select('userid');
+        $query->from('#__automsg_waiting');
+        $query->where($db->qn('timestamp').' = '.$db->q($sent));
         $db->setQuery($query);
         return $db->loadObjectList();
     }

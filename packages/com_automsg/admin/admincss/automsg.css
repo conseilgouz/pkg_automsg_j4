@@ -1,0 +1,23 @@
+.form-horizontal .controls {
+	margin-left: 10px;
+}
+#config .control-group:nth-of-type(9){ /* nb mail maxi */
+	float:left;width:50%;
+}
+#config .control-group:nth-of-type(9) .controls{
+    max-width:15em;
+}
+#config .control-group:nth-of-type(10){ /* delay */
+	float:left;width:50%;
+}
+#config .control-group:nth-of-type(10) .control-label{
+    width:100px;
+    margin-left:3em
+}
+#config .control-group:nth-of-type(10) .controls{
+    max-width:15em;
+}
+
+#config .control-group:nth-of-type(11){ /* log */
+	clear:both;width:100%;
+}

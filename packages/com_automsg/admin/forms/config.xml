@@ -38,6 +38,17 @@
             <option value="2">Un article par message</option>
         </field>
         <field type="note" name="note1" label="COM_AUTOMSG_NOTE_ADM" heading="p" />
+        <field name="limit" type="radio" default="0" class="btn-group btn-group-yesno" 
+            label="COM_AUTOMSG_LIMIT" description="COM_AUTOMSG_LIMIT_DESC">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field showon="limit:1" name="maillimit" type="number" min="10" 
+            label="COM_AUTOMSG_MAILLIMIT" description="COM_AUTOMSG_MAILLIMIT_DESC"
+            default="10"/>
+        <field showon="limit:1" name="maildelay" type="number" min="1" 
+            label="COM_AUTOMSG_MAILDELAY" description="COM_AUTOMSG_MAILDELAY_DESC"
+            default="1"/>
         <field name="log"
             type="radio" class="btn-group btn-group-yesno" default="0"
             label="COM_AUTOMSG_LOG" description="COM_AUTOMSG_LOG_DESC">
