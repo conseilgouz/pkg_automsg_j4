@@ -126,8 +126,26 @@ class PlgSystemAutomsgInstallerInstallerScript
         $query->from('#__mail_templates');
         $query->where('extension = ' . $db->quote('plg_content_automsg'));
         $db->setQuery($query);
-        $result = $db->loadResult();
-        if (!$result) {
+        $result_content = $db->loadResult();
+        $query = $db->getQuery(true);
+        $query->select('count(`template_id`)');
+        $query->from('#__mail_templates');
+        $query->where('extension = ' . $db->quote('plg_task_automsg'));
+        $db->setQuery($query);
+        $result_task = $db->loadResult();
+        $query = $db->getQuery(true);
+        $query->select('count(`template_id`)');
+        $query->from('#__mail_templates');
+        $query->where('template_id = ' . $db->quote('com_automsg.report'));
+        $db->setQuery($query);
+        $result_report = $db->loadResult();
+        if (!$result_task) {
+            $this->create_task_mail_template();
+        }
+        if (!$result_report) {
+            $this->create_report_mail_template();
+        }
+        if (!$result_content) {
             $this->create_mail_templates();
         } else { // plg_content_automsg/plg_task_automsg => com_automsg mail template
             $this->update_mail_templates($db);
@@ -159,6 +177,40 @@ class PlgSystemAutomsgInstallerInstallerScript
         $db->setQuery($query);
         $db->execute();
 
+    }
+    // create task email templates from scratch
+    private function create_task_mail_template()
+    {
+        $template = new TemplateModel(array('ignore_request' => true));
+        $table = $template->getTable();
+        $data = [];
+        // owner mail template
+        $data['template_id'] = 'com_automsg.asyncmail';
+        $data['extension'] = 'com_automsg';
+        $data['language'] = '';
+        $data['subject'] = 'COM_AUTOMSG_PUBLISHED_SUBJECT';
+        $data['htmlbody'] = '';
+        $data['attachments'] = '';
+        $data['params'] = '{"tags": ["creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
+        $data['subject'] = 'COM_AUTOMSG_ASYNC_SUBJECT';
+        $data['body'] = 'COM_AUTOMSG_ASYNC_MSG';
+        $table->save($data);
+    }
+    // create task email templates from scratch
+    private function create_report_mail_template()
+    {
+        $template = new TemplateModel(array('ignore_request' => true));
+        $table = $template->getTable();
+        $data = [];
+        $data['extension'] = 'com_automsg';
+        $data['language'] = '';
+        $data['htmlbody'] = '';
+        $data['attachments'] = '';
+        $data['params'] = '{"tags": ["ok", "error", "waiting", "total"]}';
+        $data['template_id'] = 'com_automsg.report';
+        $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
+        $data['body'] = 'COM_AUTOMSG_REPORT_MSG';
+        $table->save($data);
     }
     // create email templates from scratch or from older plugins definition
     private function create_mail_templates()
@@ -192,11 +244,6 @@ class PlgSystemAutomsgInstallerInstallerScript
             $data['subject'] = 'COM_AUTOMSG_USER_SUBJECT';
             $data['body'] = 'COM_AUTOMSG_USER_MSG';
         }
-        $table->save($data);
-        // Async message
-        $data['template_id'] = 'com_automsg.asyncmail';
-        $data['subject'] = 'COM_AUTOMSG_ASYNC_SUBJECT';
-        $data['body'] = 'COM_AUTOMSG_ASYNC_MSG';
         $table->save($data);
         // Report message
         $data['params'] = '{"tags": ["ok", "error", "waiting", "total"]}';
