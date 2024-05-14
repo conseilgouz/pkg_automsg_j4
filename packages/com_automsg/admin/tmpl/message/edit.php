@@ -142,14 +142,14 @@ foreach ($data as $i => $message) : ?>
 				<?php if ($cr) {
 				    if ($cr->waiting > 0) { // build error modal
 				        $errors = $modelMessage->getMessageWaiting($message->sent);
-				        echo '<a href="#" data-bs-toggle="modal" data-bs-target="#errorModal" title="Voir les erreurs">';
+				        echo '<a href="#" data-bs-toggle="modal" data-bs-target="#errorModal" title="Voir en attente">';
 				        echo $cr->waiting;
 				        echo '</a>';
 				        echo '<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">';
 				        echo '<div class="modal-dialog">';
 				        echo '<div class="modal-content">';
 				        echo '<div class="modal-header">';
-				        echo '<h1 class="modal-title fs-5" id="errorModalLabel">Liste des erreurs</h1>';
+				        echo '<h1 class="modal-title fs-5" id="errorModalLabel">Liste des utilisateurs en attente</h1>';
 				        echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
 				        echo '</div>';
 				        echo '<div class="modal-body">';

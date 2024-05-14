@@ -48,7 +48,7 @@ class ConfigController extends FormController
     {
         // $result = parent::cancel();
         $app = Factory::getApplication();
-        $return = Uri::base().'index.php?option=com_automsg&view=config';
+        $return = Uri::base().'index.php?option=com_automsg&view=messages';
         $app->redirect($return);
         return true;
     }
@@ -127,7 +127,7 @@ class ConfigController extends FormController
                 $this->releaseEditId($context, $recordId);
                 $app->setUserState('com_automsg.edit.config.data', null);
                 // Redirect to the list screen.
-                $this->setRedirect(Route::_('index.php?option=com_automsg&view=config' . $this->getRedirectToListAppend(), false));
+                $this->setRedirect(Route::_('index.php?option=com_automsg&view=messages' . $this->getRedirectToListAppend(), false));
                 break;
         }
     }

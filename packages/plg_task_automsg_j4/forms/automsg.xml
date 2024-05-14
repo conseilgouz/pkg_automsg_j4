@@ -2,6 +2,7 @@
 <form>
     <fields name="params">
         <fieldset name="task_params">
+            <field id="toto" type="hidden" default="0"/>
 		</fieldset>
 	</fields>
 </form>

@@ -137,8 +137,10 @@ class MessagesController extends FormController
                 'allowConcurrent'  => $allowConcurrent,
             ]
         );
-
         if ($task) {
+            $taskparams = $task->get('params');
+            $taskparams->manual = true; // manual request
+            $task->params = $taskparams;
             $task->run();
             $this->setMessage(Text::_('COM_AUTOMSG_TASK_SUCCESS'));
         } else {
@@ -149,6 +151,5 @@ class MessagesController extends FormController
              */
             $this->setMessage(Text::_('COM_AUTOMSG_TASK_ERROR'));
         }
-        $this->setRedirect(Uri::base().'index.php?option=com_automsg&view=messages');
     }
 }

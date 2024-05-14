@@ -66,10 +66,15 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
     protected function automsg(ExecuteTaskEvent $event): int
     {
         $this->autoparams = AutomsgHelper::getParams();
-        $this->goMsg();
+        $params = $event->getArgument('params');
+        $manual = false;
+        if (isset($params->manual)) {
+            $manual = $params->manual;
+        }
+        $this->goMsg($manual);
         return TaskStatus::OK;
     }
-    private function goMsg()
+    private function goMsg($manual = false)
     {
         $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_automsg');
@@ -84,10 +89,36 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         }
         $tokens = AutomsgHelper::getAutomsgToken($users);
 
-        $this->articles = AutomsgHelper::getArticlesToSend();
-        $model          = AutomsgHelper::prepare_content_model();
-
         $date = Factory::getDate(); // same timestamp for everybody in same request
+
+        $this->articles = AutomsgHelper::getArticlesToSend();
+        $b_waiting = false;
+        if (!count($this->articles)) { // no article : check for waiting
+            $waitings = AutomsgHelper::getWaitingArticles();
+            if (!count($waitings)) {
+                return true;
+            } // no waiting => exit
+            $b_waiting = true;
+            $users = [];
+            $ids = [];
+            foreach ($waitings as $waiting) {
+                $date = $waiting->timestamp;
+                if (!in_array($waiting->userid, $users)) {
+                    $users[] = $waiting->userid;
+                }
+                $ids[] = $waiting->id;
+                $articleids = trim($waiting->articleids, '[]');
+                $articleids = explode(',', $articleids);
+                foreach ($articleids as $articleid) {
+                    if (!in_array($articleid, $this->articles)) {
+                        $this->articles[] = $articleid;
+                    }
+                }
+            }
+        }
+
+        $model   = AutomsgHelper::prepare_content_model();
+        $results = [];
 
         if ($this->autoparams->async == 1) {// all articles in one email per user
             // article lines
@@ -95,30 +126,41 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             //  prepa model articles
             foreach ($this->articles as $articleid) {
                 $article = $model->getItem($articleid);
-                $data[] = AutomsgHelper::oneLine($article, $users, $deny);
+                $data[]  = AutomsgHelper::oneLine($article, $users, $deny);
             }
             if (count($data)) {
                 $results = AutomsgHelper::sendTaskEmails($this->articles, $data, $users, $tokens, $date);
-                $state = 1; // assume ok
+                $state   = 1; // assume ok
                 if (isset($results['error']) && ($results['error'] > 0)) {
                     $state = 9; // contains error
                 }
-                AutomsgHelper::updateAutoMsgTable(null, $state, $date, $results);
+                if ($b_waiting) {
+                    AutomsgHelper::updateAutoMsgWaitingTable($ids);
+                    AutomsgHelper::updateAutoMsgCr($date, $results);
+                } else {
+                    AutomsgHelper::updateAutoMsgTable(null, $state, $date, $results);
+                }
             }
         } else { // one article per email per user
             foreach ($this->articles as $articleid) {
                 $article = $model->getItem($articleid);
-                $date = Factory::getDate();
-                $results = AutomsgHelper::sendEmails($article, $users, $this->tokens, $deny, $date);
-                $state = 1; // assume ok
+                $date    = Factory::getDate();
+                $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny, $date);
+                $state   = 1; // assume ok
                 if (isset($results['error']) && ($results['error'] > 0)) {
                     $state = 9; // contains error
                 }
-                AutomsgHelper::updateAutoMsgTable($articleid, $state, $date, $results);
+                if ($b_waiting) {
+                    AutomsgHelper::updateAutoMsgWaitingTable($ids);
+                    AutomsgHelper::updateAutoMsgCr($date, $results);
+                } else {
+                    AutomsgHelper::updateAutoMsgTable($articleid, $state, $date, $results);
+                }
             }
         }
+        if ((isset($results['waiting']) && ($results['waiting'] > 0)) || AutomsgHelper::checkWaitingArticles()) {
+            // some waiting messages : update task next_execution
+            AutomsgHelper::task_next_exec();
+        }
     }
-
-
-
 }
