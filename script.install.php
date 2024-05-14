@@ -16,13 +16,11 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Version;
-use Joomla\Component\Categories\Administrator\Model\CategoryModel;
 use Joomla\Component\Mails\Administrator\Model\TemplateModel;
 use Joomla\Component\Scheduler\Administrator\Model\TaskModel;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
-use Joomla\CMS\Table\Table;
 
 class PlgSystemAutomsgInstallerInstallerScript
 {
