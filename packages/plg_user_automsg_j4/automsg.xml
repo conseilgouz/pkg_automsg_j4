@@ -2,12 +2,12 @@
 <extension version="4.0" type="plugin" group="user" method="upgrade">
 	<name>PLG_USER_AUTOMSG_NAME</name>
 	<author>ConseilGouz</author>
-	<creationDate>2024/05/07</creationDate>
+	<creationDate>2024-05-15</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<description>PLG_USER_AUTOMSG_XML_DESCRIPTION</description>
 	<files>
 		<folder plugin="automsg">services</folder>
@@ -17,8 +17,6 @@
 	<languages>
 		<language tag="fr-FR">language/fr-FR/plg_user_automsg.ini</language>
 		<language tag="fr-FR">language/fr-FR/plg_user_automsg.sys.ini</language>
-		<language tag="en-GB">language/en-GB/plg_user_automsg.ini</language>
-		<language tag="eb-GB">language/en-GB/plg_user_automsg.sys.ini</language>
 	</languages>
 	<namespace path="src">ConseilGouz\Plugin\User\AutoMsg</namespace>
 	<changelogurl>https://raw.githubusercontent.com/conseilgouz/pkg_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>

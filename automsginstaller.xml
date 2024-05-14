@@ -2,12 +2,12 @@
 <extension version="4.0" type="plugin" group="system" method="upgrade">
 	<name>plgautomsginstaller</name>
 	<author>ConseilGouz</author>
-	<creationDate>2024-04-30</creationDate>
+	<creationDate>2024-05-15</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<description>AutoMsg</description>
 	<scriptfile>script.install.php</scriptfile>
 	<files>
@@ -15,7 +15,6 @@
 		<folder>language</folder>
 	</files>
 	<languages folder="language">
-		<language tag="en-GB">en-GB/plgautomsginstaller.sys.ini</language>
 		<language tag="fr-FR">fr-FR/plgautomsginstaller.sys.ini</language>
 	</languages>
 	<updateservers>

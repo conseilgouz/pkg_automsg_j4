@@ -564,14 +564,15 @@ class Automsg
             return;
         } // should not exist, but do it just in case
         $oldcr = json_decode($oldcr);
-        $oldcr->sent += $cr['sent'];
+        if (!$cr['error']) {
+            $oldcr->sent += $cr['sent'];
+        }
         $oldcr->error += $cr['error'];
+        $oldcr->waiting -= 1;
         if ($oldcr->total < ($oldcr->sent + $oldcr->error)) { // ignore
             // we had remaining waitings
             return;
         }
-        $oldcr->waiting -= $cr['sent'];
-
         $query = $db->getQuery(true)
             ->update($db->qn('#__automsg'))
             ->set($db->qn('cr').'='.$db->q(json_encode($oldcr)))

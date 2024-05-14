@@ -3,8 +3,8 @@
 	<name>Automsg Library</name>
 	<libraryname>automsg</libraryname>
 	<author>ConseilGouz</author>
-	<version>4.0.0</version>
-	<creationDate>2024-05-01</creationDate>
+	<version>4.0.1</version>
+	<creationDate>2024-05-15</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
