@@ -49,6 +49,12 @@
         <field showon="limit:1" name="maildelay" type="number" min="1" 
             label="COM_AUTOMSG_MAILDELAY" description="COM_AUTOMSG_MAILDELAY_DESC"
             default="1"/>
+        <field name="report"
+            type="radio" class="btn-group btn-group-yesno" default="0"
+            label="COM_AUTOMSG_REPORT" description="COM_AUTOMSG_REPORT_DESC">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field name="log"
             type="radio" class="btn-group btn-group-yesno" default="0"
             label="COM_AUTOMSG_LOG" description="COM_AUTOMSG_LOG_DESC">

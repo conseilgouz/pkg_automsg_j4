@@ -199,7 +199,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $data['body'] = 'COM_AUTOMSG_ASYNC_MSG';
         $table->save($data);
         // Report message
-        $data['params'] = '{"tags": ["ok", "error", "total"]}';
+        $data['params'] = '{"tags": ["ok", "error", "waiting", "total"]}';
         $data['template_id'] = 'com_automsg.report';
         $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
         $data['body'] = 'COM_AUTOMSG_REPORT_MSG';

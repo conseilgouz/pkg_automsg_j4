@@ -31,7 +31,7 @@ class Automsg
     //
     // send single article emails
     //
-    public static function sendEmails($article, $users, $tokens, $deny, $datesent)
+    public static function sendEmails($article, $users, $tokens, $deny, $datesent, $bwaiting = false, $waitingtimestp = [])
     {
         $autoparams = self::getParams();
         $app = Factory::getApplication();
@@ -51,7 +51,9 @@ class Automsg
         }
         $creatorId = $article->created_by;
         if (!in_array($creatorId, $users) && (!in_array($creatorId, $deny))) { // creator not in users array : add it
-            $users[] = $creatorId;
+            if (!$bwaiting) {
+                $users[] = $creatorId;
+            }
         }
         $creator = $app->getIdentity($creatorId);
         $url = "<a href='".URI::root()."index.php?option=com_content&view=article&id=".$article->id."' target='_blank'>".Text::_('COM_AUTOMSG_CLICK')."</a>";
@@ -119,9 +121,19 @@ class Automsg
                 }
                 self::store_automsg_error($user_id, $article->id, $e->getMessage(), 0, $datesent);
                 $results['error']++;
+                if ($bwaiting) {
+                    $timestamp =  Factory::getDate($waitingtimestp[$article->id]);
+                    $waitingcr = ['error' => 1,'sent' => 0];
+                    self::updateAutoMsgCr($timestamp, $waitingcr);
+                }
                 continue;
             }
             $results['sent']++;
+            if ($bwaiting) {
+                $timestamp =  Factory::getDate($waitingtimestp[$article->id]);
+                $waitingcr = ['error' => 0,'sent' => 1];
+                self::updateAutoMsgCr($timestamp, $waitingcr);
+            }
             if ($autoparams->log == 2) { // need to log all msgs
                 Log::add('Article OK : '.$article->title.' envoyé à '.$receiver->email, Log::DEBUG, 'com_automsg');
             }
@@ -131,7 +143,7 @@ class Automsg
     //
     // Async task : send emails
     //
-    public static function sendTaskEmails($articleids, $articles, $users, $tokens, $datesent)
+    public static function sendTaskEmails($articleids, $articles, $users, $tokens, $datesent, $bwaiting = false, $waitingtimestp = [])
     {
         $autoparams = self::getParams();
         $app = Factory::getApplication();
@@ -176,14 +188,67 @@ class Automsg
                 }
                 self::store_automsg_error($user_id, $articleids, $e->getMessage(), 0, $datesent);
                 $results['error']++;
+                if ($bwaiting) {
+                    $timestamp =  Factory::getDate($waitingtimestp[$articleids[0]]);
+                    $waitingcr = ['error' => 1,'sent' => 0];
+                    self::updateAutoMsgCr($timestamp, $waitingcr);
+                }
                 continue; // try next one
             }
             if ($autoparams->log == 2) { // need to log msgs
                 Log::add('Task : Articles OK : '.$articleids.' envoyés à '.$receiver->email, Log::DEBUG, 'com_automsg');
             }
             $results['sent']++;
+            if ($bwaiting) {
+                $timestamp =  Factory::getDate($waitingtimestp[$articleids[0]]);
+                $waitingcr = ['error' => 0,'sent' => 1];
+                self::updateAutoMsgCr($timestamp, $waitingcr);
+            }
         }
         return $results;
+    }
+    //
+    // send report email to admin with sendEmail = 1
+    //
+    public static function sendReport($cr)
+    {
+
+        $autoparams = self::getParams();
+        $app = Factory::getApplication();
+        if ($autoparams->log) { // need to log msgs
+            self::createLog();
+        }
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        $query->select('*')
+            ->from('#__users ')
+            ->where($db->quoteName('block') . ' = 0')
+            ->where($db->quoteName('sendEmail') . ' = 1');
+        $db->setQuery($query);
+        $users = $db->loadObjectList();
+
+        $data = ['total'   => $cr['total'],
+                 'ok'      => $cr['sent'],
+                 'error'   => $cr['error'],
+                 'waiting' => $cr['waiting'],
+                 ];
+
+        foreach ($users as $user) {
+            $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user->id);
+            $mailer = new MailTemplate('com_automsg.report', $receiver->getParam('language', $app->get('language')));
+            $mailer->addTemplateData($data);
+            $mailer->addRecipient($receiver->email, $receiver->name);
+            try {
+                $send = $mailer->Send();
+            } catch (\Exception $e) {
+                if ($autoparams->log) { // need to log msgs
+                    Log::add('Task : Erreur ----> report non envoyé à '.$receiver->email.'/'.$e->getMessage(), Log::ERROR, 'com_automsg');
+                } else {
+                    $app->enqueueMessage($e->getMessage().'/'.$receiver->email, 'error');
+                }
+                continue; // try next one
+            }
+        }
     }
     //
     // get category information
@@ -397,7 +462,8 @@ class Automsg
         $query = $db->getQuery(true)
         ->select('*')
             ->from($db->qn('#__automsg_waiting'))
-            ->where($db->qn('state') . ' = 0');
+            ->where($db->qn('state') . ' = 0')
+            ->order('timestamp ASC');
         if ($autoparams->limit) {
             $query->setLimit($autoparams->maillimit);
         }
@@ -473,14 +539,12 @@ class Automsg
     public static function updateAutoMsgWaitingTable($ids = [])
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        foreach($ids as $id) {
-            $query = $db->getQuery(true)
+        $query = $db->getQuery(true)
             ->update($db->qn('#__automsg_waiting'))
-            ->set($db->qn('state').'= 1');
-            $query->where($db->qn('id').' = '.$db->q($id));
-            $db->setQuery($query);
-            $db->execute();
-        }
+            ->set($db->qn('state').'= 1')
+            ->whereIn($db->qn('id'), $ids);
+        $db->setQuery($query);
+        $db->execute();
         return true;
     }
     //
@@ -492,7 +556,7 @@ class Automsg
         $query = $db->getQuery(true)
         ->select('cr')
             ->from($db->qn('#__automsg'))
-            ->where($db->qn('sent') . ' = '.$db->q($timestamp));
+            ->where($db->qn('sent') . ' = '.$db->q($timestamp->toSql()));
         $query->setLimit(1); // all articles from one session have same timestamp
         $db->setQuery($query);
         $oldcr = $db->loadResult();
@@ -502,12 +566,16 @@ class Automsg
         $oldcr = json_decode($oldcr);
         $oldcr->sent += $cr['sent'];
         $oldcr->error += $cr['error'];
+        if ($oldcr->total < ($oldcr->sent + $oldcr->error)) { // ignore
+            // we had remaining waitings
+            return;
+        }
         $oldcr->waiting -= $cr['sent'];
 
         $query = $db->getQuery(true)
             ->update($db->qn('#__automsg'))
             ->set($db->qn('cr').'='.$db->q(json_encode($oldcr)))
-            ->where($db->qn('sent').' = '.$db->q($timestamp));
+            ->where($db->qn('sent').' = '.$db->q($timestamp->toSql()));
         $db->setQuery($query);
         $db->execute();
         return true;

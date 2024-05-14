@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `#__automsg_config` (
 `limit` tinyint NOT NULL default 0,
 `maillimit` integer NOT NULL default 0,
 `maildelay` integer NOT NULL default 1,
+`report` tinyint NOT NULL default 0,
 `log` tinyint NOT NULL default 0,
 `created` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
 `modified` datetime NULL DEFAULT NULL,
