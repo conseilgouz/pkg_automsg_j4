@@ -23,58 +23,7 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="usergroups"
-					type="usergrouplist"
-					description="PLG_CONTENT_AUTOMSG_USERGROUP_DESC"
-					label="PLG_CONTENT_AUTOMSG_USERGROUP_LABEL"
-					multiple="true" required="true"
-					layout="joomla.form.field.list-fancy-select">
-				</field>
-				<field name="categories"
-						type="category"	multiple="true"	extension="com_content"
-						layout="joomla.form.field.list-fancy-select"
-						label="JCATEGORIES"
-						>
-				</field>
-				<field name="msgcreator"
-					type="list"
-					default="1"
-					label="PLG_CONTENT_AUTOMSG_CREATOR"
-					description="PLG_CONTENT_AUTOMSG_CREATOR_DESC"
-				>
-					<option value="0">Message identique</option>
-					<option value="1">Message spécifique</option>
-				</field>
-				<field name="msgauto"
-					type="radio" class="btn-group btn-group-yesno"
-					default="1"
-					label="PLG_CONTENT_AUTOMSG_AUTO"
-				>
-					<option value="0">Non</option>
-					<option value="1">Oui</option>
-				</field>
-				<field name="chkasync" type="sql"
-                query="select count('id') as count from #__extensions where element = 'com_automsg' or (element = 'automsg' and type='plugin' and folder='task')"
-				key_field="count" value_field="count" default="0" class="hidefield" />
-			    <field type="note" showon="chkasync!:2" name="noteasync" label="PLG_CONTENT_AUTOMSG_ASYNC_NOTE" heading="p" />
-				<field name="async" showon="chkasync:2"
-					type="radio" class="btn-group btn-group-yesno"
-					default="0"
-					label="PLG_CONTENT_AUTOMSG_ASYNC"
-					description="PLG_CONTENT_AUTOMSG_ASYNC_DESC"
-				>
-					<option value="0">Non</option>
-					<option value="1">Oui</option>
-				</field>
-			    <field type="note" name="note1" label="PLG_CONTENT_AUTOMSG_NOTE" heading="p" />
-				<field name="log"
-					type="radio" class="btn-group btn-group-yesno" default="0"
-					label="PLG_CONTENT_AUTOMSG_LOG" description="PLG_CONTENT_AUTOMSG_LOG_DESC">
-					<option value="0">Non</option>
-					<option value="1">Erreurs</option>
-					<option value="21">JALL</option>
-				</field>
-				
+			    <field type="note" name="noteacom" label="PLG_CONTENT_AUTOMSG_COM_NOTE" heading="p" />
 			</fieldset>
 		</fields>
 	</config>
