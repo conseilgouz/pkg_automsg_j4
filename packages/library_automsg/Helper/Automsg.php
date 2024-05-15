@@ -210,7 +210,7 @@ class Automsg
     //
     // send report email to admin with sendEmail = 1
     //
-    public static function sendReport($cr)
+    public static function sendReport($title, $cr)
     {
 
         $autoparams = self::getParams();
@@ -227,7 +227,8 @@ class Automsg
         $db->setQuery($query);
         $users = $db->loadObjectList();
 
-        $data = ['total'   => $cr['total'],
+        $data = ['article' => $title,
+                 'total'   => $cr['total'],
                  'ok'      => $cr['sent'],
                  'error'   => $cr['error'],
                  'waiting' => $cr['waiting'],

@@ -102,7 +102,7 @@ final class AutoMsg extends CMSPlugin
                 }
                 AutomsgHelper::store_automsg($article, $state, $timestamp, $results);
                 if ( $this->autoparams->report) {
-                    AutomsgHelper::sendReport($results);
+                    AutomsgHelper::sendReport($article->title, $results);
                 }
                 if (isset($results['waiting']) && ($results['waiting'] > 0)) {
                 // some waiting messages : update task next_execution

@@ -124,9 +124,13 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         if ($this->autoparams->async == 1) {// all articles in one email per user
             // article lines
             $data = [];
-            //  prepa model articles
+            $article_titles = ""; // for reports
             foreach ($articles as $articleid) {
                 $article = $model->getItem($articleid);
+                // for report
+		        $article_titles .= ($article_titles) ? ',' : '' ;
+		        $article_titles .= $article->title;
+                // 
                 $data[]  = AutomsgHelper::oneLine($article, $users, $deny);
             }
             if (count($data)) {
@@ -139,6 +143,9 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                     AutomsgHelper::updateAutoMsgWaitingTable($ids);
                 } else {
                     AutomsgHelper::updateAutoMsgTable(null, $state, $date, $results);
+                }
+                if ( $this->autoparams->report) {
+                    AutomsgHelper::sendReport($article_titles, $results);
                 }
             }
         } else { // one article per email per user
@@ -153,6 +160,9 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                     AutomsgHelper::updateAutoMsgWaitingTable($ids);
                 } else {
                     AutomsgHelper::updateAutoMsgTable($articleid, $state, $date, $results);
+                }
+                if ( $this->autoparams->report) {
+                    AutomsgHelper::sendReport($article->title, $results);
                 }
             }
         }

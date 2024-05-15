@@ -204,7 +204,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $data['language'] = '';
         $data['htmlbody'] = '';
         $data['attachments'] = '';
-        $data['params'] = '{"tags": ["ok", "error", "waiting", "total"]}';
+        $data['params'] = '{"tags": ["article", "ok", "error", "waiting", "total"]}';
         $data['template_id'] = 'com_automsg.report';
         $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
         $data['body'] = 'COM_AUTOMSG_REPORT_MSG';
