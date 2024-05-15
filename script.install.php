@@ -10,6 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Language\Text;
@@ -21,6 +22,7 @@ use Joomla\Component\Scheduler\Administrator\Model\TaskModel;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
+use ConseilGouz\Component\Automsg\Administrator\Model\ConfigModel;
 
 class PlgSystemAutomsgInstallerInstallerScript
 {
@@ -118,6 +120,14 @@ class PlgSystemAutomsgInstallerInstallerScript
         $db->setQuery($query);
         $db->execute();
 
+        // get previous versions parameters
+        $plugin = PluginHelper::getPlugin('content', 'automsg');
+        if ($plugin) { // automsg was defined : get old values
+            $params = json_decode($plugin->params);
+        }
+        if (isset($params->usergroups)) {
+            $this->update_com_config($params);
+        }
         // create mail template
         $query = $db->getQuery(true);
         $query->select('count(`template_id`)');
@@ -147,6 +157,59 @@ class PlgSystemAutomsgInstallerInstallerScript
             $this->create_mail_templates();
         } else { // plg_content_automsg/plg_task_automsg => com_automsg mail template
             $this->update_mail_templates($db);
+        }
+        // activate all automsg plugins 
+        $conditions = array(
+            $db->qn('type') . ' = ' . $db->q('plugin'),
+            $db->qn('element') . ' = ' . $db->quote('automsg')
+        );
+        $fields = array($db->qn('enabled') . ' = 1');
+
+        $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
+        $db->setQuery($query);
+        try {
+            $db->execute();
+        } catch (\RuntimeException $e) {
+        }
+
+    }
+    private function update_com_config($params)
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $categories = [];
+        if (isset($params->categories)) {
+            $categories = $params->categories;
+        }
+        $users = implode(',', $params->usergroups);
+        $categories = implode(',', $categories);
+        $query = $db->getQuery(true)
+                ->update('#__automsg_config')
+                ->set($db->qn('usergroups').' = '.$db->q($users))
+                ->set($db->qn('categories').' = '.$db->q($categories))
+                ->set($db->qn('msgcreator').' = '.$db->q($params->msgcreator))
+                ->set($db->qn('msgauto').' = '.$db->q($params->msgauto))
+                ->set($db->qn('async').' = '.$db->q($params->async))
+                ->set($db->qn('log').' = '.$db->q($params->log))
+                ->set($db->qn('modified').' = '.$db->q(Factory::getDate()->toSql()))
+                ->where($db->qn('id').' = 1');
+        $db->setQuery($query);
+        $db->execute();
+
+        $conditions = array(
+            $db->qn('type')    . ' = ' . $db->q('plugin'),
+            $db->qn('element') . ' = ' . $db->quote('automsg'),
+            $db->qn('folder')  . ' = ' . $db->quote('content'),
+        );
+        $empty = json_encode([]);
+        $fields = array($db->qn('params') . ' = '.$db->q($empty));
+
+        $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
+        $db->setQuery($query);
+        try {
+            $db->execute();
+        } catch (\RuntimeException $e) {
         }
 
     }

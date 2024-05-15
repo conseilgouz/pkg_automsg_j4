@@ -26,7 +26,11 @@ final class AutoMsg extends CMSPlugin
 
     public function onContentAfterSave($context, $article, $isNew): void
     {
-        $this->autoparams = AutomsgHelper::getParams();
+        try{
+            $this->autoparams = AutomsgHelper::getParams();
+        } catch (\Exception $e) { // ignore errors
+            return; 
+        }
         $auto = $this->autoparams->msgauto;
         // Check if this function is enabled.
         if (!$auto) {
