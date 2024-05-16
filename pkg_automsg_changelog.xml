@@ -8,6 +8,7 @@
         </note>
 		<fix>
 			<item>Invalid error count</item>
+            <item>Use correct timezone date</item>
 		</fix>
 	</changelog>
 	<changelog>
