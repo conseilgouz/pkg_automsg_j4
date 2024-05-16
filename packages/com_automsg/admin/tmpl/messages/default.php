@@ -9,6 +9,7 @@
 
 // no direct access
 defined('_JEXEC') or die;
+use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Helper\ContentHelper;

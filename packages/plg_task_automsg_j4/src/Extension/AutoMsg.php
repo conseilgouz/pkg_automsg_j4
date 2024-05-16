@@ -1,6 +1,6 @@
 <?php
 /** Automsg Task
-* Version			: 1.2.0
+* Version			: 4.0.0
 * copyright 		: Copyright (C) 2024 ConseilGouz. All rights reserved.
 * license    		: https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
 *
@@ -10,6 +10,7 @@ namespace ConseilGouz\Plugin\Task\AutoMsg\Extension;
 
 defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailTemplate;
@@ -88,7 +89,8 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         }
         $tokens = AutomsgHelper::getAutomsgToken($users);
 
-        $date = Factory::getDate(); // same timestamp for everybody in same request
+        $date = HTMLHelper::_('date', 'now', Text::_('DATE_FORMAT_FILTER_DATETIME'));
+        $date = Factory::getDate($date); // same timestamp for everybody in same request
 
         $articles = AutomsgHelper::getArticlesToSend();
         $b_waiting = false;

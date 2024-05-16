@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin AutoMsg : send Email to selected users when an article is published
- * Version		  : 3.2.0
+ * Version		  : 4.0.0
  *
- * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
+ * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
  */
@@ -13,6 +13,8 @@ namespace ConseilGouz\Plugin\Content\AutoMsg\Extension;
 defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseAwareTrait;
@@ -26,10 +28,10 @@ final class AutoMsg extends CMSPlugin
 
     public function onContentAfterSave($context, $article, $isNew): void
     {
-        try{
+        try {
             $this->autoparams = AutomsgHelper::getParams();
         } catch (\Exception $e) { // ignore errors
-            return; 
+            return;
         }
         $auto = $this->autoparams->msgauto;
         // Check if this function is enabled.
@@ -85,7 +87,8 @@ final class AutoMsg extends CMSPlugin
         }
         $tokens = AutomsgHelper::getAutomsgToken($users);
 
-        $timestamp = Factory::getDate(); // same timestamp for everybody in same request
+        $date = HTMLHelper::_('date', 'now', Text::_('DATE_FORMAT_FILTER_DATETIME'));
+        $timestamp = Factory::getDate($date); // same timestamp for everybody in same request
 
         foreach ($pks as $articleid) {
             $article = $model->getItem($articleid);
@@ -97,19 +100,19 @@ final class AutoMsg extends CMSPlugin
                 $async = true; // automsg task plugin / component ok
             }
             if (($this->autoparams->async > 0) && $async) {
-                AutomsgHelper::store_automsg($article,0,$timestamp);
+                AutomsgHelper::store_automsg($article, 0, $timestamp);
             } else {
-                $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny,$timestamp);
+                $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny, $timestamp);
                 $state = 1; // assume ok
                 if (isset($results['error']) && ($results['error'] > 0)) {
                     $state = 9; // contains error
                 }
                 AutomsgHelper::store_automsg($article, $state, $timestamp, $results);
-                if ( $this->autoparams->report) {
+                if ($this->autoparams->report) {
                     AutomsgHelper::sendReport($article->title, $results);
                 }
                 if (isset($results['waiting']) && ($results['waiting'] > 0)) {
-                // some waiting messages : update task next_execution
+                    // some waiting messages : update task next_execution
                     AutomsgHelper::task_next_exec();
                 }
             }
