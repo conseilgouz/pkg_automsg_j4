@@ -110,118 +110,118 @@ $states = [
                 <tbody>
                     <?php
                     $titles = "";
-                    foreach ($data as $i => $message) : 
-                     ?>
+foreach ($data as $i => $message) :
+    ?>
             		<tr class="row<?php echo $i % 2; ?>">
                     <td class="center">
                     <?php
-                        $articles = explode(',', $message->articles);
-                        $modelArticle     = AutomsgHelper::prepare_content_model();
-                        foreach ($articles as $articleid) {
-                            $article = $modelArticle->getItem($articleid);
-                            $titles .= ($titles) ? ',' : '' ;
-                            $titles .= $article->title;
-                        }
-                        echo $this->escape(HTMLHelper::_('string.truncateComplex', $titles, 200, true)); 
-                    ?>
+       $articles = explode(',', $message->articles);
+    $modelArticle     = AutomsgHelper::prepare_content_model();
+    foreach ($articles as $articleid) {
+        $article = $modelArticle->getItem($articleid);
+        $titles .= ($titles) ? ',' : '' ;
+        $titles .= $article->title;
+    }
+    echo $this->escape(HTMLHelper::_('string.truncateComplex', $titles, 200, true));
+    ?>
 				</td>
                 <td>
                     <?php
-                    $sent = $message->sent;
-                    if (!$sent) {
-                        $sent = "en attente";
-                    }
-                    echo $this->escape($sent)
-                    ?>
+    $sent = $message->sent;
+    if (!$sent) {
+        $sent = "en attente";
+    }
+    echo $this->escape($sent)
+    ?>
                 </td>
 				<?php
-                    $cr = null;
-                    if (isset($message->cr)) {
-                        $cr = json_decode($message->cr);
-                    }
-                ?>
+    $cr = null;
+    if (isset($message->cr)) {
+        $cr = json_decode($message->cr);
+    }
+    ?>
 				<td class="center">
-				<?php 
-                    if ($cr) {
-                        echo $cr->total;
-                    }
-                ?>
-				</td>
-				<td class="center">
-				<?php 
-                    if ($cr) {
-                        echo $cr->sent;
-                    } 
-                ?>
+				<?php
+        if ($cr) {
+            echo $cr->total;
+        }
+    ?>
 				</td>
 				<td class="center">
 				<?php
-                    if ($cr) {
-                        if ($cr->error > 0) { // build error modal
-                            $errors = $modelMessage->getMessageErrors($message->sent);
-                            echo '<a data-bs-toggle="collapse" href="#errorCollapse" aria-expanded="true" title="Voir les erreurs">';
-                            echo $cr->error;
-                            echo '</a>';
-                        }
-                    } 
-                ?>
+        if ($cr) {
+            echo $cr->sent;
+        }
+    ?>
 				</td>
 				<td class="center">
-				<?php 
-                    if ($cr) {
-                        if ($cr->waiting > 0) { // build error modal
-                            $errors = $modelMessage->getMessageWaiting($message->sent);
-                            echo '<a  data-bs-toggle="collapse" href="#waitingCollapse" aria-expanded="false" title="Voir en attente">';
-                            echo $cr->waiting;
-                            echo '</a>';
-                        }
-                    } 
-                ?>
+				<?php
+        if ($cr) {
+            if ($cr->error > 0) { // build error modal
+                $errors = $modelMessage->getMessageErrors($message->sent);
+                echo '<a data-bs-toggle="collapse" href="#errorCollapse" aria-expanded="true" title="Voir les erreurs">';
+                echo $cr->error;
+                echo '</a>';
+            }
+        }
+    ?>
+				</td>
+				<td class="center">
+				<?php
+        if ($cr) {
+            if ($cr->waiting > 0) { // build error modal
+                $waitings = $modelMessage->getMessageWaiting($message->sent);
+                echo '<a  data-bs-toggle="collapse" href="#waitingCollapse" aria-expanded="false" title="Voir en attente">';
+                echo $cr->waiting;
+                echo '</a>';
+            }
+        }
+    ?>
                 </td>
                 <td>
                 <?php
-                    if ($message->state == 1) {
-                        echo '<span class="icon-publish" aria-hidden="true" title="Envoyé"></span>';
-                    }
-                    if ($message->state == 9) {
-                        echo '<span class="icon-error" aria-hidden="true" title="Contient des erreurs"></span>';
-                    }
-                ?>
+        if ($message->state == 1) {
+            echo '<span class="icon-publish" aria-hidden="true" title="Envoyé"></span>';
+        }
+    if ($message->state == 9) {
+        echo '<span class="icon-error" aria-hidden="true" title="Contient des erreurs"></span>';
+    }
+    ?>
                 </td>
                 </tr>
-                <?php 
-                endforeach; 
-                ?> 
+                <?php
+endforeach;
+?> 
                 </tbody>
             </table>
        	</div>
-        <?php 
-            $show= "";
-            if (($cr) && ($cr->error > 0)) {
-                $show = " show";
-            }
-            ?>
+        <?php
+            $show = "";
+if (($cr) && ($cr->error > 0)) {
+    $show = " show";
+}
+?>
         <div class="collapse <?php echo $show;?> " id="errorCollapse"  tabindex="-1" aria-labelledby="errorCollapseLabel" aria-hidden="true">
         <b>Détail des erreurs</b><br>(vous pouvez ré-essayer jusqu'à 3 fois de les renvoyer : sélectionner l'erreur en cochant sa case et cliquer sur le bouton <b>Nouvel essai</b>)
             <div class="card card-body">
                 <div class="row">
             <?php
-            $i = 0;
-                foreach($errors as $error) {
-                    $auser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($error->userid);
-                    echo '<div class="col-1">';
-                    if ($error->retry < 3) {
-                        echo HTMLHelper::_('grid.id', $i, $error->id);
-                    } else {
-                        echo '<span class="icon-error" aria-hidden="true" title="3 essais faits"></span>';
-                    }
-                    echo '</div>';
-                    echo '<div class="col-10">'.$auser->name.' (user id '.$auser->id.') : '.$error->error.'</div>';
-                    echo '<div class="col-1">'.HTMLHelper::_('jgrid.state', $states, $message->state, $error->id, 'message.', $canChange, 'cb').'</div>';
-                    $i++;
+$i = 0;
+foreach($errors as $error) {
+    $auser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($error->userid);
+    echo '<div class="col-1">';
+    if ($error->retry < 3) {
+        echo HTMLHelper::_('grid.id', $i, $error->id);
+    } else {
+        echo '<span class="icon-error" aria-hidden="true" title="3 essais faits"></span>';
+    }
+    echo '</div>';
+    echo '<div class="col-10">'.$auser->name.' (user id '.$auser->id.') : '.$error->error.'</div>';
+    echo '<div class="col-1">'.HTMLHelper::_('jgrid.state', $states, $message->state, $error->id, 'message.', $canChange, 'cb').'</div>';
+    $i++;
 
-                }
-            ?>
+}
+?>
                 </div>
             </div>
 		</div>
@@ -230,11 +230,11 @@ $states = [
             <div class="card card-body">
                 <div class="row">
                 <?php
-                foreach($errors as $error) {
-                    $auser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($error->userid);
-                    echo '<div class="col-11">'.$auser->name.' (user id '.$auser->id.')</div>';
-                }
-                ?>
+    foreach($waitings as $waiting) {
+        $auser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($waiting->userid);
+        echo '<div class="col-11">'.$auser->name.' (user id '.$auser->id.')</div>';
+    }
+?>
                 </div>
             </div>
         </div>

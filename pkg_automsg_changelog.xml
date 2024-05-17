@@ -9,6 +9,7 @@
 		<fix>
 			<item>Invalid error count</item>
             <item>Use correct timezone date</item>
+            <item>Errors retry</item>
 		</fix>
 	</changelog>
 	<changelog>
