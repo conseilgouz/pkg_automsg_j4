@@ -138,9 +138,6 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             if (count($data)) {
                 $results = AutomsgHelper::sendTaskEmails($articles, $data, $users, $tokens, $date, $b_waiting, $waitingtimestp);
                 $state   = 1; // assume ok
-                if (isset($results['error']) && ($results['error'] > 0)) {
-                    $state = 9; // contains error
-                }
                 if ($b_waiting) {
                     AutomsgHelper::updateAutoMsgWaitingTable($ids);
                 } else {
@@ -155,9 +152,6 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 $article = $model->getItem($articleid);
                 $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny, $date, $b_waiting, $waitingtimestp);
                 $state   = 1; // assume ok
-                if (isset($results['error']) && ($results['error'] > 0)) {
-                    $state = 9; // contains error
-                }
                 if ($b_waiting) {
                     AutomsgHelper::updateAutoMsgWaitingTable($ids);
                 } else {

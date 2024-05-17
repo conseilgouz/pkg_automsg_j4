@@ -104,9 +104,6 @@ final class AutoMsg extends CMSPlugin
             } else {
                 $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny, $timestamp);
                 $state = 1; // assume ok
-                if (isset($results['error']) && ($results['error'] > 0)) {
-                    $state = 9; // contains error
-                }
                 AutomsgHelper::store_automsg($article, $state, $timestamp, $results);
                 if ($this->autoparams->report) {
                     AutomsgHelper::sendReport($article->title, $results);

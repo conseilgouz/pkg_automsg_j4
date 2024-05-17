@@ -18,7 +18,7 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Utilities\ArrayHelper;
 
-class MessageTable extends Table implements VersionableTableInterface
+class ErrorTable extends Table implements VersionableTableInterface
 {
     /**
      * An array of key names to be json encoded in the bind function
@@ -45,9 +45,9 @@ class MessageTable extends Table implements VersionableTableInterface
      */
     public function __construct(DatabaseDriver $db)
     {
-        $this->typeAlias = 'com_automsg.message';
+        $this->typeAlias = 'com_automsg.error';
 
-        parent::__construct('#__automsg', 'id', $db);
+        parent::__construct('#__automsg_errors', 'id', $db);
 
         $this->created = Factory::getDate()->toSql();
         $this->modified = Factory::getDate()->toSql();
@@ -58,7 +58,7 @@ class MessageTable extends Table implements VersionableTableInterface
      *
      *  @param   string  $key  The config name
      */
-    public function updateState($key = 'id')
+    public function updateState($key = 'id',$state = 0)
     {
         $db    = $this->getDbo();
         $table = $this->_tbl;
@@ -77,13 +77,24 @@ class MessageTable extends Table implements VersionableTableInterface
         // Prepare object to be saved
         $data = new \stdClass();
         $data->id   = $key;
-        $data->state = $this->state;
+        $data->state = $state;
         $data->modified = $this->modified;
         if ($exists) {
             return $db->updateObject($table, $data, 'id');
         }
-
-        return $db->insertObject($table, $data);
+        return false;
+    }
+    public function get_errors($pks = null)
+    {
+        $db = $this->getDbo();
+        $results = $db->setQuery(
+            $db->getQuery(true)
+                ->select('*')
+                ->from($db->qn($this->_tbl))
+                ->whereIn($db->qn('id'), $pks)
+                ->where($db->qn('state') . '= 0')
+        )->loadObjectList();
+        return $results;
     }
     /**
      * Get the type alias for the history table

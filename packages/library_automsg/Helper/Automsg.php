@@ -590,12 +590,25 @@ class Automsg
         $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         $query = $db->getQuery(true)
-        ->insert($db->qn('#__automsg_errors'));
-        $query->values(
-            implode(
-                ',',
-                $query->bindArray(
-                    [
+        ->select('id,retry')
+        ->from($db->qn('#__automsg_errors'))
+        ->where($db->qn('userid').'='.$db->q($userid))
+        ->where($db->qn('timestamp').'='.$db->q($timestamp->toSql()));
+        $db->setQuery($query);
+        $result = $db->loadObject();
+        $new = true;
+        if ($result->id) {
+            $new = false;
+        }
+
+        if ($new) {
+            $query = $db->getQuery(true)
+                ->insert($db->qn('#__automsg_errors'));
+            $query->values(
+                implode(
+                    ',',
+                    $query->bindArray(
+                        [
                         0, // key
                         $state, // state
                         $userid,
@@ -604,8 +617,8 @@ class Automsg
                         $timestamp->toSql(), // timestamp
                         null, // date modified
                         0 // retry
-                    ],
-                    [
+                        ],
+                        [
                         ParameterType::INTEGER,
                         ParameterType::INTEGER,
                         ParameterType::INTEGER,
@@ -614,12 +627,24 @@ class Automsg
                         ParameterType::STRING,
                         ParameterType::NULL,
                         ParameterType::INTEGER,
-                    ]
+                        ]
+                    )
                 )
-            )
-        );
-        $db->setQuery($query);
-        $db->execute();
+            );
+            $db->setQuery($query);
+            $db->execute();
+        } else { // update retry counter
+            $date = HTMLHelper::_('date', 'now', Text::_('DATE_FORMAT_FILTER_DATETIME'));
+            $modified = Factory::getDate($date); // same timestamp for everybody in same request
+            $query = $db->getQuery(true)
+                ->update($db->qn('#__automsg_errors'))
+                ->set($db->qn('retry').'='.($result->retry + 1))
+                ->set($db->qn('modified'). '='. $db->q($modified->toSql()))
+                ->where($db->qn('id').'='.$result->id);
+            $db->setQuery($query);
+            $db->execute();
+        }
+
     }
     //
     // store errors
@@ -655,6 +680,51 @@ class Automsg
         );
         $db->setQuery($query);
         $db->execute();
+    }
+    //
+    //   Update error after fixing one error
+    //
+    public static function updateAutoMsgError($id)
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->update($db->qn('#__automsg_errors'))
+            ->set($db->qn('state').'= 1')
+            ->where($db->qn('id').' = '.$id);
+        $db->setQuery($query);
+        $db->execute();
+        return true;
+    }
+    //
+    //   Update error in CR after fixing one error
+    //
+    public static function updateAutoMsgErrorCr($timestamp)
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+        ->select('cr')
+            ->from($db->qn('#__automsg'))
+            ->where($db->qn('sent') . ' = '.$db->q($timestamp->toSql()));
+        $query->setLimit(1); // all articles from one session have same timestamp
+        $db->setQuery($query);
+        $oldcr = $db->loadResult();
+        if (!$oldcr) {
+            return;
+        } // should not exist, but do it just in case
+        $oldcr = json_decode($oldcr);
+        $oldcr->error -= 1;
+        $oldcr->sent += 1;
+        if ($oldcr->total < ($oldcr->sent + $oldcr->error)) { // ignore
+            // we had remaining waitings
+            return;
+        }
+        $query = $db->getQuery(true)
+            ->update($db->qn('#__automsg'))
+            ->set($db->qn('cr').'='.$db->q(json_encode($oldcr)))
+            ->where($db->qn('sent').' = '.$db->q($timestamp->toSql()));
+        $db->setQuery($query);
+        $db->execute();
+        return true;
     }
     // ------------Other functions
     //

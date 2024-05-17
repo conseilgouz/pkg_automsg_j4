@@ -11,8 +11,9 @@ namespace ConseilGouz\Component\Automsg\Administrator\Model;
 
 defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\MVC\Model\AdminModel;
+use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
 
 class MessageModel extends AdminModel
 {
@@ -73,9 +74,10 @@ class MessageModel extends AdminModel
         $query	= $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query->select('userid, error');
+        $query->select('*');
         $query->from('#__automsg_errors');
         $query->where($db->qn('timestamp').' = '.$db->q($sent));
+        $query->where($db->qn('state').' = 0 ');
         $db->setQuery($query);
         return $db->loadObjectList();
     }
@@ -91,5 +93,52 @@ class MessageModel extends AdminModel
         $db->setQuery($query);
         return $db->loadObjectList();
     }
+    public function retry($pks)
+    {
+        $autoparams     = AutomsgHelper::getParams();
+        $articlemodel   = AutomsgHelper::prepare_content_model();
 
+        $table          = $this->getTable('Error');
+        $errors         = $table->get_errors($pks);
+
+        foreach ($errors as $error) {
+            $users = [];
+            $articles = [];
+            $date = Factory::getDate($error->timestamp);
+            if (!in_array($error->userid, $users)) {
+                $users[] = $error->userid;
+            }
+            $articleids = trim($error->articleids, '[]');
+            $articles   = explode(',', $articleids);
+            $tokens     = AutomsgHelper::getAutomsgToken($users);
+
+            if ($autoparams->async == 1) {// one message per user (multiple articles)
+                $article_titles = ""; // for reports
+                $data           = []; // all articles, one per line
+                foreach ($articles as $articleid) {
+                    $article = $articlemodel->getItem($articleid);
+                    // for report
+                    $article_titles .= ($article_titles) ? ',' : '' ;
+                    $article_titles .= $article->title;
+                    $data[]  = AutomsgHelper::oneLine($article, $users, []);
+                }
+                if (count($data)) {
+                    $results = AutomsgHelper::sendTaskEmails($articles, $data, $users, $tokens, $date);
+                    if ($results['error'] == 0) { // error fixed ?
+                        $table->updateState($error->id, 1);
+                        AutomsgHelper::updateAutoMsgErrorCr($date);
+                    }
+                }
+            } else {
+                foreach ($articles as $articleid) {
+                    $article = $articlemodel->getItem($articleid);
+                    $results = AutomsgHelper::sendEmails($article, $users, $tokens, [], $date);
+                    if ($results['error'] == 0) { // error fixed ?
+                        $table->updateState($error->id, 1);
+                        AutomsgHelper::updateAutoMsgErrorCr($date);
+                    }
+                }
+            }
+        }
+    }
 }

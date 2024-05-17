@@ -84,24 +84,7 @@ class MessagesModel extends ListModel
 
         return $db->getIterator();
     }
-    public function check_restart($pks)
-    {
-        $table = $this->getTable();
-        $pks   = (array) $pks;
-        if (!$articles = $table->check_restart($pks)) {
-            return false;
-        }
-        return $articles;
-    }
-    public function restart($pks)
-    {
-        $table = $this->getTable();
-        $pks   = (array) $pks;
-        if (!$table->restart($pks, $this->getCurrentUser()->id)) {
-            $this->setError($table->getError());
-            return false;
-        }
-    }
+
     public function getTable($type = 'Message', $prefix = 'Administrator', $config = [])
     {
         return parent::getTable($type, $prefix, $config);

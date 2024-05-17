@@ -64,22 +64,7 @@ class MessagesController extends FormController
         return true;
 
     }
-    public function restart($pks = null, $state = 1, $userId = 0)
-    {
-        // Check for request forgeries.
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
-        // Initialise variables.
-        $app = Factory::getApplication();
-        $model = $this->getModel('messages');
-
-        $input = $app->input;
-        $pks = $input->post->get('cid', array(), 'array');
-        $item = $model->restart($pks);
-        $this->setMessage(Text::_('COM_AUTOMSG_RESTARTED'));
-        $this->setRedirect(Uri::base().'index.php?option=com_automsg&view=messages');
-        return true;
-
-    }
+    // force async process : fire task
     public function send($pks = null)
     {
         // Check for request forgeries.
@@ -88,12 +73,6 @@ class MessagesController extends FormController
         $app = Factory::getApplication();
         $input = $app->input;
         $pks = $input->post->get('cid', array(), 'array');
-        // check for errors to restart
-        $model = $this->getModel('messages');
-        $articles = $model->check_restart($pks);
-        if ($articles && sizeof($articles)) {
-            $this->restart($articles);
-        }
         // check for waiting async
         $model = new ConfigModel();
         $params = $model->getItem(1);

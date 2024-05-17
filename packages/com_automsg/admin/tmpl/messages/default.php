@@ -51,7 +51,7 @@ $states = [
               '',
          ],
          9 => [
-              'restart', // restart
+              'detail', // restart
               '',
               'Erreurs', // état :
               '',
