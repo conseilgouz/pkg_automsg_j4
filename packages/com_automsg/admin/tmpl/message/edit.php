@@ -97,7 +97,7 @@ $states = [
                         OK
                     </th>
                     <th class="5%">
-                        Erreurs
+                        Erreur(s)
                     </th>
                     <th class="5%">
                         Attente

@@ -2,12 +2,12 @@
 <extension type="component" method="upgrade">
 	<name>COM_AUTOMSG</name>
 	<author>ConseilGouz</author>
-	<creationDate>2024-05-15</creationDate>
+	<creationDate>2024-05-18</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.0.1</version>
+	<version>4.0.2</version>
 	<description>COM_AUTOMSG_XML_DESCRIPTION</description>
 	<namespace path="src">ConseilGouz\Component\Automsg</namespace>
 	<files folder="site">
@@ -61,5 +61,5 @@
 		</languages>
         
 	</administration>
-	<changelogurl>https://raw.githubusercontent.com/conseilgouz/com_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
+	<changelogurl>https://raw.githubusercontent.com/conseilgouz/pkg_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
 </extension>
