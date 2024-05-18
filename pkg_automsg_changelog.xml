@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.1.0</version>
+        <note>
+            <item>Update : 18/05/2024</item>
+        </note>
+		<addition>
+			<item>Update task info if messages are waiting</item>
+		</addition>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.0.2</version>
         <note>
             <item>Update : 18/05/2024</item>

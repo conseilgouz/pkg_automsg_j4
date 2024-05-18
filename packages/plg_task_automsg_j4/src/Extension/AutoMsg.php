@@ -1,6 +1,6 @@
 <?php
 /** Automsg Task
-* Version			: 4.0.0
+* Version			: 4.1.0
 * copyright 		: Copyright (C) 2024 ConseilGouz. All rights reserved.
 * license    		: https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
 *
@@ -12,15 +12,12 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
 
@@ -44,7 +41,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             'langConstPrefix' => 'PLG_TASK_AUTOMSG',
             'form'            => 'automsg',
             'method'          => 'automsg',
-        ],
+        ]
     ];
     protected $autoparams;
     /**
@@ -60,6 +57,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             'onTaskOptionsList'    => 'advertiseRoutines',
             'onExecuteTask'        => 'standardRoutineHandler',
             'onContentPrepareForm' => 'enhanceTaskItemForm',
+            'onTaskExecuteSuccess' => 'onTaskExecuteSuccess'
         ];
     }
 
@@ -130,9 +128,9 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             foreach ($articles as $articleid) {
                 $article = $model->getItem($articleid);
                 // for report
-		        $article_titles .= ($article_titles) ? ',' : '' ;
-		        $article_titles .= $article->title;
-                // 
+                $article_titles .= ($article_titles) ? ',' : '' ;
+                $article_titles .= $article->title;
+                //
                 $data[]  = AutomsgHelper::oneLine($article, $users, $deny);
             }
             if (count($data)) {
@@ -143,7 +141,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 } else {
                     AutomsgHelper::updateAutoMsgTable(null, $state, $date, $results);
                 }
-                if ( $this->autoparams->report) {
+                if ($this->autoparams->report) {
                     AutomsgHelper::sendReport($article_titles, $results);
                 }
             }
@@ -157,14 +155,23 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 } else {
                     AutomsgHelper::updateAutoMsgTable($articleid, $state, $date, $results);
                 }
-                if ( $this->autoparams->report) {
+                if ($this->autoparams->report) {
                     AutomsgHelper::sendReport($article->title, $results);
                 }
             }
         }
-        if ((isset($results['waiting']) && ($results['waiting'] > 0)) || AutomsgHelper::checkWaitingArticles()) {
-            // some waiting messages : update task next_execution
+    }
+    //
+    // update task rules if necessary
+    //
+    public function onTaskExecuteSuccess(Event $event)
+    {
+        if (AutomsgHelper::checkWaitingArticles()) {
+            // we have waiting messages : use automsg params
             AutomsgHelper::task_next_exec();
+        } else {
+            // no more waiting messages : restore task parameters
+            AutomsgHelper::task_restore_exec();
         }
     }
 }

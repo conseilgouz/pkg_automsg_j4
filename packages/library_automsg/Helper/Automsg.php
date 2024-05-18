@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    AutoMsg
- * Version			: 4.0.0
+ * Version			: 4.1.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (C) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -442,7 +442,6 @@ class Automsg
     //
     public static function checkWaitingArticles()
     {
-        $autoparams = self::getParams();
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
         ->select('count(id)')
@@ -764,23 +763,88 @@ class Automsg
         return $model;
     }
     //
-    // some waiting messages : update next_execution
+    // some waiting messages :
+    // - save automsg task execution_rules & cron_rules
+    // - put autoparams values & update next_execution
     //
     public static function task_next_exec()
     {
         $autoparams = self::getParams();
+        if ($autoparams->save_execution_rules || $autoparams->save_cron_rules) {
+            // already saved
+            return;
+        }
+
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->qn('#__scheduler_tasks'))
+            ->where($db->qn('type') . ' = '.$db->q('automsg'))      // automsg task
+            ->where($db->quoteName('state') . '= 1');               // enabled
+        $db->setQuery($query);
+        $task = $db->loadObject();
+        if (!$task) {// not defined
+            return;
+        }
+        // save user values
+        $query = $db->getQuery(true)
+        ->update($db->qn('#__automsg_config'))
+        ->set($db->qn('save_execution_rules').'='.$db->q($task->execution_rules))
+        ->set($db->qn('save_cron_rules').'='.$db->q($task->cron_rules))
+        ->where($db->qn('id') . ' = 1');
+        $db->setQuery($query);
+        $db->execute();
+        // compute automsg params to use in the task 
+        $execution_rules = ["rule-type" => "interval-hours",
+                            "interval-hours" => $autoparams->maildelay,
+                            "exec-day" => "1",
+                            "exec-time" => "00:01"
+                            ];
+        $cron_rules      = ["type" => "interval",
+                            "exp" => "PT".$autoparams->maildelay."H"
+                            ];
         $lastExec = Factory::getDate('now');
         $interval = new \DateInterval('PT'.$autoparams->maildelay.'H');
         $nextExec = $lastExec->add($interval);
         $nextExec = $nextExec->toSql();
-
-        // get task
-        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        // update task
         $query = $db->getQuery(true)
         ->update($db->qn('#__scheduler_tasks'))
         ->set($db->qn('next_execution').'='.$db->q($nextExec))
+        ->set($db->qn('execution_rules').'='.$db->q(json_encode($execution_rules)))
+        ->set($db->qn('cron_rules').'='.$db->q(json_encode($cron_rules)))
         ->where($db->qn('type') . ' = '.$db->q('automsg'))      // automsg task
         ->where($db->quoteName('state') . '= 1');               // enabled
+        $db->setQuery($query);
+        $db->execute();
+    }
+    // no more waiting messages :
+    // - restore execution_rules & cron_rules from automsg_config table
+    // - empty automsg_config infos
+    //
+    public static function task_restore_exec()
+    {
+        $autoparams = self::getParams();
+        if (!$autoparams->save_execution_rules && !$autoparams->save_cron_rules) {
+            // already empty
+            return;
+        }
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        // restore saved values
+        $query = $db->getQuery(true)
+        ->update($db->qn('#__scheduler_tasks'))
+        ->set($db->qn('execution_rules').'='.$db->q($autoparams->save_execution_rules))
+        ->set($db->qn('cron_rules').'='.$db->q($autoparams->save_cron_rules))
+        ->where($db->qn('type') . ' = '.$db->q('automsg'))      // automsg task
+        ->where($db->quoteName('state') . '= 1');               // enabled
+        $db->setQuery($query);
+        $db->execute();
+        // update task
+        $query = $db->getQuery(true)
+        ->update($db->qn('#__automsg_config'))
+        ->set($db->qn('save_cron_rules').'= null')
+        ->set($db->qn('save_execution_rules').'= null')
+        ->where($db->quoteName('id') . '= 1');
         $db->setQuery($query);
         $db->execute();
     }

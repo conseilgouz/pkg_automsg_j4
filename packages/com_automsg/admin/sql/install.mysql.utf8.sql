@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS `#__automsg_config` (
 `log` tinyint NOT NULL default 0,
 `created` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',
 `modified` datetime NULL DEFAULT NULL,
+`save_execution_rules` text ,
+`save_cron_rules` text ,
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='AutoMsg Config Table';
 

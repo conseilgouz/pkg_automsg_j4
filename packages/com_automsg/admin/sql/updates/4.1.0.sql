@@ -1,0 +1,1 @@
+ALTER TABLE `#__automsg_config` ADD `save_execution_rules` text AFTER `modified`;ALTER TABLE `#__automsg_config` ADD `save_cron_rules` text AFTER`save_execution_rules`;
