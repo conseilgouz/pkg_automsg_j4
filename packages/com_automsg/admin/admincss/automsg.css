@@ -4,26 +4,26 @@
 #config .control-group:nth-of-type(6){ /* nb mail maxi */
 	display:none;
 }
-#config .control-group:nth-of-type(12){ /* nb mail maxi */
+#config .control-group:nth-of-type(11){ /* nb mail maxi */
 	float:left;width:50%;
 }
-#config .control-group:nth-of-type(12){ /* nb mail maxi */
+#config .control-group:nth-of-type(11){ /* nb mail maxi */
 	float:left;width:50%;
+}
+#config .control-group:nth-of-type(11) .controls{
+    max-width:15em;
+}
+#config .control-group:nth-of-type(12){ /* delay */
+	float:left;width:50%;
+}
+#config .control-group:nth-of-type(12) .control-label{
+    width:100px;
+    margin-left:3em
 }
 #config .control-group:nth-of-type(12) .controls{
     max-width:15em;
 }
-#config .control-group:nth-of-type(13){ /* delay */
-	float:left;width:50%;
-}
-#config .control-group:nth-of-type(13) .control-label{
-    width:100px;
-    margin-left:3em
-}
-#config .control-group:nth-of-type(13) .controls{
-    max-width:15em;
-}
 
-#config .control-group:nth-of-type(14){ /* log */
+#config .control-group:nth-of-type(13){ /* log */
 	clear:both;width:100%;
 }
