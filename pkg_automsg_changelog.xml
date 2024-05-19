@@ -8,7 +8,8 @@
         </note>
 		<addition>
 			<item>Update task info if messages are waiting</item>
-		</addition>
+            <item>Check task plugin state when enabling async mode or limit mode</item>
+        </addition>
 	</changelog>
 	<changelog>
 		<element>com_automsg</element>
