@@ -30,6 +30,12 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+		<field name="chktask" type="sql"
+                query="select count('id') as count from #__scheduler_tasks where type = 'automsg' and state=1"
+				key_field="count" value_field="count" default="0" class="hidefield" />
+		<field name="chktask" type="sql"
+                query="select count('id') as count from #__scheduler_tasks where type = 'automsg' and state=1"
+				key_field="count" value_field="count" default="0" class="hidefield" />
         <field name="async"
             type="radio" class="btn-group btn-group-yesno" default="0"
             label="COM_AUTOMSG_ASYNC" description="COM_AUTOMSG_ASYNC_DESC">
@@ -37,12 +43,13 @@
             <option value="1">JALL</option>
             <option value="2">Un article par message</option>
         </field>
-        <field type="note" name="note1" label="COM_AUTOMSG_NOTE_ADM" heading="p" />
+        <field showon="async!:0[AND]chktask:0" type="note" name="noteasync" label="COM_AUTOMSG_NOTE_ASYNC" heading="p" />
         <field name="limit" type="radio" default="0" class="btn-group btn-group-yesno" 
             label="COM_AUTOMSG_LIMIT" description="COM_AUTOMSG_LIMIT_DESC">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+        <field showon="limit:1[AND]chktask:0" type="note" name="notelimit" label="COM_AUTOMSG_NOTE_LIMIT" heading="p" />
         <field showon="limit:1" name="maillimit" type="number" min="10" 
             label="COM_AUTOMSG_MAILLIMIT" description="COM_AUTOMSG_MAILLIMIT_DESC"
             default="10"/>
