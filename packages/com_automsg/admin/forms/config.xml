@@ -8,6 +8,7 @@
         <field name="version" type="version"  margintop="-3em" extension="com_automsg"/>
         <field name="id" type="hidden" default="0" readonly="true" class="readonly"
             label="JGLOBAL_FIELD_ID_LABEL" 	description ="JGLOBAL_FIELD_ID_DESC" />
+        <field type="note" name="note1" label="COM_AUTOMSG_NOTE_ADM" heading="p" />
         <field name="usergroups" type="usergrouplist"
             description="COM_AUTOMSG_USERGROUP_DESC" label="COM_AUTOMSG_USERGROUP_LABEL"
             multiple="true" required="true"
@@ -43,13 +44,13 @@
             <option value="1">JALL</option>
             <option value="2">Un article par message</option>
         </field>
-        <field showon="async!:0[AND]chktask:0" type="note" name="noteasync" label="COM_AUTOMSG_NOTE_ASYNC" heading="p" />
+        <field showon="async!:0[AND]chktask:0" type="note" name="noteasync" label="COM_AUTOMSG_NOTE_ASYNC" class="alert" />
         <field name="limit" type="radio" default="0" class="btn-group btn-group-yesno" 
             label="COM_AUTOMSG_LIMIT" description="COM_AUTOMSG_LIMIT_DESC">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field showon="limit:1[AND]chktask:0" type="note" name="notelimit" label="COM_AUTOMSG_NOTE_LIMIT" heading="p" />
+        <field showon="limit:1[AND]chktask:0" type="note" name="notelimit" label="COM_AUTOMSG_NOTE_LIMIT" class="alert" />
         <field showon="limit:1" name="maillimit" type="number" min="10" 
             label="COM_AUTOMSG_MAILLIMIT" description="COM_AUTOMSG_MAILLIMIT_DESC"
             default="10"/>

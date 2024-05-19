@@ -1,29 +1,27 @@
 .form-horizontal .controls {
 	margin-left: 10px;
 }
-#config .control-group:nth-of-type(6){ /* nb mail maxi */
+#config .control-group:nth-of-type(7){ /* sql : check automsg task */
 	display:none;
 }
-#config .control-group:nth-of-type(11){ /* nb mail maxi */
+#config .control-group:nth-of-type(12){ /* nb mail maxi */
 	float:left;width:50%;
 }
-#config .control-group:nth-of-type(11){ /* nb mail maxi */
-	float:left;width:50%;
-}
-#config .control-group:nth-of-type(11) .controls{
+#config .control-group:nth-of-type(12) .controls{
     max-width:15em;
 }
 #config .control-group:nth-of-type(12){ /* delay */
 	float:left;width:50%;
 }
-#config .control-group:nth-of-type(12) .control-label{
+#config .control-group:nth-of-type(13) .control-label{
     width:100px;
     margin-left:3em
 }
-#config .control-group:nth-of-type(12) .controls{
+#config .control-group:nth-of-type(13) .controls{
     max-width:15em;
 }
 
-#config .control-group:nth-of-type(13){ /* log */
+#config .control-group:nth-of-type(14){ /* log */
 	clear:both;width:100%;
 }
+.alert {background-color: var(--warning)}
