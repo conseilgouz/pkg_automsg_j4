@@ -1,7 +1,7 @@
 <?php
 /**
  * @component     AutoMsg - Joomla 4.x/5.x
- * Version			: 4.0.0
+ * Version			: 4.1.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -90,6 +90,7 @@ class MessageModel extends AdminModel
         $query->select('userid');
         $query->from('#__automsg_waiting');
         $query->where($db->qn('timestamp').' = '.$db->q($sent));
+        $query->where($db->qn('state').' = 0');
         $db->setQuery($query);
         return $db->loadObjectList();
     }
