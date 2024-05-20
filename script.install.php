@@ -30,11 +30,15 @@ class PlgSystemAutomsgInstallerInstallerScript
     private $min_php_version        = '8.0';
     private $name                   = 'Automsg';
     private $dir                    = null;
+    private $lang                   = null;
     private $previous_version        = "";
     private $installerName          = 'automsginstaller';
+    private $extname                 = 'automsg';
     public function __construct()
     {
         $this->dir = __DIR__;
+        $this->lang = Factory::getLanguage();
+
     }
     public function uninstall($parent)
     {
@@ -78,6 +82,8 @@ class PlgSystemAutomsgInstallerInstallerScript
 
     public function postflight($route, $installer)
     {
+        $this->lang->load($this->extname);
+
         if (! in_array($route, ['install', 'update'])) {
             return true;
         }
@@ -103,7 +109,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             return false;
         }
         $this->postInstall();
-        Factory::getApplication()->enqueueMessage('AutoMsg package', 'notice');
+        Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_INSTALL_END'), 'notice');
 
         // Uninstall this installer
         $this->uninstallInstaller();
@@ -156,9 +162,13 @@ class PlgSystemAutomsgInstallerInstallerScript
         if (!$result_content) {
             $this->create_mail_templates();
         } else { // plg_content_automsg/plg_task_automsg => com_automsg mail template
-            $this->update_mail_templates($db);
+            $this->update_mail_templates();
         }
-        // activate all automsg plugins 
+        // check email config : should not be plaintext
+        $this->check_email_config();
+        // check automsg task
+        $this->check_automsg_task();
+        // activate all automsg plugins
         $conditions = array(
             $db->qn('type') . ' = ' . $db->q('plugin'),
             $db->qn('element') . ' = ' . $db->quote('automsg')
@@ -210,11 +220,15 @@ class PlgSystemAutomsgInstallerInstallerScript
         try {
             $db->execute();
         } catch (\RuntimeException $e) {
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_INSTALL_CONFIG_ERROR'), 'error');
+            return;
         }
-
+        Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_INSTALL_CONFIG_OK'), 'notice');
     }
-    private function update_mail_templates($db)
+    private function update_mail_templates()
     {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+
         $query = $db->getQuery(true)
                 ->update('#__mail_templates')
                 ->set($db->qn('template_id').' = REPLACE(template_id,'.$db->q('plg_content_automsg').','.$db->q('com_automsg').')')
@@ -237,6 +251,7 @@ class PlgSystemAutomsgInstallerInstallerScript
                 ->where($db->qn('extension').' IN ('.$db->q('plg_task_automsg').','.$db->q('plg_content_automsg').')');
         $db->setQuery($query);
         $db->execute();
+        Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_INSTALL_TEMPLATES_OK'), 'notice');
 
     }
     // create task email templates from scratch
@@ -284,34 +299,63 @@ class PlgSystemAutomsgInstallerInstallerScript
         $template = new TemplateModel(array('ignore_request' => true));
         $table = $template->getTable();
         $data = [];
-        // owner mail template
-        $data['template_id'] = 'com_automsg.ownermail';
-        $data['extension'] = 'com_automsg';
-        $data['language'] = '';
-        $data['subject'] = 'COM_AUTOMSG_PUBLISHED_SUBJECT';
-        $data['body'] = 'COM_AUTOMSG_PUBLISHED_MSG';
-        $data['htmlbody'] = '';
-        $data['attachments'] = '';
-        $data['params'] = '{"tags": ["creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
-        $table->save($data);
-        // other users mail template
-        $data['template_id'] = 'com_automsg.usermail';
-        if ($plugin && isset($params->subject)) {
-            $subject = $this->tagstouppercase($params->subject);
-            $data['subject'] = $subject;
-            $body = $this->tagstouppercase($params->body);
-            $data['body'] = $body;
-        } else {
-            $data['subject'] = 'COM_AUTOMSG_USER_SUBJECT';
-            $data['body'] = 'COM_AUTOMSG_USER_MSG';
+
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        $query->select('count(`template_id`)');
+        $query->from('#__mail_templates');
+        $query->where('template_id = ' . $db->quote('com_automsg.ownermail'));
+        $db->setQuery($query);
+        $result_owner = $db->loadResult();
+        if (!$result_owner) {
+            // owner mail template
+            $data['template_id'] = 'com_automsg.ownermail';
+            $data['extension'] = 'com_automsg';
+            $data['language'] = '';
+            $data['subject'] = 'COM_AUTOMSG_PUBLISHED_SUBJECT';
+            $data['body'] = 'COM_AUTOMSG_PUBLISHED_MSG';
+            $data['htmlbody'] = '';
+            $data['attachments'] = '';
+            $data['params'] = '{"tags": ["creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
+            $table->save($data);
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_CREATE_OWNER_TEMPLATE_OK'), 'notice');
         }
-        $table->save($data);
-        // Report message
-        $data['params'] = '{"tags": ["ok", "error", "waiting", "total"]}';
-        $data['template_id'] = 'com_automsg.report';
-        $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
-        $data['body'] = 'COM_AUTOMSG_REPORT_MSG';
-        $table->save($data);
+        $query = $db->getQuery(true);
+        $query->select('count(`template_id`)');
+        $query->from('#__mail_templates');
+        $query->where('template_id = ' . $db->quote('com_automsg.usermail'));
+        $db->setQuery($query);
+        $result_user = $db->loadResult();
+        if (!$result_user) {
+            // other users mail template
+            $data['template_id'] = 'com_automsg.usermail';
+            if ($plugin && isset($params->subject)) {
+                $subject = $this->tagstouppercase($params->subject);
+                $data['subject'] = $subject;
+                $body = $this->tagstouppercase($params->body);
+                $data['body'] = $body;
+            } else {
+                $data['subject'] = 'COM_AUTOMSG_USER_SUBJECT';
+                $data['body'] = 'COM_AUTOMSG_USER_MSG';
+            }
+            $table->save($data);
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_CREATE_USER_TEMPLATE_OK'), 'notice');
+        }
+        $query = $db->getQuery(true);
+        $query->select('count(`template_id`)');
+        $query->from('#__mail_templates');
+        $query->where('template_id = ' . $db->quote('com_automsg.report'));
+        $db->setQuery($query);
+        $result_report = $db->loadResult();
+        if (!$result_report) {
+            // Report message
+            $data['params'] = '{"tags": ["ok", "error", "waiting", "total"]}';
+            $data['template_id'] = 'com_automsg.report';
+            $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
+            $data['body'] = 'COM_AUTOMSG_REPORT_MSG';
+            $table->save($data);
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_CREATE_REPORT_TEMPLATE_OK'), 'notice');
+        }
     }
     private function tagstouppercase($text)
     {
@@ -323,6 +367,74 @@ class PlgSystemAutomsgInstallerInstallerScript
             }
         }
         return $text;
+    }
+    // check email config : should not be plaintext
+    private function check_email_config()
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        $query->select('params');
+        $query->from('#__extensions');
+        $query->where('type = ' . $db->quote('component'));
+        $query->where('element = ' . $db->quote('com_mails'));
+        $db->setQuery($query);
+        $params = $db->loadResult();
+        if (!$params) {
+            Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_EMAIL_CONFIG_NOTOK'), 'error');
+            return;
+        }
+        if (strpos($params, 'plaintext') === false) {
+            return;
+        }
+        $params = str_replace('plaintext', 'both', $params);
+        $query = $db->getQuery(true)
+                ->update('#__extensions')
+                ->set($db->qn('params').' = '.$db->q($params))
+                ->where('type = ' . $db->quote('component'))
+                ->where('element = ' . $db->quote('com_mails'));
+        $db->setQuery($query);
+        $db->execute();
+        Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_EMAIL_CONFIG_OK'), 'notice');
+
+    }
+    private function check_automsg_task()
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        $query->select('id');
+        $query->from('#__scheduler_tasks');
+        $query->where('type = ' . $db->quote('automsg'));
+        $query->where('state = 1');
+        $query->setLimit(1);
+        $db->setQuery($query);
+        $found = $db->loadResult();
+        if ($found) {// Found in db => exit
+            return;
+        }
+        $task = new TaskModel(array('ignore_request' => true));
+        $table = $task->getTable();
+        $data = [];
+        $data['id']     = 0;
+        $data['title']  = 'AutoMsg';
+        $data['type']   = 'automsg';
+        $data['state']  = 1; // activate
+        $data['execution_rules'] = ["rule-type" => "interval-days",
+                                    "interval-days" => "1",
+                                    "exec-day" => "1",
+                                    "exec-time" => "00:01"];
+        $data['cron_rules']      = ["type" => "interval",
+                                    "exp" => "P1D"];
+        $notif = ["success_mail" => "0","failure_mail" => "1","fatal_failure_mail" => "1","orphan_mail" => "1"];
+        $data['params'] = ["individual_log" => false,"log_file" => "","notifications" => $notif];
+        $data['note']   = Text::_('PLG_AUTOMSG_CREATE_TASK_NOTE');
+        $lastExec = Factory::getDate('now');
+        $data['last_execution'] = $lastExec->toSql();
+        $interval = new \DateInterval('P1D');
+        $nextExec = $lastExec->add($interval);
+        $data['next_execution'] = $nextExec->toSql();
+
+        $table->save($data);
+        Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_CREATE_TASK_OK'), 'notice');
     }
     private function createExtensionRoot()
     {

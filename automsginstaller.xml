@@ -2,7 +2,7 @@
 <extension version="4.0" type="plugin" group="system" method="upgrade">
 	<name>plgautomsginstaller</name>
 	<author>ConseilGouz</author>
-	<creationDate>2024-05-18</creationDate>
+	<creationDate>2024-05-20</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>

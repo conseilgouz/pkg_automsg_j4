@@ -4,11 +4,12 @@
 		<type>package</type>
 		<version>4.1.0</version>
         <note>
-            <item>Update : 18/05/2024</item>
+            <item>Update : 20/05/2024</item>
         </note>
 		<addition>
 			<item>Update task info if messages are waiting</item>
             <item>Check task plugin state when enabling async mode or limit mode</item>
+            <item>Install : create scheduled task AutoMsg</item>
         </addition>
 	</changelog>
 	<changelog>
@@ -16,7 +17,7 @@
 		<type>package</type>
 		<version>4.0.2</version>
         <note>
-            <item>Update : 18/05/2024</item>
+            <item>Update : 20/05/2024</item>
         </note>
 		<fix>
 			<item>URL Changelog incorrecte</item>
