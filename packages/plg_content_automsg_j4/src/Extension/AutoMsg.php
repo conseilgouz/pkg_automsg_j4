@@ -103,12 +103,7 @@ final class AutoMsg extends CMSPlugin
                 $article = $model->getItem($articleid);
             } catch (\Exception $e) {
                 AutomsgHelper::lost_article($articleid, $timestamp);
-                // if async, check other articles, otherwise exit
-                if ($this->autoparams->async && $async) {
-                    continue; // async
-                } else {
-                    return; // not async
-                }
+                continue; // check next article
             }
             if (!empty($categories) && !in_array($article->catid, $categories)) {
                 continue; // wrong category

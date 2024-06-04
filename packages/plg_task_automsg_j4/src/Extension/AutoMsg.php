@@ -154,7 +154,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 try {
                     $article = $model->getItem($articleid);
                 } catch (\Exception $e) {
-                    AutomsgHelper::lost_article($articleid);
+                    AutomsgHelper::lost_article($articleid, $date);
                     continue;
                 }
                 $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny, $date, $b_waiting, $waitingtimestp);
