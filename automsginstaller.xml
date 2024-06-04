@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.1.1</version>
+	<version>4.1.2</version>
 	<description>AutoMsg</description>
 	<scriptfile>script.install.php</scriptfile>
 	<files>
@@ -16,6 +16,7 @@
 	</files>
 	<languages folder="language">
 		<language tag="fr-FR">fr-FR/plgautomsginstaller.sys.ini</language>
+		<language tag="en-GB">en-GB/plgautomsginstaller.sys.ini</language>
 	</languages>
 	<updateservers>
 	<server type="extension" name="AutoMsg" priority="1">https://raw.githubusercontent.com/conseilgouz/updates_github/master/pkg_automsg_update.xml</server>

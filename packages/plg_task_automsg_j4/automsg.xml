@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.1.1</version>
+	<version>4.1.2</version>
 	<description>PLG_TASK_AUTOMSG_DESC</description>
 	<namespace path="src">ConseilGouz\Plugin\Task\AutoMsg</namespace>
 	<files>
@@ -19,6 +19,8 @@
     <languages>
 		<language tag="fr-FR">language/fr-FR/plg_task_automsg.ini</language>
 		<language tag="fr-FR">language/fr-FR/plg_task_automsg.sys.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_automsg.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_automsg.sys.ini</language>
 	</languages>
     <changelogurl>https://raw.githubusercontent.com/conseilgouz/pkg_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
 </extension>
