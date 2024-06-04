@@ -22,8 +22,8 @@
         <field name="msgcreator"
             type="list" default="1"
             label="COM_AUTOMSG_CREATOR" description="COM_AUTOMSG_CREATOR_DESC">
-                <option value="0">Message identique</option>
-                <option value="1">Message spécifique</option>
+                <option value="0">COM_AUTOMSG_CREATOR_SAME</option>
+                <option value="1">COM_AUTOMSG_CREATOR_OTHER</option>
         </field>
         <field name="msgauto"
             type="radio" class="btn-group btn-group-yesno"

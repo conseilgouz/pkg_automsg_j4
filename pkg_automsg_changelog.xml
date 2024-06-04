@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.1.3</version>
+        <note>
+            <item>Update : 04/06/2024</item>
+        </note>
+		<fix>
+			<item>Languages : missing COM_AUTOMSG_CREATOR_SAME and COM_AUTOMSG_CREATOR_OTHER</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.1.2</version>
         <note>
             <item>Update : 04/06/2024</item>
