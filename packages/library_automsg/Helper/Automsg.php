@@ -848,4 +848,21 @@ class Automsg
         $db->setQuery($query);
         $db->execute();
     }
+    // Lost article 
+    public static function lost_article($articleid,$timestamp) {
+        $autoparams = self::getParams();
+        self::store_automsg_error(0, [$articleid], sprintf(Text::_('COM_AUTOMSG_NOT_FOUND'), $articleid), 9, $timestamp);
+        $article = new \StdClass();
+        $article->id = $articleid;
+        $article->title = sprintf(Text::_('COM_AUTOMSG_NOT_FOUND'), $articleid);
+        self::store_automsg($article, 9, $timestamp);
+        $results = [];
+        $results['total'] = 0;
+        $results['sent'] = 0;
+        $results['error'] = 0;
+        $results['waiting'] = 0;
+        if ($autoparams->report) {
+            self::sendReport(sprintf(Text::_('COM_AUTOMSG_NOT_FOUND'), $articleid), $results);
+        }
+    }
 }

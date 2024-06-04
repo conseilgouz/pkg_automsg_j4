@@ -1,9 +1,8 @@
 <?php
 /** Automsg Task
-* Version			: 4.1.0
-* copyright 		: Copyright (C) 2024 ConseilGouz. All rights reserved.
-* license    		: https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
-*
+ * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
+ * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
+ * @author ConseilGouz
 */
 
 namespace ConseilGouz\Plugin\Task\AutoMsg\Extension;
@@ -126,7 +125,12 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             $data = [];
             $article_titles = ""; // for reports
             foreach ($articles as $articleid) {
-                $article = $model->getItem($articleid);
+                try {
+                    $article = $model->getItem($articleid);
+                } catch (\Exception $e) {
+                    AutomsgHelper::lost_article($articleid, $date);
+                    continue;
+                }
                 // for report
                 $article_titles .= ($article_titles) ? ',' : '' ;
                 $article_titles .= $article->title;
@@ -147,7 +151,12 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
             }
         } else { // one article per email per user
             foreach ($articles as $articleid) {
-                $article = $model->getItem($articleid);
+                try {
+                    $article = $model->getItem($articleid);
+                } catch (\Exception $e) {
+                    AutomsgHelper::lost_article($articleid);
+                    continue;
+                }
                 $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny, $date, $b_waiting, $waitingtimestp);
                 $state   = 1; // assume ok
                 if ($b_waiting) {

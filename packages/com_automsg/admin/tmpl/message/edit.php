@@ -1,7 +1,6 @@
 <?php
 /**
  * @component     AutoMsg - Joomla 4.x/5.x
- * Version			: 4.0.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -12,6 +11,7 @@
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\User\UserFactoryInterface;
 use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
@@ -118,7 +118,12 @@ foreach ($data as $i => $message) :
        $articles = explode(',', $message->articles);
     $modelArticle     = AutomsgHelper::prepare_content_model();
     foreach ($articles as $articleid) {
-        $article = $modelArticle->getItem($articleid);
+        try{
+            $article = $modelArticle->getItem($articleid);
+        } catch (\Exception $e) {
+            $article = new \Stdclass;
+            $article->title = sprintf(Text::_('COM_AUTOMSG_NOT_FOUND'),$articleid);
+        }
         $titles .= ($titles) ? ',' : '' ;
         $titles .= $article->title;
     }

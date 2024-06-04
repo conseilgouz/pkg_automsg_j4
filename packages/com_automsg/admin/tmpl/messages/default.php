@@ -1,7 +1,6 @@
 <?php
 /**
  * @component     AutoMsg - Joomla 4.x/5.x
- * Version			: 4.0.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -150,7 +149,12 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 		    $titles = "";
 		    $articles = explode(',', $message->articles);
 		    foreach ($articles as $articleid) {
-		        $article = $model->getItem($articleid);
+                try{
+                    $article = $model->getItem($articleid);
+                } catch (\Exception $e) {
+                    $article = new \Stdclass;
+                    $article->title = sprintf(Text::_('COM_AUTOMSG_NOT_FOUND'),$articleid);
+                }
 		        $titles .= ($titles) ? ',' : '' ;
 		        $titles .= $article->title;
 		    }

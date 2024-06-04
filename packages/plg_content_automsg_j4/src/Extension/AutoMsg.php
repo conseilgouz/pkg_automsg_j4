@@ -68,6 +68,9 @@ final class AutoMsg extends CMSPlugin
         if ($value == 0) { // unpublish => on sort
             return true;
         }
+        $lang = Factory::getApplication()->getLanguage();
+        $lang->load('com_automsg');
+
         // parametres du plugin
         $this->autoparams = AutomsgHelper::getParams();
         $categories = [];
@@ -90,14 +93,25 @@ final class AutoMsg extends CMSPlugin
         $date = HTMLHelper::_('date', 'now', Text::_('DATE_FORMAT_FILTER_DATETIME'));
         $timestamp = Factory::getDate($date); // same timestamp for everybody in same request
 
+        $async = false;
+        if (PluginHelper::isEnabled('task', 'automsg') && ComponentHelper::isEnabled('com_automsg')) {
+            $async = true; // automsg task plugin / component ok
+        }
+
         foreach ($pks as $articleid) {
-            $article = $model->getItem($articleid);
+            try {
+                $article = $model->getItem($articleid);
+            } catch (\Exception $e) {
+                AutomsgHelper::lost_article($articleid, $timestamp);
+                // if async, check other articles, otherwise exit
+                if ($this->autoparams->async && $async) {
+                    continue; // async
+                } else {
+                    return; // not async
+                }
+            }
             if (!empty($categories) && !in_array($article->catid, $categories)) {
                 continue; // wrong category
-            }
-            $async = false;
-            if (PluginHelper::isEnabled('task', 'automsg') && ComponentHelper::isEnabled('com_automsg')) {
-                $async = true; // automsg task plugin / component ok
             }
             if (($this->autoparams->async > 0) && $async) {
                 AutomsgHelper::store_automsg($article, 0, $timestamp);
