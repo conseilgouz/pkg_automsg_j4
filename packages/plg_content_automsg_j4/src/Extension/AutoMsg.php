@@ -1,8 +1,6 @@
 <?php
 /**
  * Plugin AutoMsg : send Email to selected users when an article is published
- * Version		  : 4.0.0
- *
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -133,6 +131,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 $article = $model->getItem($articleid);
             } catch (\Exception $e) {
                 AutomsgHelper::lost_article($articleid, $timestamp);
+                AutomsgHelper::store_automsg($article, 9, $timestamp);
                 continue; // check next article
             }
             if (!empty($categories) && !in_array($article->catid, $categories)) {

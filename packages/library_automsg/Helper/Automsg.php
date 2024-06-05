@@ -488,16 +488,15 @@ class Automsg
             ->where($db->qn('state') .'< 9');
             $db->setQuery($query);
             $losts = $db->loadColumn();
-            if (!sizeOf($losts)) { // strange, nothing found
+            if (sizeOf($losts)) {
+                $query = $db->getQuery(true)
+                    ->update($db->qn('#__automsg'))
+                    ->set($db->qn('state').'= 9')
+                    ->where($db->qn('id').' in ('.implode(',', $losts).')');
+                $db->setQuery($query);
+                $db->execute();
                 return;
             }
-            $query = $db->getQuery(true)
-                ->update($db->qn('#__automsg'))
-                ->set($db->qn('state').'= 9')
-                ->where($db->qn('id').' in ('.implode(',', $losts).')');
-            $db->setQuery($query);
-            $db->execute();
-            return;
         }
         $date = Factory::getDate();
 
