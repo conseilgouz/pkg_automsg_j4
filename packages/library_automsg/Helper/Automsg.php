@@ -582,9 +582,6 @@ class Automsg
         if (!$oldcr) { // should not exist, but do it just in case
             return;
         }
-        if (!sizeOf($oldcr)) { // we are on an error : ignore it
-            return;
-        }
         $oldcr = json_decode($oldcr);
         if (!$cr['error']) {
             $oldcr->sent += $cr['sent'];

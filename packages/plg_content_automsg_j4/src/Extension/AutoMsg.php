@@ -47,7 +47,9 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         $context = $event[0];
         $article = $event[1];
         $isNew   = $event[2];
-
+        if (($context != 'com_content.article') && ($context != 'com_content.form')) {
+            return;
+        }
         try {
             $this->autoparams = AutomsgHelper::getParams();
         } catch (\Exception $e) { // ignore errors
