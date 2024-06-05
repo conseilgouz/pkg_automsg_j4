@@ -1,7 +1,6 @@
 <?php
 /**
  * @package    AutoMsg
- * Version			: 4.1.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (C) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -289,7 +288,7 @@ class Automsg
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
-            ->select($db->quoteName('u.id'))
+            ->select('DISTINCT '.$db->quoteName('u.id'))
             ->from($db->quoteName('#__users').' as u ')
             ->join('LEFT', $db->quoteName('#__user_usergroup_map').' as g on u.id = g.user_id')
             ->where($db->quoteName('block') . ' = 0 AND g.group_id IN ('.$usergroups.')');
