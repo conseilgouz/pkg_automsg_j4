@@ -53,18 +53,13 @@ class HtmlView extends BaseHtmlView
         ToolbarHelper::title(Text::_('COM_AUTOMSG_MESSAGES'), 'automsg.png');
 
         if (($canDo->get('core.edit')) || ($canDo->get('core.edit.own'))) {
-            ToolbarHelper::editList('message.edit', 'Voir');
+            ToolbarHelper::editList('message.edit', Text::_('COM_AUTOMSG_MESSAGES_BUTTON_SEE'));
         }
 
         if ($canDo->get('core.edit.state')) {
             ToolbarHelper::divider();
-            ToolbarHelper::publish('messages.send', 'Envoyer', true);
+            ToolbarHelper::publish('messages.send', Text::_('COM_AUTOMSG_MESSAGES_BUTTON_SEND'), true);
         }
-        /*if (isset($this->state) && $this->state->get('filter.state') == -2 && $canDo->get('core.delete')) {
-            ToolBarHelper::deleteList('', 'messages.delete', 'JTOOLBAR_EMPTY_TRASH');
-        } elseif ($canDo->get('core.edit.state')) {
-            ToolBarHelper::trash('messages.trash');
-        }*/
         if ($canDo->get('core.admin')) {
             ToolbarHelper::divider();
             ToolbarHelper::inlinehelp();

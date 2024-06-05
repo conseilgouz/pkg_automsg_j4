@@ -47,7 +47,7 @@ $states = [
          9 => [
               '', // restart
               '',
-              'Erreurs', // état :
+              Text::_('COM_AUTOMSG_MESSAGES_ERRORS'), // état :
               '',
               true,
               'error', // icone
@@ -85,25 +85,25 @@ $states = [
           		<thead>
           			<tr>
        				<th class="70%">
-                    Article(s)
+                        <?php echo Text::_('COM_AUTOMSG_MESSAGES_ARTICLES');?>
 				    </th>
 				    <th class="5%">
-                    Envoyé
+                        <?php echo Text::_('COM_AUTOMSG_MESSAGES_SENT');?>
 				    </th>
                     <th class="5%">
-                        Total
+                        <?php echo Text::_('COM_AUTOMSG_MESSAGES_TOTAL');?>
                     </th>
                     <th class="5%">
-                        OK
+                        <?php echo Text::_('COM_AUTOMSG_MESSAGES_OK');?>
                     </th>
                     <th class="5%">
-                        Erreur(s)
+                        <?php echo Text::_('COM_AUTOMSG_MESSAGES_ERRORS');?>
                     </th>
                     <th class="5%">
-                        Attente
+                        <?php echo Text::_('COM_AUTOMSG_MESSAGES_WAITINGS');?>
                     </th>
 				    <th width="5%">
-					Status
+                        <?php echo Text::_('JSTATUS');?>
 				    </th>
             	    </tr>
 		        </thead>
@@ -164,7 +164,7 @@ foreach ($data as $i => $message) :
         if ($cr) {
             if ($cr->error > 0) { // build error modal
                 $errors = $modelMessage->getMessageErrors($message->sent);
-                echo '<a data-bs-toggle="collapse" href="#errorCollapse" aria-expanded="true" title="Voir les erreurs">';
+                echo '<a data-bs-toggle="collapse" href="#errorCollapse" aria-expanded="true" title="'.Text::_("COM_AUTOMSG_MESSAGES_DETAIL_ERRORS").'">';
                 echo $cr->error;
                 echo '</a>';
             }
@@ -176,7 +176,7 @@ foreach ($data as $i => $message) :
         if ($cr) {
             if ($cr->waiting > 0) { // build error modal
                 $waitings = $modelMessage->getMessageWaiting($message->sent);
-                echo '<a  data-bs-toggle="collapse" href="#waitingCollapse" aria-expanded="false" title="Voir en attente">';
+                echo '<a  data-bs-toggle="collapse" href="#waitingCollapse" aria-expanded="false" title="'.Text::_("COM_AUTOMSG_MESSAGES_DETAIL_WAITINGS").'">';
                 echo $cr->waiting;
                 echo '</a>';
             }
@@ -186,10 +186,10 @@ foreach ($data as $i => $message) :
                 <td>
                 <?php
         if ($message->state == 1) {
-            echo '<span class="icon-publish" aria-hidden="true" title="Envoyé"></span>';
+            echo '<span class="icon-publish" aria-hidden="true" title="'.Text::_('COM_AUTOMSG_MESSAGES_SENT').'"></span>';
         }
     if ($message->state == 9) {
-        echo '<span class="icon-error" aria-hidden="true" title="Contient des erreurs"></span>';
+        echo '<span class="icon-error" aria-hidden="true" title="'.Text::_('COM_AUTOMSG_MESSAGES_CONTAINS_ERRORS').'"></span>';
     }
     ?>
                 </td>
@@ -207,7 +207,7 @@ if (($cr) && ($cr->error > 0)) {
 }
 ?>
         <div class="collapse <?php echo $show;?> " id="errorCollapse"  tabindex="-1" aria-labelledby="errorCollapseLabel" aria-hidden="true">
-        <b>Détail des erreurs</b><br>(vous pouvez ré-essayer jusqu'à 3 fois de les renvoyer : sélectionner l'erreur en cochant sa case et cliquer sur le bouton <b>Nouvel essai</b>)
+        <?php echo Text::_('COM_AUTOMSG_MESSAGES_DETAIL_ERRORS');?>
             <div class="card card-body">
                 <div class="row">
             <?php
@@ -230,8 +230,8 @@ foreach($errors as $error) {
                 </div>
             </div>
 		</div>
-        <div class="collapse" id="waitingCollapse" tabindex="-1" aria-labelledby="waitingCollapseLabel" aria-hidden="true">
-        Détail des 'en attente'
+        <div class="collapse" id="waitingCollapse" tabindex="-1" aria-labelledby="waitingCollapseLabel" aria-hidden="true" title="">
+        <?php echo Text::_('COM_AUTOMSG_MESSAGES_DETAIL_WAITING');?>
             <div class="card card-body">
                 <div class="row">
                 <?php

@@ -34,7 +34,7 @@ $states = [
         0 => [
              'send', // action : publish => envoi
              '',
-             'Cliquer pour envoyer',
+             Text::_('COM_AUTOMSG_MESSAGES_CLICK'),
              '',
              true,
              'warning', // icone
@@ -43,7 +43,7 @@ $states = [
          1 => [
               'detail', // ne rien faire
               '',
-              'Envoyé', // état :
+              Text::_('COM_AUTOMSG_MESSAGES_SENT'), // state
               '',
               true,
               'publish', // icone
@@ -52,7 +52,7 @@ $states = [
          9 => [
               'detail', // restart
               '',
-              'Erreurs', // état :
+              Text::_('COM_AUTOMSG_MESSAGES_ERRORS'), // état :
               '',
               true,
               'error', // icone
@@ -60,9 +60,9 @@ $states = [
          ]
        ];
 $options   = [];
-$options[] = HTMLHelper::_('select.option', '0', 'En attente');
-$options[] = HTMLHelper::_('select.option', '1', 'Envoyés');
-$options[] = HTMLHelper::_('select.option', '9', 'En erreur');
+$options[] = HTMLHelper::_('select.option', '0', Text::_('COM_AUTOMSG_MESSAGES_WAITING'));
+$options[] = HTMLHelper::_('select.option', '1', Text::_('COM_AUTOMSG_MESSAGES_SENT'));
+$options[] = HTMLHelper::_('select.option', '9', Text::_('COM_AUTOMSG_MESSAGES_ERRORS'));
 
 $ordering	= ($listOrder == 'ordering');
 $canCreate	= $user->authorise('core.create');
@@ -102,22 +102,22 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo Text::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 				</th>
 				<th class="90%">
-					<?php echo HtmlHelper::_('grid.sort', 'Article(s)', 'articles', $listDirn, $listOrder); ?>
+					<?php echo HtmlHelper::_('grid.sort', Text::_('COM_AUTOMSG_MESSAGES_ARTICLES'), 'articles', $listDirn, $listOrder); ?>
 				</th>
 				<th class="5%">
-					<?php echo HtmlHelper::_('grid.sort', 'Envoyé', 'sent', $listDirn, $listOrder); ?>
+					<?php echo HtmlHelper::_('grid.sort', Text::_('COM_AUTOMSG_MESSAGES_SENT'), 'sent', $listDirn, $listOrder); ?>
 				</th>
 				<th class="5%">
-					Total
+					<?php echo Text::_('COM_AUTOMSG_MESSAGES_TOTAL');?>
 				</th>
 				<th class="5%">
-					OK
+					<?php echo Text::_('COM_AUTOMSG_MESSAGES_OK');?>
 				</th>
 				<th class="5%">
-					Erreur(s)
+					<?php echo Text::_('COM_AUTOMSG_MESSAGES_ERRORS');?>
 				</th>
 				<th class="5%">
-					Attente
+					<?php echo Text::_('COM_AUTOMSG_MESSAGES_WAITINGS');?>
 				</th>
 				<th width="5%">
 					<?php echo HtmlHelper::_('grid.sort', 'JSTATUS', 'sent', $listDirn, $listOrder); ?>
@@ -164,7 +164,7 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
             <?php
 		    $sent = $message->sent;
 		    if (!$sent) {
-		        $sent = "en attente";
+		        $sent = Text::_('COM_AUTOMSG_MESSAGES_WAITING');
 		    }
 		    echo $this->escape($sent)
 		    ?>

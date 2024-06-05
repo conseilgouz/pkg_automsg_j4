@@ -60,7 +60,7 @@ class HtmlView extends BaseHtmlView
         }
         ToolBarHelper::title( Text::_('CG_PX_MESSAGE_EDIT'), '#xs#.png');
 
-        ToolbarHelper::custom('message.retry','envelope-opened','','Nouvel essai',false);
+        ToolbarHelper::custom('message.retry','envelope-opened','', Text::_('COM_AUTOMSG_MESSAGES_BUTTON_RETRY'),false);
 
         if (empty($this->message->id)) {
             ToolBarHelper::cancel('message.cancel');

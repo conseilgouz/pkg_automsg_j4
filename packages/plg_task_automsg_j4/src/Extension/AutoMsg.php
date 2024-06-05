@@ -129,6 +129,9 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                     $article = $model->getItem($articleid);
                 } catch (\Exception $e) {
                     AutomsgHelper::lost_article($articleid, $date);
+                    if ($b_waiting) {
+                        AutomsgHelper::updateAutoMsgWaitingTable($ids, 9);
+                    }
                     continue;
                 }
                 // for report
@@ -155,6 +158,9 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                     $article = $model->getItem($articleid);
                 } catch (\Exception $e) {
                     AutomsgHelper::lost_article($articleid, $date);
+                    if ($b_waiting) {
+                        AutomsgHelper::updateAutoMsgWaitingTable($ids, 9);
+                    }
                     continue;
                 }
                 $results = AutomsgHelper::sendEmails($article, $users, $tokens, $deny, $date, $b_waiting, $waitingtimestp);

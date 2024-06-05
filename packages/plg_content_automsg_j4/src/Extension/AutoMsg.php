@@ -18,16 +18,36 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\SubscriberInterface;
 use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
 
-final class AutoMsg extends CMSPlugin
+final class AutoMsg extends CMSPlugin implements SubscriberInterface
 {
     use DatabaseAwareTrait;
 
     protected $autoparams;
 
-    public function onContentAfterSave($context, $article, $isNew): void
+    /**
+     * @inheritDoc
+     *
+     * @return string[]
+     *
+     * @since 4.1.0
+     */
+    public static function getSubscribedEvents(): array
     {
+        return [
+            'onContentAfterSave' 	=> 'afterSave',
+            'onContentChangeState' => 'changeState',
+        ];
+    }
+    public function afterSave($event): void
+    {
+
+        $context = $event[0];
+        $article = $event[1];
+        $isNew   = $event[2];
+
         try {
             $this->autoparams = AutomsgHelper::getParams();
         } catch (\Exception $e) { // ignore errors
@@ -44,7 +64,11 @@ final class AutoMsg extends CMSPlugin
         }
         if (($article->state == 1) && ($auto == 1)) {// article auto publié
             $arr[0] = $article->id;
-            self::onContentChangeState($context, $arr, $article->state);
+            $oneEvent = [];
+            $oneEvent[] = $context;
+            $oneEvent[] = $arr;
+            $oneEvent[] = $article->state;
+            self::changeState($oneEvent);
             return;
         }
         return ;
@@ -60,8 +84,12 @@ final class AutoMsg extends CMSPlugin
      *
      * @since   3.1
      */
-    public function onContentChangeState($context, $pks, $value)
+    public function changeState($event)
     {
+        $context    = $event[0];
+        $pks        = $event[1];
+        $value      = $event[2];
+
         if (($context != 'com_content.article') && ($context != 'com_content.form')) {
             return true;
         }

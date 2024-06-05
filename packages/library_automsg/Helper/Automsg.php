@@ -480,6 +480,25 @@ class Automsg
         $autoparams = self::getParams();
 
         $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        if ($state == 9) { // lost article => set remaining ones to state 9 : error
+            $query->select('id')
+            ->from($db->qn('#__automsg'))
+            ->where($db->qn('article_id') . ' = '.$article->id)
+            ->where($db->qn('state') .'= 0');
+            $db->setQuery($query);
+            $losts = $db->loadColumn();
+            if (!sizeOf($losts)) { // strange, nothing found
+                return;
+            }
+            $query = $db->getQuery(true)
+                ->update($db->qn('#__automsg'))
+                ->set($db->qn('state').'= 9')
+                ->where($db->qn('id').' in ('.implode(',', $losts).')');
+            $db->setQuery($query);
+            $db->execute();
+            return;
+        }
         $date = Factory::getDate();
 
         $query = $db->getQuery(true)
@@ -536,12 +555,12 @@ class Automsg
     //
     //   Async : update waiting articles to sent
     //
-    public static function updateAutoMsgWaitingTable($ids = [])
+    public static function updateAutoMsgWaitingTable($ids = [], $state = 1)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->update($db->qn('#__automsg_waiting'))
-            ->set($db->qn('state').'= 1')
+            ->set($db->qn('state').'='.$state)
             ->whereIn($db->qn('id'), $ids);
         $db->setQuery($query);
         $db->execute();
@@ -560,9 +579,12 @@ class Automsg
         $query->setLimit(1); // all articles from one session have same timestamp
         $db->setQuery($query);
         $oldcr = $db->loadResult();
-        if (!$oldcr) {
+        if (!$oldcr) { // should not exist, but do it just in case
             return;
-        } // should not exist, but do it just in case
+        }
+        if (!sizeOf($oldcr)) { // we are on an error : ignore it
+            return;
+        }
         $oldcr = json_decode($oldcr);
         if (!$cr['error']) {
             $oldcr->sent += $cr['sent'];
@@ -794,7 +816,7 @@ class Automsg
         ->where($db->qn('id') . ' = 1');
         $db->setQuery($query);
         $db->execute();
-        // compute automsg params to use in the task 
+        // compute automsg params to use in the task
         $execution_rules = ["rule-type" => "interval-hours",
                             "interval-hours" => $autoparams->maildelay,
                             "exec-day" => "1",
@@ -848,8 +870,9 @@ class Automsg
         $db->setQuery($query);
         $db->execute();
     }
-    // Lost article 
-    public static function lost_article($articleid,$timestamp) {
+    // Lost article
+    public static function lost_article($articleid, $timestamp)
+    {
         $autoparams = self::getParams();
         self::store_automsg_error(0, [$articleid], sprintf(Text::_('COM_AUTOMSG_NOT_FOUND'), $articleid), 9, $timestamp);
         $article = new \StdClass();
