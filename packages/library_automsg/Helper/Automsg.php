@@ -485,7 +485,7 @@ class Automsg
             $query->select('id')
             ->from($db->qn('#__automsg'))
             ->where($db->qn('article_id') . ' = '.$article->id)
-            ->where($db->qn('state') .'= 0');
+            ->where($db->qn('state') .'< 9');
             $db->setQuery($query);
             $losts = $db->loadColumn();
             if (!sizeOf($losts)) { // strange, nothing found

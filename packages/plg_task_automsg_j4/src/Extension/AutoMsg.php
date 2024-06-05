@@ -128,9 +128,12 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 try {
                     $article = $model->getItem($articleid);
                 } catch (\Exception $e) {
-                    AutomsgHelper::lost_article($articleid, $date);
                     if ($b_waiting) {
+                        $adate = Factory::getDate($waitingtimestp[$articleid]);
+                        AutomsgHelper::lost_article($articleid, $adate);
                         AutomsgHelper::updateAutoMsgWaitingTable($ids, 9);
+                    } else {
+                        AutomsgHelper::lost_article($articleid, $date);
                     }
                     continue;
                 }
@@ -157,9 +160,12 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 try {
                     $article = $model->getItem($articleid);
                 } catch (\Exception $e) {
-                    AutomsgHelper::lost_article($articleid, $date);
                     if ($b_waiting) {
+                        $adate = Factory::getDate($waitingtimestp[$articleid]);
+                        AutomsgHelper::lost_article($articleid, $adate);
                         AutomsgHelper::updateAutoMsgWaitingTable($ids, 9);
+                    } else {
+                        AutomsgHelper::lost_article($articleid, $date);
                     }
                     continue;
                 }
