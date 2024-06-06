@@ -3,7 +3,7 @@
 <form>
 	<fields name="profile_automsg">
 		<fieldset name="profile_automsg"
-			label="Email sur un nouvel article"
+			label="PLG_USER_AUTOMSG_LABEL"
 		>
 			<field
 				name="automsg"

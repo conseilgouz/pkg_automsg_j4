@@ -1,10 +1,9 @@
 <?php
 /**
-* AutoMsg Profile  - Joomla Module 
-* Version			: 2.1.2
+* AutoMsg Profile  
 * Package			: Joomla 4.x/5.x
-* copyright 		: Copyright (C) 2023 ConseilGouz. All rights reserved.
-* license    		: http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
+* copyright 		: Copyright (C) 2024 ConseilGouz. All rights reserved.
+* license    		: https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
 */
 namespace ConseilGouz\Plugin\User\AutoMsg\Extension;
 defined('JPATH_BASE') or die;
@@ -47,12 +46,13 @@ protected $db;
 	 */
 	public function prepareData($event)
 	{
+        $context    = $event[0];
+        $data       = $event[1];
+
 		// Check we are manipulating a valid form.
 		if (!in_array($context, array('com_users.profile','com_users.registration','com_users.user','com_admin.profile','com_automsg.automsg'))){
 			return true;
 		}
-        $context    = $event[0];
-        $data       = $event[1];
         
         $userId = isset($data->id) ? $data->id : 0;
         if (!$userId) return false;
@@ -94,7 +94,7 @@ protected $db;
 	{
 		// Load user_profile plugin language
 		$lang = Factory::getLanguage();
-		$lang->load('plg_user_profile_automsg', JPATH_ADMINISTRATOR);
+		$lang->load('plg_user_automsg', JPATH_ADMINISTRATOR);
 
         $form       = $event[0];
         $data       = $event[1];
