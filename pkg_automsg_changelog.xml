@@ -8,7 +8,11 @@
         </note>
 		<fix>
 			<item>Message sent twice to owner</item>
+            <item>Languages : untranslated fields in automsg user plugin</item>
         </fix>
+        <change>
+            <item>Automsg user plugin becomes a service provider</item>
+        </change>
 	</changelog>
 	<changelog>
 		<element>com_automsg</element>

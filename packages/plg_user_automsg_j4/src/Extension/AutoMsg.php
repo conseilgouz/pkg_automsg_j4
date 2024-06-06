@@ -14,11 +14,29 @@ use Joomla\CMS\Form\FormHelper;
 use Joomla\Database\ParameterType;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\SubscriberInterface;
 
-class AutoMsg extends CMSPlugin {
+class AutoMsg extends CMSPlugin implements SubscriberInterface {
     use DatabaseAwareTrait;
 
-protected $db;	
+protected $db;
+
+    /**
+     * @inheritDoc
+     *
+     * @return string[]
+     *
+     * @since 4.1.0
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onContentPrepareData' 	=> 'prepareData',
+            'onContentPrepareForm'  => 'prepareForm',
+            'onUserAfterSave'       => 'userAfterSave',
+            'onUserAfterDelete'     => 'userAfterDelete'
+        ];
+    }
 
 	/**
 	 * @param	string	The context for the data
@@ -27,16 +45,18 @@ protected $db;
 	 * @return	boolean
 	 * @since	1.6
 	 */
-	function onContentPrepareData($context, $data)
+	public function prepareData($event)
 	{
 		// Check we are manipulating a valid form.
 		if (!in_array($context, array('com_users.profile','com_users.registration','com_users.user','com_admin.profile','com_automsg.automsg'))){
 			return true;
 		}
- 
-		$userId = isset($data->id) ? $data->id : 0;
+        $context    = $event[0];
+        $data       = $event[1];
+        
+        $userId = isset($data->id) ? $data->id : 0;
         if (!$userId) return false;
-		// Load the profile data from the database.
+        // Load the profile data from the database.
         $db    = $this->db;
         $query = $db->getQuery(true)
                  ->select(
@@ -70,12 +90,15 @@ protected $db;
 	 * @return	boolean
 	 * @since	1.6
 	 */
-	function onContentPrepareForm($form, $data)
+	public function prepareForm($event)
 	{
 		// Load user_profile plugin language
 		$lang = Factory::getLanguage();
 		$lang->load('plg_user_profile_automsg', JPATH_ADMINISTRATOR);
- 
+
+        $form       = $event[0];
+        $data       = $event[1];
+    
 		if (!($form instanceof Form)) {
 			// $this->_subject->setError('JERROR_NOT_A_FORM');
 			return false;
@@ -113,11 +136,17 @@ protected $db;
 			} else {
 				$form->removeField('something', 'profile_automsg');
 			}
-		}			
+		}
 	}
  
-	function onUserAfterSave($data, $isNew, $result, $error)
+	public function userAfterSave($event)
 	{
+        $data   = $event[0]; 
+        $data   = $event[1];
+        $isNew  = $event[2];
+        $result = $event[3];
+        $error  = $event[4];
+        
 		$userId	= (int)$data['id'];
  
 		if ($userId && $result && isset($data['profile_automsg']) && (count($data['profile_automsg']))) {
@@ -214,8 +243,12 @@ protected $db;
 	 * @param	boolean		$success	True if user was succesfully stored in the database
 	 * @param	string		$msg		Message
 	 */
-	function onUserAfterDelete($user, $success, $msg)
+	function userAfterDelete($event)
 	{
+        $user       = $event[0];
+        $success    = $event[1];
+        $msg        = $event[2];
+        
 		if (!$success) {
 			return false;
 		}

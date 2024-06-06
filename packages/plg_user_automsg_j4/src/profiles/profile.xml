@@ -8,8 +8,8 @@
 			<field
 				name="automsg"
 				type="radio" class="btn-group btn-group-yesno" default="Oui"
-				label="Réception des emails"
-				description="Réception des emails de création des articles"
+				label="PLG_USER_AUTOMSG_RECEIVE"
+				description="PLG_USER_AUTOMSG_RECEIVE_DESC"
 				>
 				<option value="Oui">JYES</option>
 				<option value="Non">JNO</option>
