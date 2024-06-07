@@ -103,7 +103,7 @@ class ConfigController extends FormController
             return false;
         }
 
-        $this->setMessage(Text::_('Save sucess!'));
+        $this->setMessage(Text::_('COM_AUTOMSG_SAVE_OK'));
         // Redirect the user and adjust session state based on the chosen task.
         switch ($task) {
             case 'apply':

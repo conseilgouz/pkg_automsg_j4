@@ -53,7 +53,7 @@ class HtmlView extends BaseHtmlView
         /*$input = Factory::getApplication()->input;
         $input->setVar('hidemainmenu', true);
         */
-        $user		= Factory::getUser();
+        $user		= Factory::getApplication()->>getIdentity();
         $userId		= $user->get('id');
         if (!isset($this->message->sent)) {
             $this->message->sent = null;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="4.0" type="library" method="upgrade">
 	<name>Automsg Library</name>
+    <description>AutoMsg library</description>
 	<libraryname>automsg</libraryname>
 	<author>ConseilGouz</author>
 	<version>4.2.1</version>
@@ -15,4 +16,7 @@
 		<file>automsg.xml</file>
 		<file>index.html</file>
 	</files>
+	<updateservers>
+	<server type="extension" name="AutoMsg" priority="1">https://raw.githubusercontent.com/conseilgouz/updates_github/master/pkg_automsg_update.xml</server>
+	</updateservers>
 </extension>

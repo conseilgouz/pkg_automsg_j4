@@ -30,4 +30,7 @@
  			</fieldset>
  		</fields>
 	</config>
+	<updateservers>
+	<server type="extension" name="AutoMsg" priority="1">https://raw.githubusercontent.com/conseilgouz/updates_github/master/pkg_automsg_update.xml</server>
+	</updateservers>
  </extension>
