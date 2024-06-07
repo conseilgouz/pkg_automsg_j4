@@ -1,8 +1,8 @@
 <?php
 /**
  * Automsg Component  - Joomla 4.x/5.x Component 
- * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @copyright (c) 2023 ConseilGouz. All Rights Reserved.
+ * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
+ * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz 
 **/
 namespace ConseilGouz\Component\Automsg\Site\View\Automsg;
@@ -100,11 +100,6 @@ class HtmlView extends BaseHtmlView
             $app->setHeader('status', 403, true);
             throw new GenericDataException(implode("\n", $this->get('Errors')), 403);
         }
-        /*if (!$this->data && $this->_layout == "edit") {
-            $app   =Factory::getApplication();
-            $app->setHeader('status', 403, true);
-            throw new GenericDataException(Text::_('COM_AUTOMSG_NOT_FOUND'), 403);
-        }*/
         $this->prepareDocument();
 
         parent::display($tpl);

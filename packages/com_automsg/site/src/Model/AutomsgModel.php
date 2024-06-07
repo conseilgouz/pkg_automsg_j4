@@ -1,8 +1,8 @@
 <?php
 /**
  * Automsg Component  - Joomla 4.x/5.x Component 
- * @license https://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @copyright (c) 2023 ConseilGouz. All Rights Reserved.
+ * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
+ * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz 
 **/
 namespace ConseilGouz\Component\Automsg\Site\Model;
@@ -181,7 +181,7 @@ class AutomsgModel extends FormModel
         }
         $userId = $this->getIdFromToken($token);
         if (!$userId) {
-            $this->setError(Text::_('COM_AUTOMSG_NOT_FOUND'));
+            $this->setError(Text::_('COM_AUTOMSG_USER_NOT_FOUND'));
         }
         $this->setState('com_automsg.automsg.automsg.id', $userId);
         // Load the parameters.
