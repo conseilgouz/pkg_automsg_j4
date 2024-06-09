@@ -82,7 +82,7 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 	<?php endif; ?>
 <div  class="container mb-2">
     <div class="row">
-        <div id="filter-bar" class="btn-toolbar col-sm">
+        <div id="filter-bar" class="btn-toolbar col-sm-3">
             <div class="btn-group pull-right hidden-phone">
                 <select name="filter_state" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo Text::_('JOPTION_SELECT_PUBLISHED');?></option>

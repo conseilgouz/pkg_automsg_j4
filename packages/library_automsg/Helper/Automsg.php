@@ -896,18 +896,14 @@ class Automsg
         $db->setQuery($query);
         $task = $db->loadObject();
         if (!$task) { 
-            $msg = "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_NOTASK')."</span>";
-            return $msg;
+            return "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_NOTASK')."</span>";
         }
         if ($task->state == 0) {
-            $msg = "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_DISABLED')."</span>";
-            return $msg;
+            return "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_DISABLED')."</span>";
         }
         if ($task->locked) {
-            $msg = "<span class='text-danger'>".sprintf(Text::_('COM_AUTOMSG_TASK_LOCKED'),$task->locked)."</span>";
-            return $msg;
+            return "<span class='text-danger'>".sprintf(Text::_('COM_AUTOMSG_TASK_LOCKED'),HTMLHelper::_('date', $task->locked, Text::_('DATE_FORMAT_FILTER_DATETIME')))."</span>";
         }
-        $msg = "<span class='text-success'>".sprintf(Text::_('COM_AUTOMSG_TASK_NEXT'),$task->next_execution)."</span>";
-        return $msg; // ??? should not be here
+        return "<span class='text-success'>".sprintf(Text::_('COM_AUTOMSG_TASK_NEXT'),HTMLHelper::_('date', $task->next_execution, Text::_('DATE_FORMAT_FILTER_DATETIME')))."</span>";
     }
 }
