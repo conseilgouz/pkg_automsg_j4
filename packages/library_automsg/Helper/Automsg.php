@@ -883,4 +883,31 @@ class Automsg
             self::sendReport(sprintf(Text::_('COM_AUTOMSG_NOT_FOUND'), $articleid), $results);
         }
     }
+    // check task status and returns it to administrator messages page
+    public static function getTaskStatus() {
+        $autoparams = self::getParams();
+        if ( !$autoparams->async && !$autoparams->limit ) return '';
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->qn('#__scheduler_tasks'))
+            ->where($db->qn('type') . ' = '.$db->q('automsg'))  // automsg task
+            ->where($db->quoteName('state') . '>= 0');          // enabled
+        $db->setQuery($query);
+        $task = $db->loadObject();
+        if (!$task) { 
+            $msg = "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_NOTASK')."</span>";
+            return $msg;
+        }
+        if ($task->state == 0) {
+            $msg = "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_DISABLED')."</span>";
+            return $msg;
+        }
+        if ($task->locked) {
+            $msg = "<span class='text-danger'>".sprintf(Text::_('COM_AUTOMSG_TASK_LOCKED'),$task->locked)."</span>";
+            return $msg;
+        }
+        $msg = "<span class='text-success'>".sprintf(Text::_('COM_AUTOMSG_TASK_NEXT'),$task->next_execution)."</span>";
+        return $msg; // ??? should not be here
+    }
 }

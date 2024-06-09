@@ -80,14 +80,22 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 	<?php else : ?>
 	<div id="j-main-container">
 	<?php endif; ?>
-	<div id="filter-bar" class="btn-toolbar">
-		<div class="btn-group pull-right hidden-phone">
-			<select name="filter_state" class="inputbox" onchange="this.form.submit()">
+<div  class="container mb-2">
+    <div class="row">
+        <div id="filter-bar" class="btn-toolbar col-sm">
+            <div class="btn-group pull-right hidden-phone">
+                <select name="filter_state" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo Text::_('JOPTION_SELECT_PUBLISHED');?></option>
                 <?php echo HtmlHelper::_('select.options', $options, 'value', 'text', $this->state->get('filter.state'), true);?>
-			</select>
-		</div>
-	</div>
+                </select>
+            </div>
+        </div>
+        <div id="task-status" class=" col-sm">
+            <?php echo $this->taskstatus;?>
+        </div>
+    </div>
+</div>
+    
 	<div class="clr"> </div>
 
     <?php if (empty($this->items)) : ?>

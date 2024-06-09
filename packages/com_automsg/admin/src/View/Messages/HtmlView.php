@@ -17,12 +17,14 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use ConseilGouz\Automsg\Helper\Automsg as AutomsgHelper;
 
 class HtmlView extends BaseHtmlView
 {
     protected $items;
     protected $pagination;
     protected $state;
+    protected $taskstatus;
     /**
      * Display the view
      */
@@ -32,7 +34,7 @@ class HtmlView extends BaseHtmlView
         $this->items		= $this->get('Items');
         $this->pagination	= $this->get('Pagination');
         $this->state		= $this->get('State');
-
+        $this->taskstatus   = AutomsgHelper::getTaskStatus();
         // Check for errors.
         $errors = $this->get('Errors');
         if ($errors && \count($errors)) {

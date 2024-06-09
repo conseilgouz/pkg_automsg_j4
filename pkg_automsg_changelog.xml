@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.2.3</version>
+        <note>
+            <item>Update : 09/06/2024</item>
+        </note>
+		<addition>
+			<item>Add task scheduler status in automsg messages page</item>
+        </addition>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.2.2</version>
         <note>
             <item>Update : 07/06/2024</item>
