@@ -67,7 +67,7 @@
             type="radio" class="btn-group btn-group-yesno" default="0"
             label="COM_AUTOMSG_LOG" description="COM_AUTOMSG_LOG_DESC">
             <option value="0">JNO</option>
-            <option value="1">JERRORS</option>
+            <option value="1">COM_AUTOMSG_LOG_ERRORS</option>
             <option value="21">JALL</option>
         </field>
 		<field name="created" type="hidden" default="0" 

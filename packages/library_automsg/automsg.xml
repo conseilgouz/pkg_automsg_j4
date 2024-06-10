@@ -4,7 +4,7 @@
     <description>AutoMsg library</description>
 	<libraryname>automsg</libraryname>
 	<author>ConseilGouz</author>
-	<version>4.2.4</version>
+	<version>4.2.5</version>
 	<creationDate>2024-06-10</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
