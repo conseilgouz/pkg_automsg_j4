@@ -267,7 +267,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $data['subject'] = 'COM_AUTOMSG_PUBLISHED_SUBJECT';
         $data['htmlbody'] = '';
         $data['attachments'] = '';
-        $data['params'] = '{"tags": ["creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
+        $data['params'] = '{"tags": ["sitename","creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
         $data['subject'] = 'COM_AUTOMSG_ASYNC_SUBJECT';
         $data['body'] = 'COM_AUTOMSG_ASYNC_MSG';
         $table->save($data);
@@ -282,7 +282,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $data['language'] = '';
         $data['htmlbody'] = '';
         $data['attachments'] = '';
-        $data['params'] = '{"tags": ["article", "ok", "error", "waiting", "total"]}';
+        $data['params'] = '{"tags": ["sitename", "article", "ok", "error", "waiting", "total"]}';
         $data['template_id'] = 'com_automsg.report';
         $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
         $data['body'] = 'COM_AUTOMSG_REPORT_MSG';
@@ -316,7 +316,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             $data['body'] = 'COM_AUTOMSG_PUBLISHED_MSG';
             $data['htmlbody'] = '';
             $data['attachments'] = '';
-            $data['params'] = '{"tags": ["creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
+            $data['params'] = '{"tags": ["sitename", "creator", "title", "cat", "intro", "catimg", "url", "introimg", "subtitle", "tags", "date","featured","unsubscribe"]}';
             $table->save($data);
             Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_CREATE_OWNER_TEMPLATE_OK'), 'notice');
         }
@@ -349,7 +349,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $result_report = $db->loadResult();
         if (!$result_report) {
             // Report message
-            $data['params'] = '{"tags": ["ok", "error", "waiting", "total"]}';
+            $data['params'] = '{"tags": ["sitename", "ok", "error", "waiting", "total"]}';
             $data['template_id'] = 'com_automsg.report';
             $data['subject'] = 'COM_AUTOMSG_REPORT_SUBJECT';
             $data['body'] = 'COM_AUTOMSG_REPORT_MSG';

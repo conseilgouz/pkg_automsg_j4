@@ -100,7 +100,8 @@ class Automsg
             if ($tokens[$user_id]) {
                 $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
-            $data['unsubscribe'] = $unsubscribe;
+            $data['unsubscribe']    = $unsubscribe;
+            $data['sitename']       = str_replace(['@', '|'], '', $app->get('sitename'));
             // Collect data for mail
             if (($user_id == $creatorId) && ($msgcreator == 1)) { // mail specifique au createur de l'article
                 $mailer = new MailTemplate('com_automsg.ownermail', $receiver->getParam('language', $app->get('language')));
@@ -170,7 +171,7 @@ class Automsg
             if ($tokens[$user_id]) {
                 $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
-            $data = ['unsubscribe'   => $unsubscribe];
+            $data = ['unsubscribe'   => $unsubscribe,'sitename' =>  str_replace(['@', '|'], '', $app->get('sitename'))];
             $mailer = new MailTemplate('com_automsg.asyncmail', $receiver->getParam('language', $app->get('language')));
             $data_articles = ['articles' => $articles];
             $mailer->addTemplateData($data);
@@ -231,6 +232,7 @@ class Automsg
                  'ok'      => $cr['sent'],
                  'error'   => $cr['error'],
                  'waiting' => $cr['waiting'],
+                 'sitename' =>  str_replace(['@', '|'], '', $app->get('sitename'))
                  ];
 
         foreach ($users as $user) {

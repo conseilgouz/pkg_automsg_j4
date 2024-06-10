@@ -42,7 +42,7 @@
             label="COM_AUTOMSG_ASYNC" description="COM_AUTOMSG_ASYNC_DESC">
             <option value="0">JNO</option>
             <option value="1">JALL</option>
-            <option value="2">Un article par message</option>
+            <option value="2">COM_AUTOMSG_ASYNC_ONE</option>
         </field>
         <field showon="async!:0[AND]chktask:0" type="note" name="noteasync" label="COM_AUTOMSG_NOTE_ASYNC" class="alert" />
         <field name="limit" type="radio" default="0" class="btn-group btn-group-yesno" 
@@ -67,7 +67,7 @@
             type="radio" class="btn-group btn-group-yesno" default="0"
             label="COM_AUTOMSG_LOG" description="COM_AUTOMSG_LOG_DESC">
             <option value="0">JNO</option>
-            <option value="1">Erreurs</option>
+            <option value="1">JERRORS</option>
             <option value="21">JALL</option>
         </field>
 		<field name="created" type="hidden" default="0" 
