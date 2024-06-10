@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.2.6</version>
+        <note>
+            <item>Update : 10/06/2024</item>
+        </note>
+		<fix>
+			<item>Invalid log value in config.xml file</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.2.5</version>
         <note>
             <item>Update : 10/06/2024</item>
