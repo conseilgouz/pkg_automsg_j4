@@ -19,6 +19,8 @@
 		<language tag="fr-FR">language/fr-FR/plg_content_automsg.sys.ini</language>
 		<language tag="en-GB">language/en-GB/plg_content_automsg.ini</language>
 		<language tag="en-GB">language/en-GB/plg_content_automsg.sys.ini</language>
+	    	<language tag="nl-NL">language/nl-NL/plg_content_automsg.ini</language>
+		<language tag="nl-NL">language/nl-NL/plg_content_automsg.sys.ini</language>
 	</languages>
 	<namespace path="src">ConseilGouz\Plugin\Content\AutoMsg</namespace>
     <changelogurl>https://raw.githubusercontent.com/conseilgouz/pkg_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
