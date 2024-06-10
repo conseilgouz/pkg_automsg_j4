@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.2.8</version>
+        <note>
+            <item>Update : 10/06/2024</item>
+        </note>
+		<fix>
+			<item>Missing NL plgautomsginstaller.sys.ini file</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.2.7</version>
         <note>
             <item>Update : 10/06/2024</item>
