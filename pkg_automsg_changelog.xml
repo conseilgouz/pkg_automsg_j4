@@ -2,6 +2,18 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.2.9</version>
+        <note>
+            <item>Update : 11/06/2024</item>
+        </note>
+		<fix>
+			<item>Change state : only accept published state</item>
+            <item>NL Language files : minor fixes</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.2.8</version>
         <note>
             <item>Update : 10/06/2024</item>

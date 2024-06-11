@@ -93,7 +93,7 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         if (($context != 'com_content.article') && ($context != 'com_content.form')) {
             return true;
         }
-        if ($value == 0) { // unpublish => on sort
+        if ($value != 1) { // not published state => exit
             return true;
         }
         $lang = Factory::getApplication()->getLanguage();
