@@ -25,11 +25,6 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 $canOrder	= ContentHelper::getActions('com_automsg');
 $saveOrder	= $listOrder == 'ordering';
 
-/** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
-$wa = Factory::getDocument()->getWebAssetManager();
-$wa->addInlineStyle('.icon-error{ color:red!important}');
-
-
 $states = [
         0 => [
              'send', // action : publish => envoi
@@ -221,9 +216,4 @@ $canChange	= $user->authorise('core.edit.state') && $canCheckin;
 	</div>
 	</div>
 </form>
-<script>
-function resetSearch() {
-  document.getElementById("filter_search").value = "";
-}
-</script>
 

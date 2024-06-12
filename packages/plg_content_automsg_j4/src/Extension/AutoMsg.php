@@ -131,7 +131,6 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
                 $article = $model->getItem($articleid);
             } catch (\Exception $e) {
                 AutomsgHelper::lost_article($articleid, $timestamp);
-                AutomsgHelper::store_automsg($article, 9, $timestamp);
                 continue; // check next article
             }
             if (!empty($categories) && !in_array($article->catid, $categories)) {

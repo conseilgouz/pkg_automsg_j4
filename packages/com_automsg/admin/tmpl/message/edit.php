@@ -20,8 +20,6 @@ $comfield	= 'components/com_automsg/';
 /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 
-$wa->addInlineStyle('.icon-error{ color:red!important}');
-
 $wa->useScript('keepalive')
     ->useScript('form.validate');
 
@@ -183,7 +181,7 @@ foreach ($data as $i => $message) :
         }
     ?>
                 </td>
-                <td>
+                <td class="tbody-icon">
                 <?php
         if ($message->state == 1) {
             echo '<span class="icon-publish" aria-hidden="true" title="'.Text::_('COM_AUTOMSG_MESSAGES_SENT').'"></span>';

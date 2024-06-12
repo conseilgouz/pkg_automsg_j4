@@ -1,7 +1,6 @@
 <?php
 /**
  * @component     AutoMsg - Joomla 4.x/5.x
- * Version			: 4.0.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz 
@@ -50,10 +49,8 @@ class HtmlView extends BaseHtmlView
     {
         $canDo = ContentHelper::getActions('com_automsg');
         $state = $this->get('State');
-        /*$input = Factory::getApplication()->input;
-        $input->setVar('hidemainmenu', true);
-        */
-        $user		= Factory::getApplication()->>getIdentity();
+
+        $user		= Factory::getApplication()->getIdentity();
         $userId		= $user->get('id');
         if (!isset($this->message->sent)) {
             $this->message->sent = null;
