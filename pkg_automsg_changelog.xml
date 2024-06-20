@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.2.12</version>
+        <note>
+            <item>Update : 20/06/2024</item>
+        </note>
+		<fix>
+			<item>Invalid version number</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.2.11</version>
         <note>
             <item>Update : 20/06/2024</item>
