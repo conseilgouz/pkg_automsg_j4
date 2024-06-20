@@ -31,5 +31,5 @@ $params = ComponentHelper::getParams('com_automsg');
 	<?php echo Text::_('COM_AUTOMSG_NOTFOUND'); ?>
 	</div>
 	<div class="col-md-1"></div>
-	<div class="col-md-4" style="margin-top:1em"><a href="index.php"  rel="noopener noreferrer"><button><?php echo Text::_('COM_AUTOMSG_HOME');?></button></a></div>
+	<div class="col-md-4" style="margin-top:1em"><a href="index.php" class="btn btn-primary" rel="noopener noreferrer"><?php echo Text::_('COM_AUTOMSG_HOME');?></a></div>
 </div>

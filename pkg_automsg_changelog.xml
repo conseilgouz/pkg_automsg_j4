@@ -2,6 +2,18 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.2.11</version>
+        <note>
+            <item>Update : 20/06/2024</item>
+        </note>
+		<fix>
+			<item>AutoMsg from front : missing mail text translation</item>
+            <item>User change profil : use btn-primary class instead of button</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.2.10</version>
         <note>
             <item>Update : 12/06/2024</item>
