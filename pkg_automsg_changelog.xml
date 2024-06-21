@@ -2,6 +2,18 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.2.13</version>
+        <note>
+            <item>Update : 21/06/2024</item>
+        </note>
+		<fix>
+			<item>Install : initialize com_mail params if empty </item>
+			<item>Uninstall : delete automsg scheduled tasks</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.2.12</version>
         <note>
             <item>Update : 20/06/2024</item>

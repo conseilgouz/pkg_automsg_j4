@@ -1,7 +1,6 @@
 <?php
 /**
  * @package    AutoMsg
- * Version			: 4.0.0
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (C) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -10,7 +9,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Language\Text;
@@ -22,7 +20,6 @@ use Joomla\Component\Scheduler\Administrator\Model\TaskModel;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
-use ConseilGouz\Component\Automsg\Administrator\Model\ConfigModel;
 
 class PlgSystemAutomsgInstallerInstallerScript
 {
@@ -37,7 +34,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     public function __construct()
     {
         $this->dir = __DIR__;
-        $this->lang = Factory::getLanguage();
+        $this->lang = Factory::getApplication()->getLanguage();
 
     }
     public function uninstall($parent)
@@ -48,9 +45,6 @@ class PlgSystemAutomsgInstallerInstallerScript
         $table->delete('com_automsg.usermail');
         $table->delete('com_automsg.asyncmail');
         $table->delete('com_automsg.report');
-        $task = new TaskModel(array('ignore_request' => true));
-        $table = $task->getTable();
-        $table->delete('automsg');
         return true;
     }
     public function preflight($route, $installer)
@@ -373,20 +367,23 @@ class PlgSystemAutomsgInstallerInstallerScript
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
-        $query->select('params');
+        $query->select('*');
         $query->from('#__extensions');
         $query->where('type = ' . $db->quote('component'));
         $query->where('element = ' . $db->quote('com_mails'));
         $db->setQuery($query);
-        $params = $db->loadResult();
-        if (!$params) {
+        $cfg = $db->loadObject();
+        if (!$cfg) {
             Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_EMAIL_CONFIG_NOTOK'), 'error');
             return;
         }
-        if (strpos($params, 'plaintext') === false) {
+        if (!$cfg->params) { // not yet created : create default
+            $cfg->params = '{"mail_style":"plaintext","alternative_mailconfig":"0","copy_mails":"0","attachment_folder":""}';
+        }
+        if (strpos($cfg->params, 'plaintext') === false) {
             return;
         }
-        $params = str_replace('plaintext', 'both', $params);
+        $params = str_replace('plaintext', 'both', $cfg->params);
         $query = $db->getQuery(true)
                 ->update('#__extensions')
                 ->set($db->qn('params').' = '.$db->q($params))
