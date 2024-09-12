@@ -23,6 +23,8 @@
 		<language tag="en-GB">language/en-GB/com_automsg.sys.ini</language>
 		<language tag="nl-NL">language/nl-NL/com_automsg.ini</language>
 		<language tag="nl-NL">language/nl-NL/com_automsg.sys.ini</language>
+		<language tag="pt-PT">language/pt-PT/com_automsg.ini</language>
+		<language tag="pt-PT">language/pt-PT/com_automsg.sys.ini</language>
 	</languages>
     <install>
 		<sql>

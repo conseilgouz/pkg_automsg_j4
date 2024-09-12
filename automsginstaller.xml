@@ -2,12 +2,12 @@
 <extension version="4.0" type="plugin" group="system" method="upgrade">
 	<name>plgautomsginstaller</name>
 	<author>ConseilGouz</author>
-	<creationDate>2024-06-21</creationDate>
+	<creationDate>2024-09-12</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.2.13</version>
+	<version>4.2.14</version>
 	<description>AutoMsg</description>
 	<scriptfile>script.install.php</scriptfile>
 	<files>
