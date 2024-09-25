@@ -2,12 +2,12 @@
 <extension type="component" method="upgrade">
 	<name>COM_AUTOMSG</name>
 	<author>ConseilGouz</author>
-	<creationDate>2024-09-12</creationDate>
+	<creationDate>2024-09-25</creationDate>
 	<copyright>(C)2024 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.2.15</version>
+	<version>4.2.16</version>
 	<description>COM_AUTOMSG_XML_DESCRIPTION</description>
 	<namespace path="src">ConseilGouz\Component\Automsg</namespace>
 	<files folder="site">
@@ -27,6 +27,8 @@
 		<language tag="pt-PT">language/pt-PT/com_automsg.sys.ini</language>
 		<language tag="pt-BR">language/pt-BR/com_automsg.ini</language>
 		<language tag="pt-BR">language/pt-BR/com_automsg.sys.ini</language>
+		<language tag="de-DE">language/de-DE/com_automsg.ini</language>
+		<language tag="de-DE">language/de-DE/com_automsg.sys.ini</language>
 	</languages>
     <install>
 		<sql>
@@ -74,6 +76,8 @@
             <language tag="pt-PT">language/pt-PT/com_automsg.sys.ini</language>
             <language tag="pt-BR">language/pt-BR/com_automsg.ini</language>
             <language tag="pt-BR">language/pt-BR/com_automsg.sys.ini</language>
+            <language tag="de-DE">language/de-DE/com_automsg.ini</language>
+            <language tag="de-DE">language/de-DE/com_automsg.sys.ini</language>
         </languages>
 	</administration>
 	<changelogurl>https://raw.githubusercontent.com/conseilgouz/pkg_automsg_j4/master/pkg_automsg_changelog.xml</changelogurl>
