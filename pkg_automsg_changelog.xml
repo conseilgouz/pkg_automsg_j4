@@ -9,6 +9,9 @@
 		<addition>
 			<item>Users list : add user name</item>
         </addition>
+        <fix>
+            <item>Missing COM_AUTOMSG_USERS in com_automsg.sys.ini files</item>
+        </fix>
 	</changelog>
 	<changelog>
 		<element>com_automsg</element>
