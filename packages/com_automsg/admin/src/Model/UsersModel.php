@@ -21,7 +21,7 @@ class UsersModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id','username','email', 'email',
+                'id','name','username','email', 'email',
                 'lastvisitDate', 'block','activation',
                 'value'
                 );
@@ -37,7 +37,7 @@ class UsersModel extends ListModel
 
         // Select the required fields from the table.
 
-        $query->select('u.id,u.username,u.email,u.lastvisitDate,u.block,u.activation, CASE p.profile_value when '.$db->q('"Oui"').' then 1 else 0  end as value');
+        $query->select('u.id,u.name,u.username,u.email,u.lastvisitDate,u.block,u.activation, CASE p.profile_value when '.$db->q('"Oui"').' then 1 else 0  end as value');
         $query->from('#__users u');
         $query->join('LEFT', '#__user_profiles p ON u.id = p.user_id');
         $query->where('p.profile_key = "profile_automsg.automsg"');

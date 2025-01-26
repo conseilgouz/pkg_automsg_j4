@@ -25,10 +25,6 @@ $canOrder	= ContentHelper::getActions('com_automsg');
 $saveOrder	= $listOrder == 'ordering';
 
 $ordering	= ($listOrder == 'ordering');
-$canCreate	= $user->authorise('core.create');
-$canEdit	= $user->authorise('core.edit');
-$canCheckin	= $user->authorise('core.manage', 'com_checkin') ;
-$canChange	= $user->authorise('core.edit.state') && $canCheckin;
 
 $app = Factory::getApplication();
 $lang = $app->getLanguage();
@@ -115,11 +111,11 @@ $states_profile = [
     <table class="table table-striped" id="usersList">
 		<thead>
 			<tr>
-				<th width="1%">
-					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo Text::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
+				<th class="10%">
+					<?php echo HTMLHelper::_('grid.sort', Text::_('COM_USERS_HEADING_NAME'), 'name', $listDirn, $listOrder); ?>
 				</th>
-				<th class="90%">
-					<?php echo HTMLHelper::_('grid.sort', Text::_('COM_USERS_HEADING_NAME'), 'username', $listDirn, $listOrder); ?>
+				<th class="10%">
+					<?php echo HTMLHelper::_('grid.sort', Text::_('JGLOBAL_USERNAME'), 'username', $listDirn, $listOrder); ?>
 				</th>
 				<th class="5%">
 					<?php echo HTMLHelper::_('grid.sort', Text::_('COM_AUTOMSG_USERS_PROFILE_VALUE'), 'value', $listDirn, $listOrder); ?>
@@ -149,49 +145,47 @@ $states_profile = [
 		<?php foreach ($this->items as $i => $user) :
 		    ?>
 			<tr class="row<?php echo $i % 2; ?>">
-				<td class="center">
-					<?php
-		            // note : $message->ids contains all ids from one record
-		            // id will be truncated to 1st record when sent to MessageModel
-		            echo HTMLHelper::_('grid.id', $i, $user->id);
-		    ?>
-				</td>
                 <td>
-                    <?php
-		                $name = $user->username;
-		    echo $this->escape($name)
+                <?php
+		            $name = $user->name;
+                    echo $this->escape($name)
+                ?>
+                </td>
+                <td>
+                <?php
+		            $name = $user->username;
+                    echo $this->escape($name)
 		    ?>
                 </td>
 				<td class="center">
                 <?php
-		    echo HTMLHelper::_('jgrid.state', $states_profile, $user->value, $i, 'users.', false, 'cb');
-		    ?>
+                    echo HTMLHelper::_('jgrid.state', $states_profile, $user->value, $i, 'users.', false, 'cb');
+                ?>
 				</td>
 				<td class="center">
 				<?php
-		        echo $user->email;
-		    ?>
+                    echo $user->email;
+                ?>
 				</td>
 				<td class="center">
 				<?php
-		        echo $user->lastvisitDate;
-		    ?>
+                    echo $user->lastvisitDate;
+                ?>
 				</td>
 				<td class="center">
 				<?php
-		        echo HTMLHelper::_('jgrid.state', $states, $user->block, $i, 'users.', false, 'cb')
-		    ?>
+                    echo HTMLHelper::_('jgrid.state', $states, $user->block, $i, 'users.', false, 'cb')
+                ?>
 				</td>
 				<td class="center">
-			<?php
-		    $valid = 1;
-		    if (! $user->activation) { // activation done
-		        $valid = 0;
-		    }
-		    echo HTMLHelper::_('jgrid.state', $states, $valid, $i, 'users.', false, 'cb');
-
-		    // echo $user->activation;
-		    ?>
+                <?php
+                    $valid = 1;
+                    if (! $user->activation) { // activation done
+                        $valid = 0;
+                    }
+                    echo HTMLHelper::_('jgrid.state', $states, $valid, $i, 'users.', false, 'cb');
+                // echo $user->activation;
+                ?>
 				</td>
 			</tr>
 			<?php endforeach; ?>

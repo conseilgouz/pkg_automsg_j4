@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.3.1</version>
+        <note>
+            <item>Update : 26/01/2025</item>
+        </note>
+		<addition>
+			<item>Users list : add user name</item>
+        </addition>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.3.0</version>
         <note>
             <item>Update : 25/01/2025</item>
