@@ -2,6 +2,18 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.3.3</version>
+        <note>
+            <item>Update : 26/01/2025</item>
+        </note>
+        <change>
+            <item>SQL : use prepared statements for users</item>
+            <item>Users : display last visit date using date.relative</item>
+        </change>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.3.2</version>
         <note>
             <item>Update : 26/01/2025</item>
@@ -27,7 +39,7 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
-		<version>4.3.2</version>
+		<version>4.3.0</version>
         <note>
             <item>Update : 25/01/2025</item>
         </note>

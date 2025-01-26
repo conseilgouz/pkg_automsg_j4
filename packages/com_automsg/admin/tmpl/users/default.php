@@ -169,7 +169,9 @@ $states_profile = [
 				</td>
 				<td class="center">
 				<?php
-                    echo $user->lastvisitDate;
+                    if ($user->lastvisitDate) {
+                        echo HTMLHelper::_('date.relative', $user->lastvisitDate);
+                    }
                 ?>
 				</td>
 				<td class="center">

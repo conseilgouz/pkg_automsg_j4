@@ -37,18 +37,21 @@ class UsersModel extends ListModel
 
         // Select the required fields from the table.
 
-        $query->select('u.id,u.name,u.username,u.email,u.lastvisitDate,u.block,u.activation, CASE p.profile_value when '.$db->q('"Oui"').' then 1 else 0  end as value');
+        $query->select('u.id,u.name,u.username,u.email,u.lastvisitDate,u.block,u.activation, CASE when p.profile_value LIKE '.$db->q('%Oui%').' then 1 else 0  end as value');
         $query->from('#__users u');
         $query->join('LEFT', '#__user_profiles p ON u.id = p.user_id');
-        $query->where('p.profile_key = "profile_automsg.automsg"');
-
+        $query->where('p.profile_key = :key');
+        $key = "profile_automsg.automsg";
+        $query->bind(':key', $key, \Joomla\Database\ParameterType::STRING);
         $value = $this->getState('filter.state');
         if (is_numeric($value)) {
             if ($value == 1) {
-                $query->where('p.profile_value = '.$db->q('"Oui"'));
+                $value = '%Oui%';
             } else {
-                $query->where('p.profile_value = '.$db->q('"Non"'));
+                $value = '%Non%';
             }
+            $query->where('p.profile_value like :value');
+            $query->bind(':value', $value, \Joomla\Database\ParameterType::STRING);
         }
         // Add the list ordering clause.
         $orderCol	= $this->state->get('list.ordering');
