@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.3.4</version>
+        <note>
+            <item>Update : 05/06/2025</item>
+        </note>
+        <fix>
+            <item>Invalid creator information when sending messages</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.3.3</version>
         <note>
             <item>Update : 26/01/2025</item>

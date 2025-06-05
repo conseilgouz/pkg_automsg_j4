@@ -54,7 +54,8 @@ class Automsg
                 $users[] = $creatorId;
             }
         }
-        $creator = $app->getIdentity($creatorId);
+        $userFactory = Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class);
+        $creator = $userFactory->loadUserById($creatorId);
         $url = "<a href='".URI::root()."index.php?option=com_content&view=article&id=".$article->id."' target='_blank'>".Text::_('COM_AUTOMSG_CLICK')."</a>";
         $info_cat = self::getCategoryName($article->catid);
         $cat_params = json_decode($info_cat[0]->params);
@@ -384,7 +385,8 @@ class Automsg
 
         $libdateformat = "d/M/Y h:m";
         $creatorId = $article->created_by;
-        $creator = Factory::getApplication()->getIdentity($creatorId);
+        $userFactory = Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class);
+        $creator = $userFactory->loadUserById($creatorId);
         $url = "<a href='".URI::root()."index.php?option=com_content&view=article&id=".$article->id."' target='_blank'>".Text::_("COM_AUTOMSG_CLICK")."</a>";
         $info_cat = self::getCategoryName($article->catid);
         $cat_params = json_decode($info_cat[0]->params);
