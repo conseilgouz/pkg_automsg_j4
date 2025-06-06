@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<extension version="4.0" type="module" method="upgrade" client="site">
+	<name>AutoMsg Enregistrement Email</name>
+	<author>ConseilGouz</author>
+	<creationDate>2025-06-06</creationDate>
+	<copyright>Copyright (C) 2025 ConseilGouz. All rights reserved</copyright>
+	<license>https://www.gnu.org/licenses/gpl-3.0.html GNU/GPLv2</license>
+	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
+	<authorUrl>www.conseilgouz.com</authorUrl>
+	<version>3.3.6</version>
+	<description>CG_XML_DESCRIPTION</description>
+	<namespace path="src">ConseilGouz\Module\AutomsgRegister</namespace>
+	<files>
+		<folder module="mod_automsg_register">services</folder>
+		<filename>index.html</filename>
+		<folder>tmpl</folder>
+		<folder>src</folder>
+	</files>
+	<media destination="mod_automsg_register" folder="media">
+		<folder>js</folder>
+		<filename>index.html</filename>
+	</media>
+	<languages>
+		<language tag="fr-FR">language/fr-FR/mod_automsg_register.ini</language>
+		<language tag="fr-FR">language/fr-FR/mod_automsg_register.sys.ini</language>
+		<language tag="en-GB">language/en-GB/mod_automsg_register.ini</language>
+		<language tag="en-GB">language/en-GB/mod_automsg_register.sys.ini</language>
+	</languages>
+	
+	<config>
+	<fields name="params" >
+		<fieldset name="basic" 
+            addfieldprefix="ConseilGouz\Module\AutomsgRegister\Site\Field"
+			>
+            <field name="version" type="version"  margintop="-3em" extension="mod_automsg_register"/>
+			<field name="pretext" type="textarea"
+                   label="AUTOMSG_REGISTER_PRETEXT_LBL" description ="AUTOMSG_REGISTER_PRETEXT_DESC"
+					filter="safehtml" cols="30" rows="5"
+				/>
+            <field name="note_captcha" type="note" description="AUTOMSG_REGISTER_NOTE_CAPTCHA" class="alert-success"/>
+            <field name="captcha" type="plugins" folder="captcha"
+					label="AUTOMSG_REGISTER_CAPTCHA"	description="AUTOMSG_REGISTER_CAPTCHA_DESC"
+					default="0" filter="cmd" >
+                <option value="0">JOPTION_DO_NOT_USE</option>
+            </field>
+		</fieldset>
+		<fieldset name="advanced">
+		<field name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX" />
+		</fieldset>
+	</fields>
+	</config>
+</extension>

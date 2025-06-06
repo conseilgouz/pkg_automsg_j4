@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS `#__automsg_public` (`id` integer NOT NULL AUTO_INCREMENT,`state` integer NOT NULL default 0,`email` text,`ip` varchar(255) NOT NULL,`timestamp` datetime NOT NULL DEFAULT '1980-01-01 00:00:00',`modified` datetime NULL DEFAULT NULL,PRIMARY KEY  (`id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='AutoMsg Public Emails Table';
