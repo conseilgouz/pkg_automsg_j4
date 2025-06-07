@@ -53,6 +53,7 @@
             <menu link="option=com_automsg&amp;view=config" view="config">COM_AUTOMSG_CONFIG</menu>
             <menu link="option=com_automsg&amp;view=messages" view="messages">COM_AUTOMSG_MESSAGES</menu>
             <menu link="option=com_automsg&amp;view=users" view="messages">COM_AUTOMSG_USERS</menu>
+            <menu link="option=com_automsg&amp;view=public" view="messages">COM_AUTOMSG_PUBLIC</menu>
         </submenu>
     
 		<files folder="admin">

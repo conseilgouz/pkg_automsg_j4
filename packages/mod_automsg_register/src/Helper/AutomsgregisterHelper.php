@@ -132,8 +132,8 @@ class AutomsgregisterHelper
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
         $sDate = gmdate("Y-m-d H:i:s", time());
         $query = $db->getQuery(true);
-        $columns = array('ip','email','timestamp');
-        $values = array($db->quote($ip),$db->quote($email),$db->quote($sDate));
+        $columns = array('ip','email','timestamp','state');
+        $values = array($db->quote($ip),$db->quote($email),$db->quote($sDate),1);
         $query->insert($db->quoteName('#__automsg_public'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
