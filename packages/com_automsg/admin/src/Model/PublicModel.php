@@ -21,11 +21,11 @@ class PublicModel extends ListModel
     {
         if (empty($public['filter_fields'])) {
             $public['filter_fields'] = array(
-                'id','email','ip','timestamp', 'modified','state','country'
+                'id','email','ip','created', 'modified','state','country'
                 );
         }
 
-        parent::__construct($config, $factory);
+        parent::__construct($public, $factory);
     }
     protected function getListQuery()
     {
@@ -35,7 +35,7 @@ class PublicModel extends ListModel
 
         // Select the required fields from the table.
 
-        $query->select('id,email,ip,state,timestamp, modified');
+        $query->select('id,email,ip,country,state,created, modified');
         $query->from('#__automsg_public');
         $orderCol	= $this->state->get('list.ordering');
         $orderDirn	= $this->state->get('list.direction');

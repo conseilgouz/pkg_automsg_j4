@@ -10,9 +10,7 @@ namespace ConseilGouz\Module\AutomsgRegister\Site\Helper;
 
 defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
 use Joomla\Database\DatabaseInterface;
@@ -54,8 +52,8 @@ class AutomsgregisterHelper
             self::updateEmail($email, $ip);
             return new JsonResponse(['success' => Text::_('AUTOMSG_REGISTER_UPDATED'),'timestp' => $now]);
         } else {
-            $country = self::getCountry($ip);
-            self::insertEmail($email, $ip,$country);
+            $country = self::getCountry($params, $ip);
+            self::insertEmail($email, $ip, $country);
             return new JsonResponse(['success' => Text::_('AUTOMSG_REGISTER_OK'),'timestp' => $now]);
         }
     }
@@ -97,7 +95,7 @@ class AutomsgregisterHelper
         if ($result) { // found in automsg_public
             return $result;
         }
-        // check in users 
+        // check in users
         $query = $db->getQuery(true)
             ->select('id')
             ->from('#__users')
@@ -118,7 +116,7 @@ class AutomsgregisterHelper
             $db->quoteName('modified') . ' = :modified'
         );
         $conditions = array(
-            $db->quoteName('ip') . ' = :ip', 
+            $db->quoteName('ip') . ' = :ip',
         );
         $query->update($db->quoteName('#__automsg_public'))->set($fields)->where($conditions);
         $query->bind(':email', $email, \Joomla\Database\ParameterType::STRING)
@@ -128,13 +126,13 @@ class AutomsgregisterHelper
         $db->execute();
     }
     // insert email in #__automsg_public
-    public static function insertEmail($email, $ip,$country)
+    public static function insertEmail($email, $ip, $country)
     {
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
         $sDate = gmdate("Y-m-d H:i:s", time());
         $query = $db->getQuery(true);
-        $columns = array('ip','email','created','state');
-        $values = array($db->quote($ip),$db->quote($email),$db->quote($sDate),1);
+        $columns = array('ip','email','created','state','country');
+        $values = array($db->quote($ip),$db->quote($email),$db->quote($sDate),1,$db->quote($country));
         $query->insert($db->quoteName('#__automsg_public'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
@@ -145,14 +143,13 @@ class AutomsgregisterHelper
             return false;
         }
     }
-    private static function getCountry($ip) {
+    private static function getCountry($params, $ip)
+    {
         $iplocate = 'https://www.iplocate.io/api/lookup/';
-        $apikey = "e468c23c8daf64701f9d96e16b677e6f";
-        $app = Factory::getApplication();
         if (($ip == '::1') || ($ip == '127.0.0.1')) { // local host
             return true;
         }
-        apikey = $params->get('iplocatekey','e468c23c8daf64701f9d96e16b677e6f');
+        $apikey = $params->get('iplocatekey', 'e468c23c8daf64701f9d96e16b677e6f');
         $response = self::getIPLocate_via_curl($iplocate.$ip.'?apikey='.$apikey);
         $country = "";
         if ($response) { // IPLocate OK
@@ -163,7 +160,7 @@ class AutomsgregisterHelper
             }
             $country = $json_array->country_code;
         }
-        return $country
+        return $country;
     }
     // get country using IPLocate
     public static function getIPLocate_via_curl($url)
@@ -181,5 +178,5 @@ class AutomsgregisterHelper
             return null;
         }
     }
-    
+
 }
