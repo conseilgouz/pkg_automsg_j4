@@ -12,7 +12,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Utilities\IpHelper;
-use ConseilGouz\Module\AutomsgRegister\Site\Helper\AutomsgregisterHelper;
+use ConseilGouz\Module\AutomsgRegister\Site\Helper\AutomsgRegisterHelper;
 
 $app = Factory::getApplication();
 $user = $app->getIdentity();
@@ -44,7 +44,7 @@ $wa->registerAndUseScript('automsgregister'.$module->id, $modulefield.'js/init.j
 
 $ip = IpHelper::getIp();
 
-$email = AutomsgregisterHelper::getEmailByIP($ip);
+$email = AutomsgRegisterHelper::getEmailByIP($ip);
 
 ?>
 <?php if ($params->get('pretext', '')) {?>
