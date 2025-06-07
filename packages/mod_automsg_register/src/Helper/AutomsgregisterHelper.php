@@ -147,7 +147,7 @@ class AutomsgregisterHelper
     {
         $iplocate = 'https://www.iplocate.io/api/lookup/';
         if (($ip == '::1') || ($ip == '127.0.0.1')) { // local host
-            return true;
+            return "";
         }
         $apikey = $params->get('iplocatekey', 'e468c23c8daf64701f9d96e16b677e6f');
         $response = self::getIPLocate_via_curl($iplocate.$ip.'?apikey='.$apikey);
