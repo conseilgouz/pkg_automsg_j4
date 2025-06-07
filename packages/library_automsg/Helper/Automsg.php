@@ -96,7 +96,14 @@ class Automsg
                 $results['waiting']++;
                 continue;
             }
-            $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+            if ($user_id > 0) { // registered user
+                $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+            } else { // from public table
+                $receiver = self::getPublic(abs($user_id));
+                if (!$receiver->language) {
+                    $receiver->language = $app->get('sitename');
+                }
+            }
             $unsubscribe = "";
             if ($tokens[$user_id]) {
                 $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
@@ -107,7 +114,11 @@ class Automsg
             if (($user_id == $creatorId) && ($msgcreator == 1)) { // mail specifique au createur de l'article
                 $mailer = new MailTemplate('com_automsg.ownermail', $receiver->getParam('language', $app->get('language')));
             } else {
-                $mailer = new MailTemplate('com_automsg.usermail', $receiver->getParam('language', $app->get('language')));
+                if ($user_id > 0) {
+                    $mailer = new MailTemplate('com_automsg.usermail', $receiver->getParam('language', $app->get('language')));
+                } else {
+                    $mailer = new MailTemplate('com_automsg.usermail', $receiver->language);
+                }
             }
             $mailer->addTemplateData($data);
             $mailer->addRecipient($receiver->email, $receiver->name);
@@ -166,14 +177,26 @@ class Automsg
                 $results['waiting']++;
                 continue;
             }
-            $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+            if ($user_id > 0) {
+                $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+            } else { // from public table
+                $receiver = self::getPublic(abs($user_id));
+                if (!$receiver->language) {
+                    $receiver->language = $app->get('sitename');
+                }
+            }
             $go = false;
             $unsubscribe = "";
             if ($tokens[$user_id]) {
                 $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
             $data = ['unsubscribe'   => $unsubscribe,'sitename' =>  str_replace(['@', '|'], '', $app->get('sitename'))];
-            $mailer = new MailTemplate('com_automsg.asyncmail', $receiver->getParam('language', $app->get('language')));
+            if ($user_id > 0) {
+                $mailer = new MailTemplate('com_automsg.asyncmail', $receiver->getParam('language', $app->get('language')));
+            } else {
+                $mailer = new MailTemplate('com_automsg.usermail', $receiver->language);
+            }
+
             $data_articles = ['articles' => $articles];
             $mailer->addTemplateData($data);
             $mailer->addTemplateData($data_articles);
@@ -310,6 +333,37 @@ class Automsg
             ->where($db->quoteName('profile_key') . ' like ' .$db->quote('profile_automsg.%').' AND '.$db->quoteName('profile_value'). ' like '.$db->quote('%Non%'));
         $db->setQuery($query);
         return (array) $db->loadColumn();
+    }
+    //
+    // get all users from defined in public table
+    //
+    // Note : ids are made negative
+    //
+    public static function getPublics()
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select('DISTINCT CONCAT("-",'.$db->quoteName('id').')')
+            ->from($db->quoteName('#__automsg_public'))
+            ->where($db->quoteName('state') . ' = 1');
+        $db->setQuery($query);
+        return (array) $db->loadColumn();
+    }
+    //
+    // get all users from defined in public table
+    //
+    // Note : ids are made negative
+    //
+    public static function getPublic($id)
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select('email,email as name, country as language')
+            ->from($db->quoteName('#__automsg_public'))
+            ->where($db->quoteName('id'). '= :id')
+            ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
+        $db->setQuery($query);
+        return $db->loadObject();
     }
     //
     // Get all users token (used in unsubscribe links)
@@ -888,9 +942,12 @@ class Automsg
         }
     }
     // check task status and returns it to administrator messages page
-    public static function getTaskStatus() {
+    public static function getTaskStatus()
+    {
         $autoparams = self::getParams();
-        if ( !$autoparams->async && !$autoparams->limit ) return '';
+        if (!$autoparams->async && !$autoparams->limit) {
+            return '';
+        }
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select('*')
@@ -899,15 +956,15 @@ class Automsg
             ->where($db->quoteName('state') . '>= 0');          // enabled
         $db->setQuery($query);
         $task = $db->loadObject();
-        if (!$task) { 
+        if (!$task) {
             return "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_NOTASK')."</span>";
         }
         if ($task->state == 0) {
             return "<span class='text-danger'>".Text::_('COM_AUTOMSG_TASK_DISABLED')."</span>";
         }
         if ($task->locked) {
-            return "<span class='text-danger'>".sprintf(Text::_('COM_AUTOMSG_TASK_LOCKED'),HTMLHelper::_('date', $task->locked, Text::_('DATE_FORMAT_FILTER_DATETIME')))."</span>";
+            return "<span class='text-danger'>".sprintf(Text::_('COM_AUTOMSG_TASK_LOCKED'), HTMLHelper::_('date', $task->locked, Text::_('DATE_FORMAT_FILTER_DATETIME')))."</span>";
         }
-        return "<span class='text-success'>".sprintf(Text::_('COM_AUTOMSG_TASK_NEXT'),HTMLHelper::_('date', $task->next_execution, Text::_('DATE_FORMAT_FILTER_DATETIME')))."</span>";
+        return "<span class='text-success'>".sprintf(Text::_('COM_AUTOMSG_TASK_NEXT'), HTMLHelper::_('date', $task->next_execution, Text::_('DATE_FORMAT_FILTER_DATETIME')))."</span>";
     }
 }

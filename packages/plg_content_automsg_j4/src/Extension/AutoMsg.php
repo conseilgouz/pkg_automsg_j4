@@ -109,6 +109,11 @@ final class AutoMsg extends CMSPlugin implements SubscriberInterface
         $model     = AutomsgHelper::prepare_content_model();
         // get users
         $users = AutomsgHelper::getUsers($this->autoparams->usergroups);
+        // get public users
+        $public = AutomsgHelper::getPublics();
+        if (count($public)) {
+            $users = array_merge($public, $users);
+        }
         // check profile automsg
         $deny = AutomsgHelper::getDenyUsers();
 
