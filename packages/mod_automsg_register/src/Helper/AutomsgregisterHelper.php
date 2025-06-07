@@ -54,7 +54,8 @@ class AutomsgregisterHelper
             self::updateEmail($email, $ip);
             return new JsonResponse(['success' => Text::_('AUTOMSG_REGISTER_UPDATED'),'timestp' => $now]);
         } else {
-            self::insertEmail($email, $ip);
+            $country = self::getCountry($ip);
+            self::insertEmail($email, $ip,$country);
             return new JsonResponse(['success' => Text::_('AUTOMSG_REGISTER_OK'),'timestp' => $now]);
         }
     }
@@ -127,12 +128,12 @@ class AutomsgregisterHelper
         $db->execute();
     }
     // insert email in #__automsg_public
-    public static function insertEmail($email, $ip)
+    public static function insertEmail($email, $ip,$country)
     {
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
         $sDate = gmdate("Y-m-d H:i:s", time());
         $query = $db->getQuery(true);
-        $columns = array('ip','email','timestamp','state');
+        $columns = array('ip','email','created','state');
         $values = array($db->quote($ip),$db->quote($email),$db->quote($sDate),1);
         $query->insert($db->quoteName('#__automsg_public'))
             ->columns($db->quoteName($columns))
@@ -144,4 +145,41 @@ class AutomsgregisterHelper
             return false;
         }
     }
+    private static function getCountry($ip) {
+        $iplocate = 'https://www.iplocate.io/api/lookup/';
+        $apikey = "e468c23c8daf64701f9d96e16b677e6f";
+        $app = Factory::getApplication();
+        if (($ip == '::1') || ($ip == '127.0.0.1')) { // local host
+            return true;
+        }
+        apikey = $params->get('iplocatekey','e468c23c8daf64701f9d96e16b677e6f');
+        $response = self::getIPLocate_via_curl($iplocate.$ip.'?apikey='.$apikey);
+        $country = "";
+        if ($response) { // IPLocate OK
+            $json_array = json_decode($response);
+            if ($json_array->country_code == "") { // IPLocate perdu : on suppose hackeur
+                echo sprintf(Text::_('AUTOMSG_REGISTER_COUNTRY_NOTFOUND'), $ip);
+                return $country;
+            }
+            $country = $json_array->country_code;
+        }
+        return $country
+    }
+    // get country using IPLocate
+    public static function getIPLocate_via_curl($url)
+    {
+        try {
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_URL, $url);
+            $response = curl_exec($curl);
+            curl_close($curl);
+            return $response;
+        } catch (\RuntimeException $e) {
+            return null;
+        }
+    }
+    
 }

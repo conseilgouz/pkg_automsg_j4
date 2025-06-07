@@ -30,6 +30,10 @@
 		<language tag="de-DE">language/de-DE/com_automsg.ini</language>
 		<language tag="de-DE">language/de-DE/com_automsg.sys.ini</language>
 	</languages>
+	<media destination="com_automsg" folder="media">
+        <folder>images</folder>
+		<filename>index.html</filename>
+	</media>
     <install>
 		<sql>
 			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql

@@ -7,8 +7,8 @@
 	<license>https://www.gnu.org/licenses/gpl-3.0.html GNU/GPLv2</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>3.3.6</version>
-	<description>CG_XML_DESCRIPTION</description>
+	<version>>4.3.5</version>
+	<description>AUTOMSG_REGISTER_XML_DESCRIPTION</description>
 	<namespace path="src">ConseilGouz\Module\AutomsgRegister</namespace>
 	<files>
 		<folder module="mod_automsg_register">services</folder>
@@ -37,12 +37,8 @@
                    label="AUTOMSG_REGISTER_PRETEXT_LBL" description ="AUTOMSG_REGISTER_PRETEXT_DESC"
 					filter="safehtml" cols="30" rows="5"
 				/>
-            <field name="note_captcha" type="note" description="AUTOMSG_REGISTER_NOTE_CAPTCHA" class="alert-success"/>
-            <field name="captcha" type="plugins" folder="captcha"
-					label="AUTOMSG_REGISTER_CAPTCHA"	description="AUTOMSG_REGISTER_CAPTCHA_DESC"
-					default="0" filter="cmd" >
-                <option value="0">JOPTION_DO_NOT_USE</option>
-            </field>
+            <field name="note_iplocate" type="note" description="AUTOMSG_REGISTER_NOTE_IPLOCATE" class="alert-success"/>
+            <field name="iplocatekey" type="text" size="50" default="" label="AUTOMSG_REGISTER_IPLOCATE" description="AUTOMSG_REGISTER_IPLOCATE_DESC"/>
 		</fieldset>
 		<fieldset name="advanced">
 		<field name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX" />

@@ -17,11 +17,11 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 class PublicModel extends ListModel
 {
-    public function __construct($config = array(), MVCFactoryInterface $factory = null)
+    public function __construct($public = array(), MVCFactoryInterface $factory = null)
     {
-        if (empty($config['filter_fields'])) {
-            $config['filter_fields'] = array(
-                'id','email','ip','timestamp', 'modified','state'
+        if (empty($public['filter_fields'])) {
+            $public['filter_fields'] = array(
+                'id','email','ip','timestamp', 'modified','state','country'
                 );
         }
 

@@ -99,8 +99,11 @@ $states = [
 				<th class="5%">
 					<?php echo Text::_('COM_AUTOMSG_IP');?>
 				</th>
+				<th class="1%">
+					<?php echo Text::_('COM_AUTOMSG_COUNTRY');?>
+				</th>
 				<th class="5%">
-					<?php echo HTMLHelper::_('grid.sort', 'COM_AUTOMSG_CREATED', 'timestamp', $listDirn, $listOrder); ?>
+					<?php echo HTMLHelper::_('grid.sort', 'COM_AUTOMSG_CREATED', 'created', $listDirn, $listOrder); ?>
 				</th>
 				<th class="5%">
 					<?php echo HTMLHelper::_('grid.sort', 'COM_AUTOMSG_MODIFIED', 'modified', $listDirn, $listOrder); ?>
@@ -135,9 +138,15 @@ $states = [
 		    ?>
 				</td>
 				<td class="center">
+					<?php if ($public->country) {
+                            echo HTMLHelper::_('image', 'com_automsg/' . strtolower($public->country) . '.png', $public->country, "title=$public->country", true);
+                            }
+                    ?>
+				</td>
+				<td class="center">
 				<?php
-		        if ($public->timestamp) {
-		            echo HTMLHelper::_('date.relative', $public->timestamp);
+		        if ($public->created) {
+		            echo HTMLHelper::_('date.relative', $public->created);
 		        }
 		    ?>
 				</td>
