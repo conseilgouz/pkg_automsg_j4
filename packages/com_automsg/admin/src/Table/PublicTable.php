@@ -93,6 +93,32 @@ class PublicTable extends Table implements VersionableTableInterface
 
         return $db->insertObject($table, $data);
     }
+    public function deletePublic($email = 'email')
+    {
+        $db    = $this->getDbo();
+        $table = $this->_tbl;
+        // Check if key exists
+        $result = $db->setQuery(
+            $db->getQuery(true)
+                ->select('id')
+                ->from($db->quoteName($this->_tbl))
+                ->where($db->quoteName('email') . ' = ' . $db->quote($email))
+        )->loadResult();
+
+        $exists = $result ? true : false;
+
+        if (!$exists) {
+            return false;
+        }
+        $query = $db->getQuery(true);
+        $query->delete($db->quoteName($this->_tbl))
+            ->where($db->quoteName('id') . ' = :id')
+            ->bind(':id', $result, \Joomla\Database\ParameterType::INTEGER);
+        $db->setQuery($query);
+        $result = $db->execute();
+        $data = new \stdClass();
+        return $result;
+    }
     /**
      * Get the type alias for the history table
      *

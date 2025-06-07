@@ -226,5 +226,11 @@ class AutomsgModel extends FormModel
         $result = Factory::getApplication()->triggerEvent('onUserAfterSave', [$prop, false, true, $this->getError()]);
         return $user->id;
     }
+    
+    public function deletePublic($email) {
+        
+        $table = $this->getTable('Public');
+        return $table->deletePublic($email);
+    }
 
 }

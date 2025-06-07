@@ -105,8 +105,12 @@ class Automsg
                 }
             }
             $unsubscribe = "";
-            if ($tokens[$user_id]) {
-                $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
+            if ($user_id > 0) {
+                if ($tokens[$user_id]) {
+                    $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
+                }
+            } else {
+                $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=reset&email=".$receiver->email."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
             $data['unsubscribe']    = $unsubscribe;
             $data['sitename']       = str_replace(['@', '|'], '', $app->get('sitename'));
@@ -187,14 +191,18 @@ class Automsg
             }
             $go = false;
             $unsubscribe = "";
-            if ($tokens[$user_id]) {
-                $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
+            if ($user_id > 0) {
+                if ($tokens[$user_id]) {
+                    $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
+                }
+            } else {
+                    $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=reset&email=".$receiver->email."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
             $data = ['unsubscribe'   => $unsubscribe,'sitename' =>  str_replace(['@', '|'], '', $app->get('sitename'))];
             if ($user_id > 0) {
                 $mailer = new MailTemplate('com_automsg.asyncmail', $receiver->getParam('language', $app->get('language')));
             } else {
-                $mailer = new MailTemplate('com_automsg.usermail', $receiver->language);
+                $mailer = new MailTemplate('com_automsg.asyncmail', $receiver->language);
             }
 
             $data_articles = ['articles' => $articles];
