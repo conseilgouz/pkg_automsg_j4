@@ -37,6 +37,12 @@ class PublicModel extends ListModel
 
         $query->select('id,email,ip,country,state,created, modified');
         $query->from('#__automsg_public');
+        $value = $this->getState('filter.state');
+        if (is_numeric($value)) {
+            $query->where('state = :value');
+            $query->bind(':value', $value, \Joomla\Database\ParameterType::INTEGER);
+        }
+        
         $orderCol	= $this->state->get('list.ordering');
         $orderDirn	= $this->state->get('list.direction');
         $query->order($db->escape($orderCol.' '.$orderDirn));
