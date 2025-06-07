@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.3.6</version>
+        <note>
+            <item>Update : 07/06/2025</item>
+        </note>
+        <fix>
+            <item>Fix AutomsgRegisterHelper not found</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.3.5</version>
         <note>
             <item>Update : 06/06/2025</item>
