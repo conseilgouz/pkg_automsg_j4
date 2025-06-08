@@ -2,21 +2,14 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
-		<version>4.3.6</version>
+		<version>4.3.7</version>
         <note>
-            <item>Update : 07/06/2025</item>
+            <item>Update : 08/06/2025</item>
         </note>
         <fix>
+            <item>Register module : ignore empty email</item>
             <item>Fix AutomsgRegisterHelper not found</item>
         </fix>
-	</changelog>
-	<changelog>
-		<element>com_automsg</element>
-		<type>package</type>
-		<version>4.3.5</version>
-        <note>
-            <item>Update : 06/06/2025</item>
-        </note>
         <addition>
             <item>New public registration module</item>
         </addition>

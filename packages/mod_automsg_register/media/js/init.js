@@ -19,8 +19,14 @@ document.addEventListener('DOMContentLoaded', function() {
         let email = email_ed.value.trim();
         let id = document.getElementById('automsg_register_id').value;
         let timestp = document.getElementById('timestp').value;
-        if (!email) return;
-        if (email.indexOf('@') <= 0) return; 
+        if (!email) {// empty
+            btn_ok.style.display = "inline-block";
+            return;
+        }
+        if (email.indexOf('@') <= 0) {
+            btn_ok.style.display = "inline-block";
+            return; 
+        }
         url = '?option=com_ajax&module=automsg_register&email='+ email+'&id='+id+'&format=json&timestp='+timestp+'&'+csrf+'=1';
         Joomla.request({
             method : 'POST',

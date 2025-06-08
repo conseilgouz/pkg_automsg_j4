@@ -4,8 +4,8 @@
     <description>AutoMsg library</description>
 	<libraryname>automsg</libraryname>
 	<author>ConseilGouz</author>
-	<version>4.3.6</version>
-	<creationDate>2025-06-07</creationDate>
+	<version>4.3.7</version>
+	<creationDate>2025-06-08</creationDate>
 	<copyright>(C)2025 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
