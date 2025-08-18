@@ -35,7 +35,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     {
         $this->dir = __DIR__;
         $this->lang = Factory::getApplication()->getLanguage();
-
+        $this->db = Factory::getContainer()->get(DatabaseInterface::class);
     }
     public function uninstall($parent)
     {
@@ -113,7 +113,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     private function postInstall()
     {
         // remove obsolete update sites
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
         $query = $db->getQuery(true)
             ->delete('#__update_sites')
             ->where($db->quoteName('location') . ' like "%432473037d.url-de-test.ws/%"');
@@ -180,7 +180,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     }
     private function update_com_config($params)
     {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
         $categories = [];
         if (isset($params->categories)) {
             $categories = $params->categories;
@@ -221,7 +221,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     }
     private function update_mail_templates()
     {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
 
         $query = $db->getQuery(true)
                 ->update('#__mail_templates')
@@ -294,7 +294,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $table = $template->getTable();
         $data = [];
 
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
         $query = $db->getQuery(true);
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
@@ -365,7 +365,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     // check email config : should not be plaintext
     private function check_email_config()
     {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
         $query = $db->getQuery(true);
         $query->select('*');
         $query->from('#__extensions');
@@ -396,7 +396,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     }
     private function check_automsg_task()
     {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
         $query = $db->getQuery(true);
         $query->select('id');
         $query->from('#__scheduler_tasks');
@@ -497,7 +497,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             }
         }
         // enable plugins
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
         $conditions = array(
             $db->qn('type') . ' = ' . $db->q('plugin'),
             $db->qn('element') . ' = ' . $db->quote('automsg')
@@ -518,6 +518,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     private function installPackage($package)
     {
         $tmpInstaller = new Installer();
+        $tmpInstaller->setDatabase($this->db);
         $installed = $tmpInstaller->install($this->dir . '/packages/' . $package);
         return $installed;
     }
@@ -539,7 +540,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             JPATH_PLUGINS . '/system/' . $this->installerName . '/language',
             JPATH_PLUGINS . '/system/' . $this->installerName,
         ]);
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $db = $this->db;
         $query = $db->getQuery(true)
             ->delete('#__extensions')
             ->where($db->quoteName('element') . ' = ' . $db->quote($this->installerName))
