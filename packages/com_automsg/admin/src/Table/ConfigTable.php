@@ -50,6 +50,8 @@ class ConfigTable extends Table implements VersionableTableInterface
 
         $this->created = Factory::getDate()->toSql();
         $this->updated = Factory::getDate()->toSql();
+        
+        $this->db = $db;
     }
 
     /**
@@ -59,7 +61,7 @@ class ConfigTable extends Table implements VersionableTableInterface
      */
     public function updateState($key = 'id')
     {
-        $db    = Factory::getDBo();
+        $db    = $this->db;
         $table = $this->_tbl;
         $key   = empty($this->id) ? $key : $this->id;
 

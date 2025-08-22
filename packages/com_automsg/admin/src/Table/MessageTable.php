@@ -51,6 +51,8 @@ class MessageTable extends Table implements VersionableTableInterface
 
         $this->created = Factory::getDate()->toSql();
         $this->modified = Factory::getDate()->toSql();
+        
+        $this->db = $db;
     }
 
     /**
@@ -60,7 +62,7 @@ class MessageTable extends Table implements VersionableTableInterface
      */
     public function updateState($key = 'id')
     {
-        $db    = $this->getDbo();
+        $db    = $this->db;
         $table = $this->_tbl;
         $key   = empty($this->id) ? $key : $this->id;
 

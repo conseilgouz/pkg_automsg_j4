@@ -17,7 +17,7 @@ use Joomla\CMS\Language\Text;
 
 HTMLHelper::_('bootstrap.tooltip', '.hasTooltip');
 
-$input = Factory::getApplication()->input;
+$input = Factory::getApplication()->getInput();
 $email = $input->getRaw('email');
 if ($email) {
     $model = $this->getModel();

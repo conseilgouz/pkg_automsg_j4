@@ -2,7 +2,7 @@
 /**
  * @package    AutoMsg
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
- * @copyright (C) 2024 ConseilGouz. All Rights Reserved.
+ * @copyright (C) 2025 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
  * @license    GNU/GPLv3
  */
@@ -29,6 +29,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     private $dir                    = null;
     private $lang                   = null;
     private $previous_version        = "";
+    private $db                      = null;
     private $installerName          = 'automsginstaller';
     private $extname                 = 'automsg';
     public function __construct()

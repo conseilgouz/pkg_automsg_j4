@@ -2,7 +2,7 @@
 <extension version="4.0" type="module" method="upgrade" client="site">
 	<name>AutoMsg Enregistrement Email</name>
 	<author>ConseilGouz</author>
-	<creationDate>2025-08-18</creationDate>
+	<creationDate>2025-08-22</creationDate>
 	<copyright>Copyright (C) 2025 ConseilGouz. All rights reserved</copyright>
 	<license>https://www.gnu.org/licenses/gpl-3.0.html GNU/GPLv2</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>

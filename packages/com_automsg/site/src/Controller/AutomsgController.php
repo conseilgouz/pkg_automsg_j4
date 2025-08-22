@@ -7,11 +7,12 @@
 **/
 namespace ConseilGouz\Component\Automsg\Site\Controller;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -35,7 +36,7 @@ class AutomsgController extends BaseController
     {
         $app         = $this->app;
         // Get the current user id.
-        $userId     = $this->input->getInt('userid');
+        $userId     = $this->getInput()->getInt('userid');
 
         $app->setUserState('com_automsg.edit.automsg.id', $userId);
 
@@ -63,7 +64,7 @@ class AutomsgController extends BaseController
         /** @var \Joomla\Component\Users\Site\Model\ProfileModel $model */
         $model  = $this->getModel('Automsg', 'Site');
         // Get the user data.
-        $requestData = $app->input->post->get('jform', [], 'array');
+        $requestData = $app->getInput()->post->get('jform', [], 'array');
 
         // Validate the posted data.
         $form = $model->getForm();
@@ -133,7 +134,7 @@ class AutomsgController extends BaseController
         $app->setUserState('com_automsg.edit.automsg.data', null);
     }
     protected function getTokenFromId($userid) {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
         ->select($db->quoteName('profile_value'))
         ->from($db->quoteName('#__user_profiles'))

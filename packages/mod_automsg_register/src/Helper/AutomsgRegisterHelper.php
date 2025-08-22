@@ -24,7 +24,7 @@ class AutomsgRegisterHelper
     {
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
         $app = Factory::getApplication();
-        $input = $app->input->request;
+        $input = $app->getInput()->request;
         $timestp = $input->getInt('timestp');
         $email = $input->getString('email');
         $ip = IpHelper::getIp();

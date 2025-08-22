@@ -15,6 +15,7 @@ defined('_JEXEC') || die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 use Joomla\String\StringHelper;
 
 class VersionField extends FormField
@@ -34,8 +35,7 @@ class VersionField extends FormField
 
         $version = '';
 
-        $jinput = Factory::getApplication()->input;
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query
             ->select($db->quoteName('manifest_cache'))
@@ -46,12 +46,13 @@ class VersionField extends FormField
         $tmp = json_decode($row['manifest_cache']);
         $version = $tmp->version;
 
-        $document = Factory::getDocument();
+        /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
+        $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
         $css = '';
         $css .= ".version {display:block;text-align:right;color:brown;font-size:12px;}";
         $css .= ".readonly.plg-desc {font-weight:normal;}";
         $css .= "fieldset.radio label {width:auto;}";
-        $document->addStyleDeclaration($css);
+        $wa->addInlineStyle($css);
         $margintop = $this->def('margintop');
         if (StringHelper::strlen($margintop)) {
             $js = "document.addEventListener('DOMContentLoaded', function() {
@@ -59,7 +60,7 @@ class VersionField extends FormField
 			parent = vers.parentElement.parentElement;
 			parent.style.marginTop = '".$margintop."';
 			})";
-            $document->addScriptDeclaration($js);
+            $wa->addInlineScript($js);
         }
         $return .= '<span class="version">' . Text::_('JVERSION') . ' ' . $version . "</span>";
 

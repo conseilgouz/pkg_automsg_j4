@@ -50,6 +50,8 @@ class PublicTable extends Table implements VersionableTableInterface
 
         $this->created = Factory::getDate()->toSql();
         $this->modified = Factory::getDate()->toSql();
+        
+        $this->db = $db;
     }
     /**
      *  setState method
@@ -67,7 +69,7 @@ class PublicTable extends Table implements VersionableTableInterface
      */
     public function updateState($key = 'id', $state = 0)
     {
-        $db    = $this->getDbo();
+        $db    = $this->db;
         $table = $this->_tbl;
         $key   = empty($this->id) ? $key : $this->id;
 
@@ -95,7 +97,7 @@ class PublicTable extends Table implements VersionableTableInterface
     }
     public function deletePublic($email = 'email')
     {
-        $db    = $this->getDbo();
+        $db    = $this->db;
         $table = $this->_tbl;
         // Check if key exists
         $result = $db->setQuery(

@@ -13,16 +13,16 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormFactoryInterface;
 use Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\FormModel;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Administrator\Model\UserModel;
 use Joomla\Registry\Registry;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Router\Route;
 
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -174,7 +174,7 @@ class AutomsgModel extends FormModel
     {
         // Get the application object.
         $params = Factory::getApplication()->getParams('com_automsg');
-        $input = Factory::getApplication()->input;
+        $input = Factory::getApplication()->getInput();
         $token = $input->getRaw('token');
         if (!$token) {
             return false;

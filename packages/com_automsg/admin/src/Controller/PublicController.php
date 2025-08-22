@@ -30,7 +30,7 @@ class PublicController extends FormController
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
 
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $pks = $input->post->get('cid', array(), 'array');
         $model = new PublicModel();
         $model->delete($pks);
@@ -42,7 +42,7 @@ class PublicController extends FormController
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
 
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $pks = $input->post->get('cid', array(), 'array');
         $model = new PublicModel();
         $model->publish($pks);
@@ -54,7 +54,7 @@ class PublicController extends FormController
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
 
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $pks = $input->post->get('cid', array(), 'array');
         $model = new PublicModel();
         $model->unpublish($pks);

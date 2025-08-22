@@ -34,7 +34,8 @@ class MessagesController extends FormController
         // Initialise variables.
         $app = Factory::getApplication();
         $model = $this->getModel('messages');
-        $data = $app->input->getRaw('jform', array(), 'post', 'array');
+        $input = $app->getInput();
+        $data = $input->getRaw('jform', array(), 'post', 'array');
         $form = $model->getForm();
         $data['name'] = 'annonce';
         $res = $model->validate($form, $data);
@@ -57,7 +58,7 @@ class MessagesController extends FormController
         $app = Factory::getApplication();
         $model = $this->getModel('messages');
 
-        $input = $app->input;
+        $input = $app->getInput();
         $pks = $input->post->get('cid', array(), 'array');
 
         $this->setRedirect(Uri::base().'index.php?option=com_automsg&view=message&layout=edit&id='.$pks[0]);
@@ -71,7 +72,7 @@ class MessagesController extends FormController
         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
 
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $pks = $input->post->get('cid', array(), 'array');
         // check for waiting async
         $model = new ConfigModel();

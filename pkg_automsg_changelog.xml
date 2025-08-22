@@ -2,6 +2,19 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.4.0</version>
+        <note>
+            <item>Update : 22/08/2025</item>
+        </note>
+        <fix>
+            <item>Joomla 6 : getApplication()->input removed</item>
+            <item>Joomla 6 : getDbo() removed</item>
+            <item>Field Version : use webassets and remove getDbo</item>
+        </fix>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.3.8</version>
         <note>
             <item>Update : 18/08/2025</item>

@@ -60,11 +60,12 @@ class ConfigController extends FormController
 
         // Initialise variables.
         $app = Factory::getApplication();
+        $input = $app->getInput();
         $model = $this->getModel('config');
-        $data = $app->input->getVar('jform', array(), 'post', 'array');
+        $data = $input->getVar('jform', array(), 'post', 'array');
         $task = $this->getTask();
         $context = 'com_automsg.edit.config';
-        $recordId = $app->input->getInt('id');
+        $recordId = $input->getInt('id');
         // Populate the row id from the session.
         $data['id'] = $recordId;
         // Check for validation errors.

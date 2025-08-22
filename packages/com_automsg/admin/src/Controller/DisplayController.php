@@ -36,6 +36,8 @@ class DisplayController extends BaseController {
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
+        $app = Factory::getApplication();
+        $this->input = $app->getInput();
 		$view   = $this->input->get('view', 'config');
 		$layout = $this->input->get('layout', 'default');
 		$id     = $this->input->getInt('id');

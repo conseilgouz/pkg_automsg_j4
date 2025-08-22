@@ -26,8 +26,7 @@ class MessageController extends FormController
         // Initialise variables.
         $app = Factory::getApplication();
         $model = $this->getModel('message');
-
-        $input = $app->input;
+        $input = $app->getInput();
         $pks = $input->post->get('cid', array(), 'array');
         $myid = $input->get('id');
         
