@@ -2,7 +2,7 @@
 <extension type="component" method="upgrade">
 	<name>COM_AUTOMSG</name>
 	<author>ConseilGouz</author>
-	<creationDate>2025-08-22</creationDate>
+	<creationDate>2025-08-24</creationDate>
 	<copyright>(C)2025 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>

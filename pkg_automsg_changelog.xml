@@ -4,11 +4,12 @@
 		<type>package</type>
 		<version>4.4.0</version>
         <note>
-            <item>Update : 22/08/2025</item>
+            <item>Update : 24/08/2025</item>
         </note>
         <fix>
             <item>Joomla 6 : getApplication()->input removed</item>
             <item>Joomla 6 : getDbo() removed</item>
+            <item>Joomla 6 : list-view not loaded</item>
             <item>Field Version : use webassets and remove getDbo</item>
         </fix>
 	</changelog>
