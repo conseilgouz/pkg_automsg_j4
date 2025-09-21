@@ -29,6 +29,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     private $dir                    = null;
     private $lang                   = null;
     private $previous_version        = "";
+    private $newlib_version	         = '';
     private $db                      = null;
     private $installerName          = 'automsginstaller';
     private $extname                 = 'automsg';
@@ -113,6 +114,18 @@ class PlgSystemAutomsgInstallerInstallerScript
     }
     private function postInstall()
     {
+        if (!$this->checkLibrary('conseilgouz')) { // need library installation
+            $ret = $this->installPackageCG('lib_conseilgouz');
+            if ($ret) {
+                Factory::getApplication()->enqueueMessage('ConseilGouz Library ' . $this->newlib_version . ' installed', 'notice');
+            }
+        }
+        // delete obsolete version.php file
+        $this->delete([
+            JPATH_ADMINISTRATOR . '/components/com_automsg/src/Field/VersionField.php',
+            JPATH_SITE . '/modules/mod_automsg_register/src/Field/VersionField.php',
+        ]);
+        
         // remove obsolete update sites
         $db = $this->db;
         $query = $db->getQuery(true)
@@ -532,6 +545,42 @@ class PlgSystemAutomsgInstallerInstallerScript
         Factory::getCache()->clean('_system');
         return true;
     }
+    private function checkLibrary($library)
+    {
+        $file = $this->dir.'/lib_conseilgouz/conseilgouz.xml';
+        if (!is_file($file)) {// library not installed
+            return false;
+        }
+        $xml = simplexml_load_file($file);
+        $this->newlib_version = $xml->version;
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $conditions = array(
+             $db->qn('type') . ' = ' . $db->q('library'),
+             $db->qn('element') . ' = ' . $db->quote($library)
+            );
+        $query = $db->getQuery(true)
+                ->select('manifest_cache')
+                ->from($db->quoteName('#__extensions'))
+                ->where($conditions);
+        $db->setQuery($query);
+        $manif = $db->loadObject();
+        if ($manif) {
+            $manifest = json_decode($manif->manifest_cache);
+            if ($manifest->version >= $this->newlib_version) { // compare versions
+                return true; // library ok
+            }
+        }
+        return false; // need library
+    }
+    private function installPackageCG($package)
+    {
+        $tmpInstaller = new Joomla\CMS\Installer\Installer();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $tmpInstaller->setDatabase($db);
+        $installed = $tmpInstaller->install($this->dir . '/' . $package);
+        return $installed;
+    }
+    
     private function uninstallInstaller()
     {
         if (! is_dir(JPATH_PLUGINS . '/system/' . $this->installerName)) {

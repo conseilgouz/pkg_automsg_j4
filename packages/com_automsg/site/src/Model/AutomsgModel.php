@@ -22,6 +22,7 @@ use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Administrator\Model\UserModel;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
 
 
@@ -188,7 +189,7 @@ class AutomsgModel extends FormModel
         $this->setState('params', $params);
     }
     protected function getIdFromToken($token) {
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true)
 			->select($db->quoteName('user_id'))
 			->from($db->quoteName('#__user_profiles'))

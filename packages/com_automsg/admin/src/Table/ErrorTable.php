@@ -88,7 +88,7 @@ class ErrorTable extends Table implements VersionableTableInterface
     }
     public function get_errors($pks = null)
     {
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $results = $db->setQuery(
             $db->getQuery(true)
                 ->select('*')

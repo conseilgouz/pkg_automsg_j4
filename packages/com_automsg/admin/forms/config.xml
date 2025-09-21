@@ -4,7 +4,7 @@
         <inlinehelp button="show"/>     
     </config>
     <fieldset name="config" label="AutoMsg Config"
-        addfieldprefix="ConseilGouz\Component\Automsg\Administrator\Field">
+        addfieldprefix="ConseilGouz\Library\Field">
         <field name="version" type="version"  margintop="-3em" extension="com_automsg"/>
         <field name="id" type="hidden" default="0" readonly="true" class="readonly"
             label="JGLOBAL_FIELD_ID_LABEL" 	description ="JGLOBAL_FIELD_ID_DESC" />

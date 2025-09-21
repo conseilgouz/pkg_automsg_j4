@@ -2,12 +2,12 @@
 <extension version="4.0" type="module" method="upgrade" client="site">
 	<name>AutoMsg Enregistrement Email</name>
 	<author>ConseilGouz</author>
-	<creationDate>2025-08-24</creationDate>
+	<creationDate>2025-09-21</creationDate>
 	<copyright>Copyright (C) 2025 ConseilGouz. All rights reserved</copyright>
 	<license>https://www.gnu.org/licenses/gpl-3.0.html GNU/GPLv2</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>>4.3.7</version>
+	<version>4.4.1</version>
 	<description>AUTOMSG_REGISTER_XML_DESCRIPTION</description>
 	<namespace path="src">ConseilGouz\Module\AutomsgRegister</namespace>
 	<files>
@@ -29,9 +29,7 @@
 	
 	<config>
 	<fields name="params" >
-		<fieldset name="basic" 
-            addfieldprefix="ConseilGouz\Module\AutomsgRegister\Site\Field"
-			>
+		<fieldset name="basic" addfieldprefix="ConseilGouz\Library\Field">
             <field name="version" type="version"  margintop="-3em" extension="mod_automsg_register"/>
 			<field name="pretext" type="textarea"
                    label="AUTOMSG_REGISTER_PRETEXT_LBL" description ="AUTOMSG_REGISTER_PRETEXT_DESC"
