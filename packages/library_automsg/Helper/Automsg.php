@@ -1,8 +1,8 @@
 <?php
 /**
- * @package    AutoMsg
+ * Automsg Component  - Joomla 4.x/5.x/6.x Component 
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
- * @copyright (C) 2024 ConseilGouz. All Rights Reserved.
+ * @copyright (C) 2025 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
  * @license    GNU/GPLv3
  */
@@ -100,8 +100,8 @@ class Automsg
                 $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
             } else { // from public table
                 $receiver = self::getPublic(abs($user_id));
-                if (!$receiver->language) {
-                    $receiver->language = $app->get('sitename');
+                if (!$receiver->language || (strlen($receiver->language) == 2)) {
+                    $receiver->language = $app->get('language');
                 }
             }
             $unsubscribe = "";
@@ -185,8 +185,8 @@ class Automsg
                 $receiver = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
             } else { // from public table
                 $receiver = self::getPublic(abs($user_id));
-                if (!$receiver->language) {
-                    $receiver->language = $app->get('sitename');
+                if (!$receiver->language || (strlen($receiver->language) == 2)) {
+                    $receiver->language = $app->get('language');
                 }
             }
             $go = false;

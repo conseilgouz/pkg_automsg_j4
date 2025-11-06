@@ -2,9 +2,9 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
-		<version>4.4.2</version>
+		<version>4.4.3</version>
         <note>
-            <item>Update : 21/09/2025</item>
+            <item>Update : 06/11/2025</item>
         </note>
         <fix>
             <item>Joomla 6 : replace $db->getQuery(true) by $db->createQuery()</item>
