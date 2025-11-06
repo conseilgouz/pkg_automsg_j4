@@ -128,7 +128,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         
         // remove obsolete update sites
         $db = $this->db;
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->delete('#__update_sites')
             ->where($db->quoteName('location') . ' like "%432473037d.url-de-test.ws/%"');
         $db->setQuery($query);
@@ -143,19 +143,19 @@ class PlgSystemAutomsgInstallerInstallerScript
             $this->update_com_config($params);
         }
         // create mail template
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
         $query->where('extension = ' . $db->quote('plg_content_automsg'));
         $db->setQuery($query);
         $result_content = $db->loadResult();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
         $query->where('extension = ' . $db->quote('plg_task_automsg'));
         $db->setQuery($query);
         $result_task = $db->loadResult();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
         $query->where('template_id = ' . $db->quote('com_automsg.report'));
@@ -183,7 +183,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         );
         $fields = array($db->qn('enabled') . ' = 1');
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
         $db->setQuery($query);
         try {
@@ -201,7 +201,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         }
         $users = implode(',', $params->usergroups);
         $categories = implode(',', $categories);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->update('#__automsg_config')
                 ->set($db->qn('usergroups').' = '.$db->q($users))
                 ->set($db->qn('categories').' = '.$db->q($categories))
@@ -222,7 +222,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $empty = json_encode([]);
         $fields = array($db->qn('params') . ' = '.$db->q($empty));
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
         $db->setQuery($query);
         try {
@@ -237,7 +237,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     {
         $db = $this->db;
 
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->update('#__mail_templates')
                 ->set($db->qn('template_id').' = REPLACE(template_id,'.$db->q('plg_content_automsg').','.$db->q('com_automsg').')')
                 ->set($db->qn('subject').' = REPLACE(subject,'.$db->q('PLG_CONTENT_AUTOMSG_').','.$db->q('COM_AUTOMSG_').')')
@@ -245,7 +245,7 @@ class PlgSystemAutomsgInstallerInstallerScript
                 ->where($db->qn('extension').' = '.$db->q('plg_content_automsg'));
         $db->setQuery($query);
         $db->execute();
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->update('#__mail_templates')
                 ->set($db->qn('template_id').' = REPLACE(template_id,'.$db->q('plg_task_automsg').','.$db->q('com_automsg').')')
                 ->set($db->qn('subject').' = REPLACE(subject,'.$db->q('PLG_TASK_AUTOMSG_').','.$db->q('COM_AUTOMSG_').')')
@@ -253,7 +253,7 @@ class PlgSystemAutomsgInstallerInstallerScript
                 ->where($db->qn('extension').' = '.$db->q('plg_task_automsg'));
         $db->setQuery($query);
         $db->execute();
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->update('#__mail_templates')
                 ->set($db->qn('extension').' = '.$db->q('com_automsg'))
                 ->where($db->qn('extension').' IN ('.$db->q('plg_task_automsg').','.$db->q('plg_content_automsg').')');
@@ -309,7 +309,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         $data = [];
 
         $db = $this->db;
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
         $query->where('template_id = ' . $db->quote('com_automsg.ownermail'));
@@ -328,7 +328,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             $table->save($data);
             Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_CREATE_OWNER_TEMPLATE_OK'), 'notice');
         }
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
         $query->where('template_id = ' . $db->quote('com_automsg.usermail'));
@@ -349,7 +349,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             $table->save($data);
             Factory::getApplication()->enqueueMessage(Text::_('PLG_AUTOMSG_CREATE_USER_TEMPLATE_OK'), 'notice');
         }
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('count(`template_id`)');
         $query->from('#__mail_templates');
         $query->where('template_id = ' . $db->quote('com_automsg.report'));
@@ -380,7 +380,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     private function check_email_config()
     {
         $db = $this->db;
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('*');
         $query->from('#__extensions');
         $query->where('type = ' . $db->quote('component'));
@@ -398,7 +398,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             return;
         }
         $params = str_replace('plaintext', 'both', $cfg->params);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->update('#__extensions')
                 ->set($db->qn('params').' = '.$db->q($params))
                 ->where('type = ' . $db->quote('component'))
@@ -411,7 +411,7 @@ class PlgSystemAutomsgInstallerInstallerScript
     private function check_automsg_task()
     {
         $db = $this->db;
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('id');
         $query->from('#__scheduler_tasks');
         $query->where('type = ' . $db->quote('automsg'));
@@ -518,7 +518,7 @@ class PlgSystemAutomsgInstallerInstallerScript
         );
         $fields = array($db->qn('enabled') . ' = 1');
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
         $db->setQuery($query);
         try {
@@ -558,7 +558,7 @@ class PlgSystemAutomsgInstallerInstallerScript
              $db->qn('type') . ' = ' . $db->q('library'),
              $db->qn('element') . ' = ' . $db->quote($library)
             );
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->select('manifest_cache')
                 ->from($db->quoteName('#__extensions'))
                 ->where($conditions);
@@ -591,14 +591,15 @@ class PlgSystemAutomsgInstallerInstallerScript
             JPATH_PLUGINS . '/system/' . $this->installerName,
         ]);
         $db = $this->db;
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->delete('#__extensions')
             ->where($db->quoteName('element') . ' = ' . $db->quote($this->installerName))
             ->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
             ->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));
         $db->setQuery($query);
         $db->execute();
-        Factory::getCache()->clean('_system');
+		$cache = Factory::getContainer()->get(Joomla\CMS\Cache\CacheControllerFactoryInterface::class)->createCacheController();
+        $cache->clean('_system');
     }
 
     public function delete($files = [])

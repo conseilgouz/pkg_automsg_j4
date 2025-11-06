@@ -2,6 +2,23 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.4.2</version>
+        <note>
+            <item>Update : 21/09/2025</item>
+        </note>
+        <fix>
+            <item>Joomla 6 : replace $db->getQuery(true) by $db->createQuery()</item>
+            <item>PHP 8.5 : Curl_close dprecated</item>
+            <item>Public : wrong template language</item>
+            <item>Install : clear cache</item>
+        </fix>
+        <change>
+            <item>Use ConseilGouz Library version 1.1.0</item>
+        </change>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.4.1</version>
         <note>
             <item>Update : 21/09/2025</item>

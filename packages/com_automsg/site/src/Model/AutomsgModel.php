@@ -190,7 +190,7 @@ class AutomsgModel extends FormModel
     }
     protected function getIdFromToken($token) {
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
-		$query = $db->getQuery(true)
+		$query = $db->createQuery()
 			->select($db->quoteName('user_id'))
 			->from($db->quoteName('#__user_profiles'))
 			->where($db->quoteName('profile_key') . ' like ' .$db->quote('profile_automsg.token').' AND '.$db->quoteName('profile_value'). ' = '.$db->quote($token));

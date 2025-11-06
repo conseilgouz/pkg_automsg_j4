@@ -1,6 +1,6 @@
 <?php
 /**
- * @component     AutoMsg - Joomla 4.x/5.x
+ * @component     AutoMsg - Joomla 4.x/5.x/6.x
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2025 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -31,7 +31,7 @@ class PublicModel extends ListModel
     {
         // Initialise variables.
         $db		= $this->getDatabase();
-        $query	= $db->getQuery(true);
+        $query	= $db->createQuery();
 
         // Select the required fields from the table.
 

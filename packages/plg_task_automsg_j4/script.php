@@ -18,7 +18,7 @@ class plgtaskAutomsgInstallerScript
     public function uninstall($parent)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('id');
         $query->from('#__scheduler_tasks');
         $query->where('type = ' . $db->quote('automsg'));

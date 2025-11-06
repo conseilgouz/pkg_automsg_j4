@@ -86,7 +86,7 @@ class MessagesController extends FormController
     {
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $result = $db->setQuery(
-            $db->getQuery(true)
+            $db->createQuery()
                 ->select('id')
                 ->from($db->quoteName('#__scheduler_tasks'))
                 ->where($db->quoteName('type') . ' = ' . $db->quote('automsg'))

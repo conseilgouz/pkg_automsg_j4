@@ -75,7 +75,7 @@ class PublicTable extends Table implements VersionableTableInterface
 
         // Check if key exists
         $result = $db->setQuery(
-            $db->getQuery(true)
+            $db->createQuery()
                 ->select('COUNT(*)')
                 ->from($db->quoteName($this->_tbl))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($key))
@@ -101,7 +101,7 @@ class PublicTable extends Table implements VersionableTableInterface
         $table = $this->_tbl;
         // Check if key exists
         $result = $db->setQuery(
-            $db->getQuery(true)
+            $db->createQuery()
                 ->select('id')
                 ->from($db->quoteName($this->_tbl))
                 ->where($db->quoteName('email') . ' = ' . $db->quote($email))
@@ -112,7 +112,7 @@ class PublicTable extends Table implements VersionableTableInterface
         if (!$exists) {
             return false;
         }
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->delete($db->quoteName($this->_tbl))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $result, \Joomla\Database\ParameterType::INTEGER);

@@ -1,7 +1,6 @@
 <?php
 /**
- * @component     AutoMsg - Joomla 4.x/5.x
- * Version			: 4.1.0
+ * @component     AutoMsg - Joomla 4.x/5.x/6.x
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -54,7 +53,7 @@ class MessageModel extends AdminModel
     public function getMessagesList($data)
     {
         $db		= $this->getDatabase();
-        $query	= $db->getQuery(true);
+        $query	= $db->createQuery();
 
         // Select the required fields from the table.
         $query->select('sent, state,cr, GROUP_CONCAT(DISTINCT id) as ids, GROUP_CONCAT(DISTINCT article_id) as articles');
@@ -71,7 +70,7 @@ class MessageModel extends AdminModel
     public function getMessageErrors($sent)
     {
         $db		= $this->getDatabase();
-        $query	= $db->getQuery(true);
+        $query	= $db->createQuery();
 
         // Select the required fields from the table.
         $query->select('*');
@@ -84,7 +83,7 @@ class MessageModel extends AdminModel
     public function getMessageWaiting($sent)
     {
         $db		= $this->getDatabase();
-        $query	= $db->getQuery(true);
+        $query	= $db->createQuery();
 
         // Select the required fields from the table.
         $query->select('userid');

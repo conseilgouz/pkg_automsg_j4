@@ -251,7 +251,7 @@ class Automsg
             self::createLog();
         }
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('*')
             ->from('#__users ')
             ->where($db->quoteName('block') . ' = 0')
@@ -290,7 +290,7 @@ class Automsg
     private static function getCategoryName($id)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('*')
             ->from('#__categories ')
             ->where('id = '.(int)$id)
@@ -304,7 +304,7 @@ class Automsg
     private static function getArticleTags($id)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('tags.title as tag, tags.alias as alias, tags.note as note, tags.images as images, parent.title as parent_title, parent.alias as parent_alias')
             ->from('#__contentitem_tag_map as map ')
             ->innerJoin('#__content as c on c.id = map.content_item_id')
@@ -321,7 +321,7 @@ class Automsg
     public static function getUsers($usergroups)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('DISTINCT '.$db->quoteName('u.id'))
             ->from($db->quoteName('#__users').' as u ')
             ->join('LEFT', $db->quoteName('#__user_usergroup_map').' as g on u.id = g.user_id')
@@ -335,7 +335,7 @@ class Automsg
     public static function getDenyUsers()
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select($db->quoteName('p.user_id'))
             ->from($db->quoteName('#__user_profiles').' as p ')
             ->where($db->quoteName('profile_key') . ' like ' .$db->quote('profile_automsg.%').' AND '.$db->quoteName('profile_value'). ' like '.$db->quote('%Non%'));
@@ -350,7 +350,7 @@ class Automsg
     public static function getPublics()
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('DISTINCT CONCAT("-",'.$db->quoteName('id').')')
             ->from($db->quoteName('#__automsg_public'))
             ->where($db->quoteName('state') . ' = 1');
@@ -365,7 +365,7 @@ class Automsg
     public static function getPublic($id)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('email,email as name, country as language')
             ->from($db->quoteName('#__automsg_public'))
             ->where($db->quoteName('id'). '= :id')
@@ -393,7 +393,7 @@ class Automsg
     private static function checkautomsgtoken($userId)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                  ->select(
                      [
                             $db->quoteName('profile_value'),
@@ -410,7 +410,7 @@ class Automsg
             return $result;
         } // automsg token already exists => exit
         // create a token
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->insert($db->quoteName('#__user_profiles'));
         $token = mb_strtoupper(strval(bin2hex(openssl_random_pseudo_bytes(16))));
         $order = 2;
@@ -493,7 +493,7 @@ class Automsg
     public static function getArticlesToSend()
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->select('DISTINCT '.$db->quoteName('article_id'))
             ->from($db->quoteName('#__automsg'))
             ->where($db->quoteName('state') . ' = 0');
@@ -508,7 +508,7 @@ class Automsg
     public static function checkWaitingArticles()
     {
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->select('count(id)')
             ->from($db->qn('#__automsg_waiting'))
             ->where($db->qn('state') . ' = 0');
@@ -524,7 +524,7 @@ class Automsg
     {
         $autoparams = self::getParams();
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->select('*')
             ->from($db->qn('#__automsg_waiting'))
             ->where($db->qn('state') . ' = 0')
@@ -545,7 +545,7 @@ class Automsg
         $autoparams = self::getParams();
 
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         if ($state == 9) { // lost article => set remaining ones to state 9 : error
             $query->select('id')
             ->from($db->qn('#__automsg'))
@@ -554,7 +554,7 @@ class Automsg
             $db->setQuery($query);
             $losts = $db->loadColumn();
             if (sizeOf($losts)) {
-                $query = $db->getQuery(true)
+                $query = $db->createQuery()
                     ->update($db->qn('#__automsg'))
                     ->set($db->qn('state').'= 9')
                     ->where($db->qn('id').' in ('.implode(',', $losts).')');
@@ -565,7 +565,7 @@ class Automsg
         }
         $date = Factory::getDate();
 
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->insert($db->qn('#__automsg'));
         $query->values(
             implode(
@@ -605,7 +605,7 @@ class Automsg
     public static function updateAutoMsgTable($articleid = null, $state = 0, $timestamp = null, $cr = [])
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->update($db->qn('#__automsg'))
         ->set($db->qn('state').'='.$state.','.$db->qn('sent').'='.$db->q($timestamp->toSql()).','.$db->qn('cr').'='.$db->q(json_encode($cr)))
         ->where($db->qn('state') . ' = 0');
@@ -622,7 +622,7 @@ class Automsg
     public static function updateAutoMsgWaitingTable($ids = [], $state = 1)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->update($db->qn('#__automsg_waiting'))
             ->set($db->qn('state').'='.$state)
             ->whereIn($db->qn('id'), $ids);
@@ -636,7 +636,7 @@ class Automsg
     public static function updateAutoMsgCr($timestamp, $cr = [])
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->select('cr')
             ->from($db->qn('#__automsg'))
             ->where($db->qn('sent') . ' = '.$db->q($timestamp->toSql()));
@@ -656,7 +656,7 @@ class Automsg
             // we had remaining waitings
             return;
         }
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->update($db->qn('#__automsg'))
             ->set($db->qn('cr').'='.$db->q(json_encode($oldcr)))
             ->where($db->qn('sent').' = '.$db->q($timestamp->toSql()));
@@ -671,7 +671,7 @@ class Automsg
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
 
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->select('id,retry')
         ->from($db->qn('#__automsg_errors'))
         ->where($db->qn('userid').'='.$db->q($userid))
@@ -684,7 +684,7 @@ class Automsg
         }
 
         if ($new) {
-            $query = $db->getQuery(true)
+            $query = $db->createQuery()
                 ->insert($db->qn('#__automsg_errors'));
             $query->values(
                 implode(
@@ -718,7 +718,7 @@ class Automsg
         } else { // update retry counter
             $date = HTMLHelper::_('date', 'now', Text::_('DATE_FORMAT_FILTER_DATETIME'));
             $modified = Factory::getDate($date); // same timestamp for everybody in same request
-            $query = $db->getQuery(true)
+            $query = $db->createQuery()
                 ->update($db->qn('#__automsg_errors'))
                 ->set($db->qn('retry').'='.($result->retry + 1))
                 ->set($db->qn('modified'). '='. $db->q($modified->toSql()))
@@ -735,7 +735,7 @@ class Automsg
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
 
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->insert($db->qn('#__automsg_waiting'));
         $query->values(
             implode(
@@ -769,7 +769,7 @@ class Automsg
     public static function updateAutoMsgError($id)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->update($db->qn('#__automsg_errors'))
             ->set($db->qn('state').'= 1')
             ->where($db->qn('id').' = '.$id);
@@ -783,7 +783,7 @@ class Automsg
     public static function updateAutoMsgErrorCr($timestamp)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->select('cr')
             ->from($db->qn('#__automsg'))
             ->where($db->qn('sent') . ' = '.$db->q($timestamp->toSql()));
@@ -800,7 +800,7 @@ class Automsg
             // we had remaining waitings
             return;
         }
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->update($db->qn('#__automsg'))
             ->set($db->qn('cr').'='.$db->q(json_encode($oldcr)))
             ->where($db->qn('sent').' = '.$db->q($timestamp->toSql()));
@@ -859,7 +859,7 @@ class Automsg
         }
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('*')
             ->from($db->qn('#__scheduler_tasks'))
             ->where($db->qn('type') . ' = '.$db->q('automsg'))      // automsg task
@@ -870,7 +870,7 @@ class Automsg
             return;
         }
         // save user values
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->update($db->qn('#__automsg_config'))
         ->set($db->qn('save_execution_rules').'='.$db->q($task->execution_rules))
         ->set($db->qn('save_cron_rules').'='.$db->q($task->cron_rules))
@@ -891,7 +891,7 @@ class Automsg
         $nextExec = $lastExec->add($interval);
         $nextExec = $nextExec->toSql();
         // update task
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->update($db->qn('#__scheduler_tasks'))
         ->set($db->qn('next_execution').'='.$db->q($nextExec))
         ->set($db->qn('execution_rules').'='.$db->q(json_encode($execution_rules)))
@@ -914,7 +914,7 @@ class Automsg
         }
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         // restore saved values
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->update($db->qn('#__scheduler_tasks'))
         ->set($db->qn('execution_rules').'='.$db->q($autoparams->save_execution_rules))
         ->set($db->qn('cron_rules').'='.$db->q($autoparams->save_cron_rules))
@@ -923,7 +923,7 @@ class Automsg
         $db->setQuery($query);
         $db->execute();
         // update task
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->update($db->qn('#__automsg_config'))
         ->set($db->qn('save_cron_rules').'= null')
         ->set($db->qn('save_execution_rules').'= null')
@@ -957,7 +957,7 @@ class Automsg
             return '';
         }
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('*')
             ->from($db->qn('#__scheduler_tasks'))
             ->where($db->qn('type') . ' = '.$db->q('automsg'))  // automsg task

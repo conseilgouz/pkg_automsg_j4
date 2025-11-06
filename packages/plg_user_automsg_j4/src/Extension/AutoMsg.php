@@ -63,7 +63,7 @@ class AutoMsg extends CMSPlugin implements SubscriberInterface
         }
         // Load the profile data from the database.
         $db    = $this->db;
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                  ->select(
                      [
                             $db->quoteName('profile_key'),
@@ -154,13 +154,13 @@ class AutoMsg extends CMSPlugin implements SubscriberInterface
         if ($userId && $result && isset($data['profile_automsg']) && (count($data['profile_automsg']))) {
             $db = $this->db;
             $db->setQuery(
-                $db->getQuery(true)
+                $db->createQuery()
                             ->delete($db->quoteName('#__user_profiles'))
                             ->where($db->quoteName('user_id').' = :userId AND profile_key LIKE \'profile_automsg.automsg\'')
                             ->bind(':userId', $userId, ParameterType::INTEGER)
             )->execute();
             $order	= 1;
-            $query = $db->getQuery(true)
+            $query = $db->createQuery()
                 ->insert($db->quoteName('#__user_profiles'));
             foreach ($data['profile_automsg'] as $k => $v) {
                 $query->values(
@@ -196,7 +196,7 @@ class AutoMsg extends CMSPlugin implements SubscriberInterface
     protected function checkautomsgtoken($userId)
     {
         $db    = $this->db;
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                  ->select(
                      [
                             $db->quoteName('profile_value'),
@@ -213,7 +213,7 @@ class AutoMsg extends CMSPlugin implements SubscriberInterface
             return true;
         } // automsg token already exists => exit
         // create a token
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
                 ->insert($db->quoteName('#__user_profiles'));
         $token = mb_strtoupper(strval(bin2hex(openssl_random_pseudo_bytes(16))));
         $order = 2;

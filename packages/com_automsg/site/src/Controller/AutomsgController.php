@@ -135,7 +135,7 @@ class AutomsgController extends BaseController
     }
     protected function getTokenFromId($userid) {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
         ->select($db->quoteName('profile_value'))
         ->from($db->quoteName('#__user_profiles'))
         ->where($db->quoteName('profile_key') . ' like ' .$db->quote('profile_automsg.token').' AND '.$db->quoteName('user_id'). ' = '.$userid);

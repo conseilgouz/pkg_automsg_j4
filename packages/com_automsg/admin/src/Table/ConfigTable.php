@@ -67,7 +67,7 @@ class ConfigTable extends Table implements VersionableTableInterface
 
         // Check if key exists
         $result = $db->setQuery(
-            $db->getQuery(true)
+            $db->createQuery()
                 ->select('COUNT(*)')
                 ->from($db->quoteName($this->_tbl))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($key))

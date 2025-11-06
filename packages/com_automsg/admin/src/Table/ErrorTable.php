@@ -68,7 +68,7 @@ class ErrorTable extends Table implements VersionableTableInterface
 
         // Check if key exists
         $result = $db->setQuery(
-            $db->getQuery(true)
+            $db->createQuery()
                 ->select('COUNT(*)')
                 ->from($db->quoteName($this->_tbl))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($key))
@@ -90,7 +90,7 @@ class ErrorTable extends Table implements VersionableTableInterface
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $results = $db->setQuery(
-            $db->getQuery(true)
+            $db->createQuery()
                 ->select('*')
                 ->from($db->qn($this->_tbl))
                 ->whereIn($db->qn('id'), $pks)

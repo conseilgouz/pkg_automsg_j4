@@ -1,7 +1,6 @@
 <?php
 /**
- * @component     AutoMsg - Joomla 4.x/5.x
- * Version		: 4.0.0
+ * @component     AutoMsg - Joomla 4.x/5.x/6.x
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -18,7 +17,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 class MessagesModel extends ListModel
 {
-    public function __construct($config = array(), MVCFactoryInterface $factory = null)
+    public function __construct($config = array(), ?MVCFactoryInterface $factory = null)
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
@@ -38,7 +37,7 @@ class MessagesModel extends ListModel
     {
         // Initialise variables.
         $db		= $this->getDatabase();
-        $query	= $db->getQuery(true);
+        $query	= $db->createQuery();
 
         // Select the required fields from the table.
         $query->select('sent, state,cr, GROUP_CONCAT(DISTINCT id) as ids, GROUP_CONCAT(DISTINCT article_id) as articles');
@@ -103,7 +102,7 @@ class MessagesModel extends ListModel
     private function getDataQuery($pks = null)
     {
         $db		= $this->getDatabase();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('a.*');
         $query->from('#__automsg as a');
         if (is_array($pks) && count($pks) > 0) {

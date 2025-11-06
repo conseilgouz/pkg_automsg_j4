@@ -61,7 +61,7 @@ class AutomsgRegisterHelper
     private static function getModuleById($id)
     {
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('m.id, m.title, m.module, m.position, m.content, m.showtitle, m.params')
             ->from('#__modules AS m')
             ->where('m.id = :id')
@@ -73,7 +73,7 @@ class AutomsgRegisterHelper
     public static function getEmailByIP($ip)
     {
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('email')
             ->from('#__automsg_public')
             ->where('ip = :ip')
@@ -85,7 +85,7 @@ class AutomsgRegisterHelper
     public static function checkEmail($email)
     {
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('ip')
             ->from('#__automsg_public')
             ->where('email = :email')
@@ -96,7 +96,7 @@ class AutomsgRegisterHelper
             return $result;
         }
         // check in users
-        $query = $db->getQuery(true)
+        $query = $db->createQuery()
             ->select('id')
             ->from('#__users')
             ->where('email = :email')
@@ -110,7 +110,7 @@ class AutomsgRegisterHelper
     {
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
         $sDate = gmdate("Y-m-d H:i:s", time());
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $fields = array(
             $db->quoteName('email') . ' = :email',
             $db->quoteName('modified') . ' = :modified'
@@ -130,7 +130,7 @@ class AutomsgRegisterHelper
     {
         $db =  Factory::getContainer()->get(DatabaseInterface::class);
         $sDate = gmdate("Y-m-d H:i:s", time());
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $columns = array('ip','email','created','state','country');
         $values = array($db->quote($ip),$db->quote($email),$db->quote($sDate),1,$db->quote($country));
         $query->insert($db->quoteName('#__automsg_public'))
@@ -172,7 +172,6 @@ class AutomsgRegisterHelper
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_URL, $url);
             $response = curl_exec($curl);
-            curl_close($curl);
             return $response;
         } catch (\RuntimeException $e) {
             return null;
