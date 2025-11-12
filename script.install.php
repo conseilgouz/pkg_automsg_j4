@@ -605,7 +605,7 @@ class PlgSystemAutomsgInstallerInstallerScript
             foreach ($cache->getAll() as $group) {
                 $cache->clean($group->group);
             }
-            $app->enqueueMessage('<p>Cleaning cache done.</p>');
+            Factory::getApplication()->enqueueMessage('<p>Cleaning cache done.</p>');
         }
     }
 
