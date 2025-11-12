@@ -6,6 +6,9 @@
         <note>
             <item>Update : 12/11/2025</item>
         </note>
+        <fix>
+            <item>Install : clear cache</item>
+        </fix>
         <change>
             <item>Joomla 6 : error handling</item>
         </change>

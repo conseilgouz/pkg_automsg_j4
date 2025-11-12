@@ -598,8 +598,15 @@ class PlgSystemAutomsgInstallerInstallerScript
             ->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));
         $db->setQuery($query);
         $db->execute();
-		$cache = Factory::getContainer()->get(Joomla\CMS\Cache\CacheControllerFactoryInterface::class)->createCacheController();
-        $cache->clean('_system');
+        // nettoyage du cache
+        $cacheModel = Factory::getApplication()->bootComponent('com_cache')->getMVCFactory()->createModel('Cache', 'Administrator', ['ignore_request' => true]);
+        $cache = $cacheModel->getCache() ??null;
+        if ($cache) {
+            foreach ($cache->getAll() as $group) {
+                $cache->clean($group->group);
+            }
+            $app->enqueueMessage('<p>Cleaning cache done.</p>');
+        }
     }
 
     public function delete($files = [])
