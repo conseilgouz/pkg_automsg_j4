@@ -17,7 +17,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 class UsersModel extends ListModel
 {
-    public function __construct($config = array(), MVCFactoryInterface $factory = null)
+    public function __construct($config = array(),? MVCFactoryInterface $factory = null)
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(

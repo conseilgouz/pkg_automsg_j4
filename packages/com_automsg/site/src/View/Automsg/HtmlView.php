@@ -1,8 +1,8 @@
 <?php
 /**
- * Automsg Component  - Joomla 4.x/5.x Component 
+ * Automsg Component  - Joomla 4.x/5.x/6.x Component 
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
- * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
+ * @copyright (c) 2025 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz 
 **/
 namespace ConseilGouz\Component\Automsg\Site\View\Automsg;
@@ -88,18 +88,23 @@ class HtmlView extends BaseHtmlView
      */
     public function display($tpl = null)
     {
-        // Get the view data.
-        $this->data               = $this->get('Data');
-        $this->form               = $this->getModel()->getForm();
-        $this->state              = $this->get('State');
-        $this->params             = $this->state->get('params');
-        $this->db                 = Factory::getContainer()->get(DatabaseInterface::class);
-        // Check for errors.
-        if ( $this->get('Errors')) {
+        $model = $this->getModel();
+        $model->setUseExceptions(true);
+
+        try {
+            $this->data               = $model->getData();
+            $this->form               = $model->getForm();
+            $this->state              = $model->getState();
+            $this->params             = $this->state->get('params');
+            $this->db                 = Factory::getContainer()->get(DatabaseInterface::class);
+        } catch (\Exception $e) {
 	        $app   =Factory::getApplication();
-	        $app->enqueueMessage( implode("\n", $this->get('Errors')), 'error');
+	        $app->enqueueMessage( $e->getMessage(), 'error');
             $app->setHeader('status', 403, true);
-            throw new GenericDataException(implode("\n", $this->get('Errors')), 403);
+            throw new GenericDataException($e->getMessage(), 403,$e);
+        }
+
+        if ( $this->get('Errors')) {
         }
         $this->prepareDocument();
 

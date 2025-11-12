@@ -1,6 +1,6 @@
 <?php
 /**
- * @component     AutoMsg - Joomla 4.x/5.x
+ * @component     AutoMsg - Joomla 4.x/5.x/6.x
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  * @copyright (c) 2025 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
@@ -29,16 +29,16 @@ class HtmlView extends BaseHtmlView
      */
     public function display($tpl = null)
     {
-        // Initialise variables.
-        $this->items		= $this->get('Items');
-        $this->pagination	= $this->get('Pagination');
-        $this->state		= $this->get('State');
-        // Check for errors.
-        $errors = $this->get('Errors');
-        if ($errors && \count($errors)) {
-            throw new GenericDataException(implode("\n", $errors), 500);
-        }
+        $model = $this->getModel();
+        $model->setUseExceptions(true);
 
+        try {
+            $this->items		= $model->getItems();
+            $this->pagination	= $model->getPagination();
+            $this->state		= $model->getState();
+        } catch (\Exception $e) {
+            throw new GenericDataException($e->getMessage(), 500, $e);
+        }
         $this->addToolbar();
         // $this->sidebar = JHtmlSidebar::render();
 

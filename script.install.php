@@ -23,7 +23,7 @@ use Joomla\Filesystem\Folder;
 
 class PlgSystemAutomsgInstallerInstallerScript
 {
-    private $min_joomla_version     = '4.0.0';
+    private $min_joomla_version     = '5.4.0';
     private $min_php_version        = '8.0';
     private $name                   = 'Automsg';
     private $dir                    = null;

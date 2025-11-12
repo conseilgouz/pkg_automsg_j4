@@ -1,9 +1,8 @@
 <?php
 /**
- * @component     AutoMsg - Joomla 4.x/5.x
- * Version			: 4.0.0
+ * @component     AutoMsg - Joomla 4.x/5.x/6.x
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
- * @copyright (c) 2024 ConseilGouz. All Rights Reserved.
+ * @copyright (c) 2025 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
 **/
 

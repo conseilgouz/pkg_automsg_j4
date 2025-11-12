@@ -17,7 +17,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 class PublicModel extends ListModel
 {
-    public function __construct($public = array(), MVCFactoryInterface $factory = null)
+    public function __construct($public = array(), ?MVCFactoryInterface $factory = null)
     {
         if (empty($public['filter_fields'])) {
             $public['filter_fields'] = array(

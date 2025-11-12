@@ -2,6 +2,17 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
+		<version>4.4.4</version>
+        <note>
+            <item>Update : 12/11/2025</item>
+        </note>
+        <change>
+            <item>Joomla 6 : error handling</item>
+        </change>
+	</changelog>
+	<changelog>
+		<element>com_automsg</element>
+		<type>package</type>
 		<version>4.4.3</version>
         <note>
             <item>Update : 06/11/2025</item>
