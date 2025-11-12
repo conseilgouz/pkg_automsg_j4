@@ -2,7 +2,7 @@
 	<changelog>
 		<element>com_automsg</element>
 		<type>package</type>
-		<version>4.4.4</version>
+		<version>4.4.5</version>
         <note>
             <item>Update : 12/11/2025</item>
         </note>
