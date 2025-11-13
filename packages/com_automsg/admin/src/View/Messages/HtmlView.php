@@ -29,17 +29,16 @@ class HtmlView extends BaseHtmlView
      */
     public function display($tpl = null)
     {
-        // Initialise variables.
-        $this->items		= $this->get('Items');
-        $this->pagination	= $this->get('Pagination');
-        $this->state		= $this->get('State');
-        $this->taskstatus   = AutomsgHelper::getTaskStatus();
-        // Check for errors.
-        $errors = $this->get('Errors');
-        if ($errors && \count($errors)) {
-            throw new GenericDataException(implode("\n", $errors), 500);
+        $model = $this->getModel();
+        $model->setUseExceptions(true);
+        try{
+            $this->items		= $model->getItems();
+            $this->pagination	= $model->getPagination();
+            $this->state		= $model->getState();
+            $this->taskstatus   = AutomsgHelper::getTaskStatus();
+        } catch (\Exception $e) {
+            throw new GenericDataException($e->getMessage(), 500, $e);
         }
-
         $this->addToolbar();
         // $this->sidebar = JHtmlSidebar::render();
 

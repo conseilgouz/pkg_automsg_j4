@@ -2,12 +2,12 @@
 <extension version="4.0" type="plugin" group="user" method="upgrade">
 	<name>PLG_USER_AUTOMSG_NAME</name>
 	<author>ConseilGouz</author>
-	<creationDate>2025-11-12</creationDate>
+	<creationDate>2025-11-13</creationDate>
 	<copyright>(C)2025 ConseilGouz. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>pascal.leconte@conseilgouz.com</authorEmail>
 	<authorUrl>www.conseilgouz.com</authorUrl>
-	<version>4.4.6</version>
+	<version>4.4.7</version>
 	<description>PLG_USER_AUTOMSG_XML_DESCRIPTION</description>
 	<files>
 		<folder plugin="automsg">services</folder>
