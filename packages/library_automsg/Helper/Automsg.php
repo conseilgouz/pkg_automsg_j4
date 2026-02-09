@@ -466,8 +466,27 @@ class Automsg
     {
         $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_automsg');
-
         $libdateformat = "d/M/Y h:m";
+        // apply content plugins
+        $dispatcher = Factory::getApplication()->getDispatcher();
+        PluginHelper::importPlugin('content', null, true, $dispatcher);
+
+        $notext = false;
+        if ($article->introtext && (!isset($article->text) ||  !trim($article->text))) {
+            $article->text = $article->introtext;
+            $notext = true; // no text
+        }
+        $contentEventArguments = [
+            'context' => 'com_content.article',
+            'subject' => &$article,
+            'params'  => $article->params,
+            'page'    => 0,
+        ];
+        $dispatcher->dispatch('onContentPrepare', new Content\ContentPrepareEvent('onContentPrepare', $contentEventArguments));
+        if ($notext) { // there was no text, restore introtext with text after content plugins have been applied
+            $article->introtext = $article->text;
+        }
+        // check other fields
         $creatorId = $article->created_by;
         $userFactory = Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class);
         $creator = $userFactory->loadUserById($creatorId);
