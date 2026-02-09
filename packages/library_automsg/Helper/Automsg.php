@@ -1,8 +1,8 @@
 <?php
 /**
- * Automsg Component  - Joomla 4.x/5.x/6.x Component 
+ * Automsg Component  - Joomla 4.x/5.x/6.x Component
  * @license https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
- * @copyright (C) 2025 ConseilGouz. All Rights Reserved.
+ * @copyright (C) 2026 ConseilGouz. All Rights Reserved.
  * @author ConseilGouz
  * @license    GNU/GPLv3
  */
@@ -13,11 +13,13 @@ namespace ConseilGouz\Automsg\Helper;
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\Content;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailTemplate;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Content\Site\Model\ArticleModel;
@@ -48,6 +50,26 @@ class Automsg
         if ($autoparams->log) { // need to log msgs
             self::createLog();
         }
+        // apply content plugins
+        $dispatcher = Factory::getApplication()->getDispatcher();
+        PluginHelper::importPlugin('content', null, true, $dispatcher);
+
+        $notext = false;
+        if ($article->introtext && (!isset($article->text) ||  !trim($article->text))) {
+            $article->text = $article->introtext;
+            $notext = true; // no text
+        }
+        $contentEventArguments = [
+            'context' => 'com_content.article',
+            'subject' => &$article,
+            'params'  => $article->params,
+            'page'    => 0,
+        ];
+        $dispatcher->dispatch('onContentPrepare', new Content\ContentPrepareEvent('onContentPrepare', $contentEventArguments));
+        if ($notext) { // there was no text, restore introtext with text after content plugins have been applied
+            $article->introtext = $article->text;
+        }
+        // other article fields
         $creatorId = $article->created_by;
         if (!in_array($creatorId, $users) && (!in_array($creatorId, $deny))) { // creator not in users array : add it
             if (!$bwaiting) {
@@ -196,7 +218,7 @@ class Automsg
                     $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=edit&token=".$tokens[$user_id]."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
                 }
             } else {
-                    $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=reset&email=".$receiver->email."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
+                $unsubscribe = "<a href='".URI::root()."index.php?option=com_automsg&view=automsg&layout=reset&email=".$receiver->email."' target='_blank'>".Text::_('COM_AUTOMSG_UNSUBSCRIBE')."</a>";
             }
             $data = ['unsubscribe'   => $unsubscribe,'sitename' =>  str_replace(['@', '|'], '', $app->get('sitename'))];
             if ($user_id > 0) {
